@@ -314,3 +314,54 @@ export async function deleteAfspraak(
     return { success: false, error: 'Er is een fout opgetreden' };
   }
 }
+
+export type AfspraakStatus =
+  | 'TE_BEVESTIGEN'
+  | 'BEVESTIGD'
+  | 'IN_WACHTZAAL'
+  | 'BINNEN'
+  | 'AFGEWERKT'
+  | 'NO_SHOW'
+  | 'GEANNULEERD';
+
+export interface UpdateAfspraakStatusResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Update de status van een afspraak
+ */
+export async function updateAfspraakStatus(
+  afspraakId: number,
+  status: AfspraakStatus
+): Promise<UpdateAfspraakStatusResult> {
+  try {
+    const session = await requireZorgverlener();
+
+    // Haal bestaande afspraak op
+    const bestaandeAfspraak = await prisma.afspraak.findUnique({
+      where: { id: afspraakId },
+    });
+
+    if (!bestaandeAfspraak) {
+      return { success: false, error: 'Afspraak niet gevonden' };
+    }
+
+    // Check toegang
+    if (bestaandeAfspraak.zorgverlenerId !== session.userId && !session.isAdmin) {
+      return { success: false, error: 'Geen toegang tot deze afspraak' };
+    }
+
+    // Update status
+    await prisma.afspraak.update({
+      where: { id: afspraakId },
+      data: { status },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Update afspraak status error:', error);
+    return { success: false, error: 'Er is een fout opgetreden' };
+  }
+}

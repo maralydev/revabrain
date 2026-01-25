@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAfspraakById } from '@/modules/afspraak/queries';
-import { updateAfspraak, cancelAfspraak, deleteAfspraak, ConflictInfo } from '@/modules/afspraak/actions';
+import { updateAfspraak, cancelAfspraak, deleteAfspraak, updateAfspraakStatus, type AfspraakStatus, ConflictInfo } from '@/modules/afspraak/actions';
 import { searchPatients, PatientWithLastAfspraak } from '@/modules/patient/queries';
 import type { AfspraakWithRelations } from '@/modules/afspraak/queries';
 
@@ -25,6 +25,7 @@ export default function EditAfspraakPage() {
   const [duur, setDuur] = useState<30 | 45 | 60 | 90>(60);
   const [type, setType] = useState<'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN'>('CONSULTATIE');
   const [notities, setNotities] = useState('');
+  const [status, setStatus] = useState<AfspraakStatus>('TE_BEVESTIGEN');
 
   const [conflicts, setConflicts] = useState<ConflictInfo[]>([]);
   const [error, setError] = useState('');
@@ -50,6 +51,7 @@ export default function EditAfspraakPage() {
         setDuur(data.duur as any);
         setType(data.type as any);
         setNotities(data.notities || '');
+        setStatus(data.status as AfspraakStatus);
 
         // Set patient
         if (data.patient) {
@@ -170,6 +172,21 @@ export default function EditAfspraakPage() {
       setError('Er is een fout opgetreden');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleStatusChange(newStatus: AfspraakStatus) {
+    try {
+      const result = await updateAfspraakStatus(afspraakId, newStatus);
+
+      if (result.success) {
+        setStatus(newStatus);
+        // Optionally show success message or refresh
+      } else {
+        setError(result.error || 'Fout bij statuswijziging');
+      }
+    } catch (err) {
+      setError('Er is een fout opgetreden');
     }
   }
 
@@ -323,6 +340,29 @@ export default function EditAfspraakPage() {
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+        </div>
+
+        {/* Status */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Status *
+          </label>
+          <select
+            value={status}
+            onChange={(e) => handleStatusChange(e.target.value as AfspraakStatus)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="TE_BEVESTIGEN">Te bevestigen</option>
+            <option value="BEVESTIGD">Bevestigd</option>
+            <option value="IN_WACHTZAAL">In wachtzaal</option>
+            <option value="BINNEN">Binnen</option>
+            <option value="AFGEWERKT">Afgewerkt</option>
+            <option value="NO_SHOW">No-show</option>
+            <option value="GEANNULEERD">Geannuleerd</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Statuswijziging wordt direct opgeslagen
+          </p>
         </div>
 
         {/* Conflicts Warning */}

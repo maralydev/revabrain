@@ -314,4 +314,35 @@
 - Soft delete option (currently hard delete, but with logging)
 
 **Volgende stappen:**
-- US-005: Afspraak status wijzigen (workflow)
+- US-004: Herhalende afspraken (reeks boeken)
+
+### 2026-01-26 01:00 - US-005: Afspraak status wijzigen (workflow)
+
+**Wat gebouwd:**
+- updateAfspraakStatus server action
+- Status dropdown in edit page met direct save
+- All 7 statuses available: TE_BEVESTIGEN, BEVESTIGD, IN_WACHTZAAL, BINNEN, AFGEWERKT, NO_SHOW, GEANNULEERD
+- Status change visible in agenda via STATUS_CONFIG colors (already implemented in US-003)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - updateAfspraakStatus action, AfspraakStatus type
+- `/app/admin/afspraak/[id]/edit/page.tsx` - status dropdown, handleStatusChange
+
+**Functionaliteit:**
+- Status dropdown saves immediately on change (geen save button)
+- Access control: alleen eigen afspraken (of admin)
+- Status visible in agenda via colored left border (STATUS_CONFIG)
+- User feedback: "Statuswijziging wordt direct opgeslagen" text
+
+**UI patterns:**
+- Dropdown placed after Notities, before Conflicts
+- Direct save (onChange handler calls server action)
+- Status state updated optimistically on success
+- Error handling displays error message
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Volgende stappen:**
+- US-004: Herhalende afspraken (reeks boeken)
