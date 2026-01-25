@@ -674,3 +674,51 @@
 **Volgende stappen:**
 - 15/24 stories done (62.5%)
 - 9 stories remaining
+
+### 2026-01-26 01:10 - US-012: Rapporten genereren (admin)
+
+**Wat gebouwd:**
+- Treatment reports dashboard
+- Per-caregiver breakdown
+- Appointment statistics by type and status
+- CSV export with totals
+
+**Code structuur:**
+- `/src/modules/analytics/reports.ts` - generateTreatmentReport action
+- `/src/app/admin/analytics/reports/page.tsx` - Reports UI
+
+**Functionaliteit:**
+- Date range filter (start/end date required)
+- Per-caregiver statistics:
+  - Total appointments
+  - Breakdown by type: intakes, consultaties, huisbezoeken
+  - Breakdown by status: afgewerkt, no-shows, geannuleerd
+- Table displays all active caregivers with appointments in period
+- Only shows caregivers with >0 appointments
+- CSV export includes all data + totals row at bottom
+
+**Implementatie details:**
+- Parallel queries using Promise.all for each caregiver (performance optimization)
+- 7 queries per caregiver: total, intakes, consultaties, huisbezoeken, afgewerkt, no-shows, geannuleerd
+- Filter excludes admin blocks (type: 'ADMIN')
+- Admin-only access enforced
+- CSV format: Headers + data rows + empty line + 'TOTAAL' + totals row
+
+**UI patterns:**
+- Form with date inputs + "Genereer Rapport" button
+- Table with 8 columns: Zorgverlener, Totaal, Intakes, Consultaties, Huisbezoeken, Afgewerkt, No-Shows, Geannuleerd
+- Color coding: afgewerkt (green), no-shows (orange), geannuleerd (gray)
+- Green "Exporteer CSV" button in table header
+- Empty state when no treatments in period
+
+**Commando's gedraaid:**
+- `rm -rf .next && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- AC mentions "grafiek" (charts/graphs) - deferred for now, table only
+- AC mentions filter by discipline - not implemented
+- Could add zorgverlener dropdown filter
+
+**Volgende stappen:**
+- 16/24 stories done (66.7%)
+- 8 stories remaining

@@ -301,8 +301,8 @@
         "Verify in browser"
       ],
       "priority": 19,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Treatment reports at /admin/analytics/reports. Date range filter with per-caregiver breakdown. Counts by appointment type (intake, consultatie, huisbezoek) and status (afgewerkt, no-shows, geannuleerd). Table view with CSV export including totals row. Parallel queries using Promise.all for performance. Admin-only access."
     },
     {
       "id": "US-013",
