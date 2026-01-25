@@ -30,6 +30,7 @@ export interface Afspraak {
   isHerhalend?: boolean
   sessieNummer?: number
   totaalSessies?: number
+  isAlert?: boolean
 }
 
 export interface Zorgverlener {

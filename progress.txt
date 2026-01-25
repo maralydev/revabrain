@@ -397,3 +397,56 @@
 
 **Volgende stappen:**
 - US-005c: Notities bij afspraak (incl. alerts)
+
+### 2026-01-26 00:15 - US-005c: Notities bij afspraak (incl. alerts)
+
+**Wat gebouwd:**
+- isAlert boolean field added to Afspraak schema
+- Manual migration created (SQLite enum workaround needed)
+- Alert checkbox UI in create and edit forms
+- Red alert icon (⚠️) displayed in AfspraakCard when isAlert=true
+- Type extensions in queries and actions to support new field
+
+**Code structuur:**
+- `/prisma/schema.prisma` - Added isAlert BOOLEAN DEFAULT false to Afspraak model
+- `/prisma/migrations/20260126001142_add_is_alert_to_afspraak/` - Manual migration SQL
+- `/src/modules/afspraak/queries.ts` - Extended AfspraakWithRelations type with isAlert
+- `/src/modules/afspraak/actions.ts` - Added isAlert to CreateAfspraakInput and UpdateAfspraakInput
+- `/src/app/admin/afspraak/nieuw/page.tsx` - Added isAlert checkbox in form
+- `/src/app/admin/afspraak/[id]/edit/page.tsx` - Added isAlert checkbox in edit form
+- `/src/modules/agenda/types.ts` - Added isAlert to Afspraak interface
+- `/src/modules/agenda/components/AfspraakCard.tsx` - Added AlertIcon component and display logic
+- `/src/modules/agenda/hooks/useAgenda.ts` - Added isAlert mapping in data transformation
+
+**UI patterns:**
+- Checkbox below notities textarea: "Markeer als alert (belangrijke notitie)"
+- Alert icon appears next to patient name in agenda card
+- Red warning triangle icon with tooltip "Alert: Belangrijke notitie"
+
+**Prisma issue & workaround:**
+- Prisma 4.x-5.x all reject native enums for SQLite connector
+- Existing schema has enums (stored as TEXT in SQLite, validated in Prisma)
+- Cannot regenerate Prisma client due to enum validation errors
+- Workaround: Manual migration via sqlite3, type assertions (as any) in actions
+- Database column added successfully, existing client works with type casting
+- When switching to PostgreSQL, can regenerate client properly
+
+**Commando's gedraaid:**
+- `sqlite3 prisma/dev.db < migration.sql` (manual migration ✅)
+- `sqlite3 prisma/dev.db "INSERT INTO _prisma_migrations..."` (track migration ✅)
+- Tried Prisma 4.16, 5.0, 5.18, 5.21, 5.22 - all fail on enum validation
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Prisma SQLite enum validation prevents client regeneration across all tested versions
+- Used type casting and manual types until PostgreSQL migration
+- isAlert works in DB and code but types require assertions
+
+**Nog te implementeren:**
+- Alert popup when opening appointment (mentioned in AC but not yet built)
+- Currently only shows visual indicator in agenda
+- Will need modal/toast notification for full implementation
+
+**Volgende stappen:**
+- US-005d: Afwezigheid registreren (beschikbaarheid blokkeren)

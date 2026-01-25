@@ -25,6 +25,7 @@ export default function EditAfspraakPage() {
   const [duur, setDuur] = useState<30 | 45 | 60 | 90>(60);
   const [type, setType] = useState<'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN'>('CONSULTATIE');
   const [notities, setNotities] = useState('');
+  const [isAlert, setIsAlert] = useState(false);
   const [status, setStatus] = useState<AfspraakStatus>('TE_BEVESTIGEN');
 
   const [conflicts, setConflicts] = useState<ConflictInfo[]>([]);
@@ -51,6 +52,7 @@ export default function EditAfspraakPage() {
         setDuur(data.duur as any);
         setType(data.type as any);
         setNotities(data.notities || '');
+        setIsAlert((data as any).isAlert || false);
         setStatus(data.status as AfspraakStatus);
 
         // Set patient
@@ -113,6 +115,7 @@ export default function EditAfspraakPage() {
         duur,
         type,
         notities: notities || undefined,
+        isAlert,
       });
 
       if (result.success) {
@@ -340,6 +343,18 @@ export default function EditAfspraakPage() {
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              id="isAlert"
+              checked={isAlert}
+              onChange={(e) => setIsAlert(e.target.checked)}
+              className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
+            />
+            <label htmlFor="isAlert" className="text-sm text-gray-700">
+              Markeer als alert (belangrijke notitie)
+            </label>
+          </div>
         </div>
 
         {/* Status */}

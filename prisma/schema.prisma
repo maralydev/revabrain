@@ -111,6 +111,7 @@ model Afspraak {
 
   // Extra info
   notities        String?
+  isAlert         Boolean   @default(false)  // Alert voor belangrijke notities
 
   // Metadata
   aangemaakt      DateTime  @default(now())

@@ -9,6 +9,7 @@ export interface CreateAfspraakInput {
   duur: 30 | 45 | 60 | 90;
   type: 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN';
   notities?: string;
+  isAlert?: boolean;
 }
 
 export interface CreateAfspraakResult {
@@ -25,6 +26,7 @@ export interface UpdateAfspraakInput {
   duur?: 30 | 45 | 60 | 90;
   type?: 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN';
   notities?: string;
+  isAlert?: boolean;
 }
 
 export interface UpdateAfspraakResult {
@@ -130,10 +132,11 @@ export async function createAfspraak(
         type: input.type,
         status: 'TE_BEVESTIGEN',
         notities: input.notities || null,
+        isAlert: input.isAlert || false,
         patientId: input.patientId,
         zorgverlenerId: session.userId,
         ingeboektDoorId: session.userId,
-      },
+      } as any, // Type assertion needed until Prisma client is regenerated
     });
 
     return {
@@ -207,7 +210,8 @@ export async function updateAfspraak(
         ...(input.duur && { duur: input.duur }),
         ...(input.type && { type: input.type }),
         ...(input.notities !== undefined && { notities: input.notities || null }),
-      },
+        ...(input.isAlert !== undefined && { isAlert: input.isAlert }),
+      } as any, // Type assertion needed until Prisma client is regenerated
     });
 
     return {

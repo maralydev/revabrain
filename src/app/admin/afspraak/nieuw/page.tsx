@@ -17,6 +17,7 @@ export default function NieuweAfspraakPage() {
   const [duur, setDuur] = useState<30 | 45 | 60 | 90>(60);
   const [type, setType] = useState<'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN'>('CONSULTATIE');
   const [notities, setNotities] = useState('');
+  const [isAlert, setIsAlert] = useState(false);
 
   const [isRecurring, setIsRecurring] = useState(false);
   const [totaalSessies, setTotaalSessies] = useState(12);
@@ -97,6 +98,7 @@ export default function NieuweAfspraakPage() {
           duur,
           type,
           notities: notities || undefined,
+          isAlert,
         });
 
         if (result.success) {
@@ -250,6 +252,18 @@ export default function NieuweAfspraakPage() {
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              id="isAlert"
+              checked={isAlert}
+              onChange={(e) => setIsAlert(e.target.checked)}
+              className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
+            />
+            <label htmlFor="isAlert" className="text-sm text-gray-700">
+              Markeer als alert (belangrijke notitie)
+            </label>
+          </div>
         </div>
 
         {/* Herhalende Afspraken */}

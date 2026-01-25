@@ -83,6 +83,7 @@ export function useAfspraken(datum: Date, zorgverlenerId?: number) {
         patientId: a.patientId || undefined,
         zorgverlenerNaam: `${a.zorgverlener.voornaam} ${a.zorgverlener.achternaam}`,
         zorgverlenerId: a.zorgverlenerId,
+        isAlert: (a as any).isAlert || false,
         // isHerhalend, sessieNummer, totaalSessies not yet implemented
       }))
 

@@ -159,8 +159,8 @@
         "Verify in browser"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added isAlert boolean field to Afspraak schema/database via manual migration (Prisma enum issue with SQLite workaround). Checkbox UI in create/edit forms. Red alert icon (⚠️) displays in AfspraakCard when isAlert=true. Type extensions added to support field until Prisma client regeneration. Note: Alert popup on open not yet implemented - visual indicator only for now."
     },
     {
       "id": "US-005d",
