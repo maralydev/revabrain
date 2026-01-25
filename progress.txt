@@ -859,3 +859,83 @@ CREATE TABLE AfspraakTypeConfig (
 **Volgende stappen:**
 - 18/24 stories done (75%)
 - 6 stories remaining
+
+### 2026-01-26 01:40 - US-008d: Disciplines beheren (admin)
+
+**Wat gebouwd:**
+- Configurable disciplines system
+- Admin UI for managing discipline configurations
+- Teamleden linking display
+
+**Code structuur:**
+- Manual migration: Created DisciplineConfig table, seeded with 5 disciplines
+- `/prisma/schema.prisma` - Added DisciplineConfig model
+- `/src/modules/discipline-config/queries.ts` - Query functions
+- `/src/modules/discipline-config/actions.ts` - Update/activate/deactivate actions
+- `/src/app/admin/settings/disciplines/page.tsx` - Admin UI
+
+**Functionaliteit:**
+- Each discipline has config row linked by code
+- Configurable fields:
+  - naam (display name)
+  - beschrijving (for public website)
+  - actief (boolean)
+  - volgorde (display order, integer)
+- Shows teamleden count and names per discipline
+- Edit form with name, description textarea, order number, active checkbox
+- Teamleden are already linked via Teamlid.discipline field (existing functionality)
+- Admin-only access
+
+**Database structure:**
+```sql
+CREATE TABLE DisciplineConfig (
+  id INTEGER PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,        -- LOGOPEDIE, KINESITHERAPIE, etc.
+  naam TEXT NOT NULL,                -- Display name
+  beschrijving TEXT,                 -- For website
+  actief INTEGER DEFAULT 1,          -- Boolean
+  volgorde INTEGER DEFAULT 0,        -- Display order
+  aangemaakt TEXT DEFAULT CURRENT_TIMESTAMP,
+  laatstGewijzigd TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Seeded disciplines:**
+- LOGOPEDIE: Logopedie, "Behandeling van spraak-, taal- en slikstoornissen...", order 1
+- KINESITHERAPIE: Kinesitherapie, "Bewegingstherapie gericht op herstel...", order 2
+- ERGOTHERAPIE: Ergotherapie, "Ondersteuning bij dagelijkse activiteiten...", order 3
+- NEUROPSYCHOLOGIE: Neuropsychologie, "Onderzoek en behandeling van cognitieve functies", order 4
+- DIETIEK: Diëtiek, "Voedingsadvies en begeleiding", order 5
+
+**UI patterns:**
+- List view with code badges, inactive badges, order badges
+- Shows linked teamleden: "Teamleden (2): Jan Jansen, Marie Dupont"
+- Edit form with:
+  - Name input
+  - Description textarea (for website)
+  - Order number input with helper text
+  - Active checkbox
+- Info banner explains enum limitation
+
+**Teamleden linking:**
+- Already implemented via Teamlid.discipline field
+- Count active teamleden per discipline
+- Display names in list view
+- No additional linking needed (AC satisfied)
+
+**Beperkingen:**
+- Cannot create new disciplines (enum-based)
+- Cannot delete disciplines (only deactivate)
+- Full migration to dynamic system would require removing enum
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE DisciplineConfig..."` with seeded data
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Optional: discipline detail page for public website (US-010)
+- Optional: icon/image for each discipline
+
+**Volgende stappen:**
+- 19/24 stories done (79.2%)
+- 5 stories remaining

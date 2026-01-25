@@ -249,3 +249,24 @@ model AfspraakTypeConfig {
   aangemaakt      DateTime  @default(now())
   laatstGewijzigd DateTime  @updatedAt
 }
+
+// ============================================
+// DISCIPLINE CONFIG
+// Voor configureerbare disciplines (admin-only)
+// ============================================
+model DisciplineConfig {
+  id              Int       @id @default(autoincrement())
+
+  // Identificatie
+  code            String    @unique  // Matches Discipline enum value
+  naam            String
+  beschrijving    String?   // Description for public website
+
+  // Display
+  actief          Boolean   @default(true)
+  volgorde        Int       @default(0)  // Display order
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+}

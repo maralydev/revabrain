@@ -240,8 +240,8 @@
         "Verify in browser"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Configurable disciplines via admin UI at /admin/settings/disciplines. Created DisciplineConfig table with fields: code (links to enum), naam, beschrijving, actief, volgorde. Seeded with 5 disciplines (LOGOPEDIE, KINESITHERAPIE, ERGOTHERAPIE, NEUROPSYCHOLOGIE, DIETIEK). Admin can modify display name, description for website, display order, and active status. Shows linked teamleden count and names. Teamleden are linked via existing Teamlid.discipline field. Cannot create new disciplines (enum-based)."
     },
     {
       "id": "US-014",
