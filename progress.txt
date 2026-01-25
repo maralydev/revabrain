@@ -628,3 +628,49 @@
 
 **Volgende stappen:**
 - US-013: No-show analyse (admin)
+
+### 2026-01-26 01:05 - US-013: No-show analyse (admin)
+
+**Wat gebouwd:**
+- No-show analysis dashboard
+- Date range filtering
+- Statistics calculation
+- CSV export functionality
+
+**Code structuur:**
+- `/src/modules/analytics/no-show.ts` - analyzeNoShows action
+- `/src/app/admin/analytics/no-show/page.tsx` - Analysis UI
+
+**Functionaliteit:**
+- Date range filter (start/end date required)
+- Statistics calculated:
+  - Total appointments (excluding cancelled and admin blocks)
+  - Total no-shows
+  - No-show percentage
+- Patient list grouped by patient:
+  - Patient name
+  - No-show count
+  - Total appointments for period
+  - Individual no-show percentage
+  - Last no-show date
+- Sorted by no-show count (descending)
+- Color coding: >20% red, >10% orange, <10% gray
+- CSV export with all data + totals
+
+**UI patterns:**
+- Three stat cards: total, no-shows, percentage with conditional coloring
+- Table with sortable data
+- Green "Exporteer CSV" button
+- Empty state when no no-shows found
+- Form submission analyzes and displays results
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Filter by zorgverlener (mentioned in AC but not implemented)
+- Could add date range presets (last month, last quarter, etc.)
+
+**Volgende stappen:**
+- 15/24 stories done (62.5%)
+- 9 stories remaining

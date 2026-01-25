@@ -317,8 +317,8 @@
         "Verify in browser"
       ],
       "priority": 20,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "No-show analysis at /admin/analytics/no-show. Date range filter. Stats cards: total appointments, total no-shows, percentage with color coding. Patient table sorted by no-show count with individual percentages. CSV export functionality. Excludes admin blocks and cancelled appointments. Admin-only access."
     },
     {
       "id": "US-009",
