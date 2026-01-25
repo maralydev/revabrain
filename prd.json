@@ -224,8 +224,8 @@
         "Verify in browser"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Configurable appointment types via admin UI at /admin/settings/afspraak-types. Created AfspraakTypeConfig table with fields: code (links to enum), naam, kleur (hex), standaardDuur, factureerbaar, actief. Seeded with existing types (INTAKE, CONSULTATIE, HUISBEZOEK, ADMIN). Admin can modify display name, color, default duration, and billable status. Cannot create new types (enum-based, requires code changes). Can activate/deactivate types. Future enhancement: Link to disciplines."
     },
     {
       "id": "US-008d",

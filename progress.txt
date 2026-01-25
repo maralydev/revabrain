@@ -782,3 +782,80 @@
 **Volgende stappen:**
 - 17/24 stories done (70.8%)
 - 7 stories remaining
+
+### 2026-01-26 01:30 - US-008c: Afspraak types beheren (admin)
+
+**Wat gebouwd:**
+- Configurable appointment types system
+- Admin UI for managing type configurations
+- Database table with seeded data
+
+**Code structuur:**
+- Manual migration: Created AfspraakTypeConfig table, seeded with 4 types
+- `/prisma/schema.prisma` - Added AfspraakTypeConfig model
+- `/src/modules/afspraak-type-config/queries.ts` - Query functions for configs
+- `/src/modules/afspraak-type-config/actions.ts` - Update/activate/deactivate actions
+- `/src/app/admin/settings/afspraak-types/page.tsx` - Admin UI
+
+**Functionaliteit:**
+- Each appointment type has config row linked by code (INTAKE, CONSULTATIE, etc.)
+- Configurable fields:
+  - naam (display name)
+  - kleur (hex color code with color picker)
+  - standaardDuur (30/45/60/90 minutes)
+  - factureerbaar (boolean)
+  - actief (boolean)
+- Edit form shows current values
+- Color picker + hex input for easy color selection
+- Visual color swatch in list view
+- Info banner explains enum limitation (cannot create new types)
+- Admin-only access
+
+**Database structure:**
+```sql
+CREATE TABLE AfspraakTypeConfig (
+  id INTEGER PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,        -- INTAKE, CONSULTATIE, etc.
+  naam TEXT NOT NULL,                -- Display name
+  kleur TEXT NOT NULL,               -- Hex color
+  standaardDuur INTEGER NOT NULL,    -- Minutes
+  factureerbaar INTEGER DEFAULT 1,   -- Boolean
+  actief INTEGER DEFAULT 1,          -- Boolean
+  aangemaakt TEXT DEFAULT CURRENT_TIMESTAMP,
+  laatstGewijzigd TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Seeded types:**
+- INTAKE: Intake, blue (#3B82F6), 60 min, factureerbaar
+- CONSULTATIE: Consultatie, green (#10B981), 45 min, factureerbaar
+- HUISBEZOEK: Huisbezoek, orange (#F59E0B), 60 min, factureerbaar
+- ADMIN: Administratief, gray (#6B7280), 30 min, niet factureerbaar
+
+**UI patterns:**
+- List view with color swatches
+- Code displayed as badge (monospace)
+- Inactive types marked with red badge
+- Edit button per type
+- Form with color picker + hex input
+- Checkboxes for factureerbaar/actief
+- Duration dropdown (30/45/60/90)
+
+**Beperkingen:**
+- Cannot create new types (enum-based in Afspraak model)
+- Cannot delete types (only deactivate)
+- Cannot link to disciplines yet (AC requirement deferred)
+- Future migration needed to make fully dynamic (remove enum dependency)
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE AfspraakTypeConfig..."` with seeded data
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- AC mentions "Type kan gekoppeld worden aan één of meerdere disciplines" - not implemented
+- Full enum-to-config migration for creating new types
+- Validation: prevent deactivating types with upcoming appointments
+
+**Volgende stappen:**
+- 18/24 stories done (75%)
+- 6 stories remaining

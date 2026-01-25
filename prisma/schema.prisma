@@ -227,3 +227,25 @@ enum AfwezigheidType {
   OPLEIDING
   ANDERE
 }
+
+// ============================================
+// AFSPRAAK TYPE CONFIG
+// Voor configureerbare afspraaktypes (admin-only)
+// ============================================
+model AfspraakTypeConfig {
+  id              Int       @id @default(autoincrement())
+
+  // Identificatie
+  code            String    @unique  // Matches AfspraakType enum value
+  naam            String
+
+  // Display & Gedrag
+  kleur           String    // Hex color code
+  standaardDuur   Int       // Minuten
+  factureerbaar   Boolean   @default(true)
+  actief          Boolean   @default(true)
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+}
