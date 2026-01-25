@@ -270,3 +270,27 @@ model DisciplineConfig {
   aangemaakt      DateTime  @default(now())
   laatstGewijzigd DateTime  @updatedAt
 }
+
+// ============================================
+// AUDIT LOG
+// Voor compliance en traceerbaarheid (admin-only viewing)
+// ============================================
+model AuditLog {
+  id              Int       @id @default(autoincrement())
+
+  // Wanneer & Wie
+  timestamp       DateTime  @default(now())
+  teamlidId       Int
+  teamlidNaam     String    // Denormalized for reporting
+
+  // Wat
+  actieType       String    // LOGIN, PATIENT_CREATE, PATIENT_DELETE, etc.
+  entiteitType    String?   // Patient, Afspraak, Teamlid, etc.
+  entiteitId      Int?
+  omschrijving    String
+  metadata        String?   // JSON string for additional context
+
+  @@index([timestamp(sort: Desc)])
+  @@index([teamlidId])
+  @@index([actieType])
+}

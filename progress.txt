@@ -939,3 +939,101 @@ CREATE TABLE DisciplineConfig (
 **Volgende stappen:**
 - 19/24 stories done (79.2%)
 - 5 stories remaining
+
+### 2026-01-26 01:50 - US-014: Audit log bekijken (admin)
+
+**Wat gebouwd:**
+- Complete audit log infrastructure
+- Admin viewing interface with filters
+- CSV export functionality
+
+**Code structuur:**
+- Manual migration: Created AuditLog table with indexes
+- `/prisma/schema.prisma` - Added AuditLog model
+- `/src/shared/lib/audit.ts` - Utility functions for logging
+- `/src/modules/audit-log/queries.ts` - Query functions with filters
+- `/src/app/admin/audit-log/page.tsx` - Admin viewing UI
+
+**Functionaliteit:**
+- AuditLog table stores all important actions
+- Fields: timestamp, teamlidId, teamlidNaam, actieType, entiteitType, entiteitId, omschrijving, metadata (JSON)
+- Indexed on timestamp (DESC), teamlidId, actieType for performance
+- logAudit() utility function for easy logging throughout app
+- Admin UI at /admin/audit-log with:
+  - Date range filter
+  - User filter (dropdown)
+  - Action type filter (dropdown)
+  - Pagination (50 entries per page)
+  - CSV export
+  - Chronological table display
+
+**Database structure:**
+```sql
+CREATE TABLE AuditLog (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  teamlidId INTEGER NOT NULL,
+  teamlidNaam TEXT NOT NULL,           -- Denormalized for reporting
+  actieType TEXT NOT NULL,              -- LOGIN, PATIENT_CREATE, etc.
+  entiteitType TEXT,                    -- Patient, Afspraak, Teamlid, etc.
+  entiteitId INTEGER,
+  omschrijving TEXT NOT NULL,
+  metadata TEXT                         -- JSON string
+);
+
+CREATE INDEX idx_auditlog_timestamp ON AuditLog(timestamp DESC);
+CREATE INDEX idx_auditlog_teamlid ON AuditLog(teamlidId);
+CREATE INDEX idx_auditlog_actietype ON AuditLog(actieType);
+```
+
+**Actie types defined:**
+- LOGIN, LOGOUT
+- PATIENT_CREATE, PATIENT_UPDATE, PATIENT_DELETE, PATIENT_EXPORT
+- AFSPRAAK_CREATE, AFSPRAAK_UPDATE, AFSPRAAK_DELETE, AFSPRAAK_STATUS_CHANGE
+- TEAMLID_CREATE, TEAMLID_UPDATE, TEAMLID_PASSWORD_RESET
+- AFWEZIGHEID_CREATE, AFWEZIGHEID_DELETE
+- CONFIG_UPDATE, EXPORT_GENERATED
+
+**UI patterns:**
+- Filter form with 4 dropdowns (date, date, user, action type)
+- Clear filters button
+- Export CSV button (disabled when no results)
+- Pagination controls (previous/next)
+- Results count display
+- Table with 5 columns: Timestamp, Gebruiker, Actie (badge), Entiteit, Omschrijving
+- Hover effect on rows
+
+**logAudit() usage pattern:**
+```typescript
+import { logAudit } from '@/shared/lib/audit';
+
+// In any server action:
+await logAudit({
+  actieType: 'PATIENT_CREATE',
+  entiteitType: 'Patient',
+  entiteitId: patient.id,
+  omschrijving: 'Nieuwe patiënt geregistreerd',
+  metadata: { /* optional extra context */ },
+});
+```
+
+**Features:**
+- Automatically fetches current user from session
+- Non-blocking: errors don't break app flow
+- Denormalized teamlidNaam for fast querying
+- Metadata field supports JSON for future extensions
+- CSV export includes all visible fields
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE AuditLog..."` with indexes
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Integrate logAudit() calls throughout existing actions (incremental)
+- Optional: Automatic retention policy (delete old logs after X months)
+- Optional: More advanced filtering (full-text search in omschrijving)
+- Optional: Export to Excel format (currently only CSV)
+
+**Volgende stappen:**
+- 20/24 stories done (83.3%)
+- 4 stories remaining (all public site features)
