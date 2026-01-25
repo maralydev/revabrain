@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getPatientById } from '@/modules/patient/queries';
 import { exportPatientData } from '@/modules/patient/export';
+import { deletePatient } from '@/modules/patient/delete';
 import type { Patient } from '@prisma/client';
 
 export default function PatientDetailPage() {
@@ -14,6 +15,9 @@ export default function PatientDetailPage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteReden, setDeleteReden] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -61,6 +65,34 @@ export default function PatientDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!patient || !deleteReden) return;
+
+    try {
+      setDeleting(true);
+      setError('');
+
+      const result = await deletePatient({
+        patientId,
+        reden: deleteReden,
+      });
+
+      if (result.success) {
+        alert('Patiënt permanent verwijderd. Alle persoonsgegevens zijn gewist.');
+        router.push('/admin/patient');
+        router.refresh();
+      } else {
+        setError(result.error || 'Fout bij verwijderen');
+      }
+    } catch (err) {
+      setError('Er is een fout opgetreden');
+    } finally {
+      setDeleting(false);
+      setShowDeleteDialog(false);
+      setDeleteReden('');
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto p-6">
@@ -90,6 +122,12 @@ export default function PatientDetailPage() {
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
           >
             {exporting ? 'Exporteren...' : 'Exporteer Data (GDPR)'}
+          </button>
+          <button
+            onClick={() => setShowDeleteDialog(true)}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Verwijder (GDPR)
           </button>
           <button
             onClick={() => router.back()}
@@ -171,6 +209,58 @@ export default function PatientDetailPage() {
           Deze export kan gebruikt worden voor inzageverzoeken conform GDPR.
         </p>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-red-600 mb-4">
+              Patiënt Permanent Verwijderen (GDPR)
+            </h2>
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded">
+              <p className="text-sm text-red-800 font-semibold mb-2">
+                WAARSCHUWING: Deze actie kan niet ongedaan gemaakt worden!
+              </p>
+              <ul className="text-sm text-red-700 list-disc list-inside space-y-1">
+                <li>Alle persoonsgegevens worden permanent verwijderd</li>
+                <li>Afspraken worden geanonimiseerd (naam verwijderd)</li>
+                <li>Herhalende reeksen worden verwijderd</li>
+              </ul>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reden voor verwijdering (verplicht) *
+              </label>
+              <textarea
+                value={deleteReden}
+                onChange={(e) => setDeleteReden(e.target.value)}
+                rows={3}
+                placeholder="Bijv: GDPR verzoek van patiënt d.d. ..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDelete}
+                disabled={deleting || deleteReden.length < 5}
+                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? 'Verwijderen...' : 'Bevestig Verwijdering'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeleteReden('');
+                }}
+                disabled={deleting}
+                className="flex-1 py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              >
+                Annuleren
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

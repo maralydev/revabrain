@@ -284,8 +284,8 @@
         "Typecheck/lint/tests slagen"
       ],
       "priority": 18,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Delete confirmation dialog with reason required (min 5 chars). Transaction: anonymize appointments (patientId → NULL), delete herhalende reeks, delete patient. Warning UI explains irreversible action. Logged with patient ID, appointment count, reason snippet - NO PII in logs. Admin-only access."
     },
     {
       "id": "US-012",

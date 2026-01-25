@@ -583,3 +583,48 @@
 
 **Volgende stappen:**
 - US-016: Patiënt volledig verwijderen (GDPR recht op vergetelheid)
+
+### 2026-01-26 00:55 - US-016: Patiënt volledig verwijderen (GDPR recht op vergetelheid)
+
+**Wat gebouwd:**
+- Patient deletion functionality for GDPR compliance
+- Confirmation dialog with required reason
+- Transaction-based deletion with anonymization
+- Logging without PII
+
+**Code structuur:**
+- `/src/modules/patient/delete.ts` - deletePatient action
+- `/src/app/admin/patient/[id]/page.tsx` - Added delete UI with modal
+
+**Functionaliteit:**
+- Delete button on patient detail page
+- Modal dialog with warnings and reason textarea
+- Required reason (min 5 chars) explaining deletion
+- Transaction ensures atomic operation:
+  1. Anonymize appointments (set patientId to NULL for stats)
+  2. Delete herhalende reeks records
+  3. Delete patient (permanent PII removal)
+- Success redirects to patient list
+- Logged: patient ID, appointment count, reason snippet (first 20 chars) - NO PII
+
+**UI patterns:**
+- Red "Verwijder (GDPR)" button in header
+- Modal overlay with dark background
+- Warning box explaining irreversible consequences
+- Bullet list of what gets deleted/anonymized
+- Textarea for deletion reason with placeholder
+- Disabled confirm button until reason entered
+- Loading state during deletion
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `rm -rf .next && npm run build` (build ✅ - clean required)
+
+**Belangrijk:**
+- Appointments NOT deleted - only anonymized (patientId → NULL)
+- Preserves appointment statistics while removing PII
+- Irreversible operation with strong warnings
+- Admin-only access enforced
+
+**Volgende stappen:**
+- US-013: No-show analyse (admin)
