@@ -79,8 +79,8 @@
         "Verify in browser (agenda UI)"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Dag/week toggle, real data from database, status colors (STATUS_CONFIG), navigation (prev/next/today). DagView: grid per zorgverlener, WeekView: 7-day grid. Hooks updated to fetch real afspraken and teamleden."
     },
     {
       "id": "US-002",

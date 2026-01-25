@@ -7,8 +7,9 @@
 
 // === Components ===
 export { AfspraakCard } from './components/AfspraakCard'
-export { AgendaHeader } from './components/AgendaHeader'
+export { AgendaHeader, type AgendaView } from './components/AgendaHeader'
 export { DagView } from './components/DagView'
+export { WeekView } from './components/WeekView'
 
 // === Hooks ===
 export {

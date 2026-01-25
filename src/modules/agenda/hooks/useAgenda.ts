@@ -6,9 +6,12 @@
  * React hooks voor agenda functionaliteit
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import type { Afspraak, Zorgverlener } from '../types'
-import { DUMMY_AFSPRAKEN, DUMMY_ZORGVERLENERS } from '../data/dummyData'
+import { getAfsprakenByDate } from '@/modules/afspraak/queries'
+import { getActieveTeamleden } from '@/modules/teamlid/queries'
+import type { Teamlid } from '@prisma/client'
+import type { AfspraakWithRelations } from '@/modules/afspraak/queries'
 
 /**
  * Hook voor datum navigatie in de agenda
@@ -57,31 +60,54 @@ export function useAgendaDatum(initialDate: Date = new Date()) {
 
 /**
  * Hook voor het ophalen van afspraken
- *
- * TODO: Vervang door React Query / SWR met echte API calls
  */
 export function useAfspraken(datum: Date, zorgverlenerId?: number) {
-  // Tijdelijk: gebruik dummy data
-  // Later: useSWR of useQuery met agendaService
-  const afspraken = useMemo(() => {
-    const startVanDag = new Date(datum)
-    startVanDag.setHours(0, 0, 0, 0)
+  const [afspraken, setAfspraken] = useState<Afspraak[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-    const eindVanDag = new Date(datum)
-    eindVanDag.setHours(23, 59, 59, 999)
+  const loadAfspraken = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const data = await getAfsprakenByDate(datum)
 
-    return DUMMY_AFSPRAKEN.filter(a => {
-      const inDag = a.datum >= startVanDag && a.datum <= eindVanDag
-      const vanZorgverlener = zorgverlenerId ? a.zorgverlenerId === zorgverlenerId : true
-      return inDag && vanZorgverlener
-    })
+      // Transform AfspraakWithRelations to Afspraak type
+      const transformed: Afspraak[] = data.map((a: AfspraakWithRelations) => ({
+        id: a.id,
+        datum: new Date(a.datum),
+        duur: a.duur,
+        type: a.type as any,
+        status: a.status as any,
+        patientNaam: a.patient ? `${a.patient.voornaam} ${a.patient.achternaam}` : undefined,
+        patientId: a.patientId || undefined,
+        zorgverlenerNaam: `${a.zorgverlener.voornaam} ${a.zorgverlener.achternaam}`,
+        zorgverlenerId: a.zorgverlenerId,
+        // isHerhalend, sessieNummer, totaalSessies not yet implemented
+      }))
+
+      // Filter by zorgverlenerId if provided
+      const filtered = zorgverlenerId
+        ? transformed.filter(a => a.zorgverlenerId === zorgverlenerId)
+        : transformed
+
+      setAfspraken(filtered)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Er is een fout opgetreden')
+    } finally {
+      setIsLoading(false)
+    }
   }, [datum, zorgverlenerId])
+
+  useEffect(() => {
+    loadAfspraken()
+  }, [loadAfspraken])
 
   return {
     afspraken,
-    isLoading: false,
-    error: null,
-    refetch: () => {},
+    isLoading,
+    error,
+    refetch: loadAfspraken,
   }
 }
 
@@ -89,11 +115,45 @@ export function useAfspraken(datum: Date, zorgverlenerId?: number) {
  * Hook voor het ophalen van zorgverleners
  */
 export function useZorgverleners() {
-  // Tijdelijk: gebruik dummy data
+  const [zorgverleners, setZorgverleners] = useState<Zorgverlener[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadZorgverleners() {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const data = await getActieveTeamleden()
+
+        // Transform Teamlid to Zorgverlener type
+        const transformed: Zorgverlener[] = data.map((t: Teamlid, index: number) => {
+          // Assign colors cyclically
+          const colors = ['#2879D8', '#59ECB7', '#9C27B0', '#FFC107', '#4CAF50']
+          return {
+            id: t.id,
+            voornaam: t.voornaam,
+            achternaam: t.achternaam,
+            discipline: t.discipline || 'Zorgverlener',
+            kleur: colors[index % colors.length],
+          }
+        })
+
+        setZorgverleners(transformed)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Er is een fout opgetreden')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadZorgverleners()
+  }, [])
+
   return {
-    zorgverleners: DUMMY_ZORGVERLENERS,
-    isLoading: false,
-    error: null,
+    zorgverleners,
+    isLoading,
+    error,
   }
 }
 

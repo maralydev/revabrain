@@ -172,4 +172,52 @@
 - Build error ENOTEMPTY .next/server → fix met `rm -rf .next`
 
 **Volgende stappen:**
-- US-003: Dag/week overzicht (agenda views - HIGH PRIORITY)
+- US-002: Afspraak wijzigen (CRUD - update)
+
+### 2026-01-26 00:15 - US-003: Dag/week overzicht (agenda views)
+
+**Wat gebouwd:**
+- DagView component (bestaand, werkt met real data nu)
+- WeekView component (nieuw, 7-day grid)
+- View toggle in AgendaHeader (DAG/WEEK buttons)
+- Week navigation (prev/next moves 7 days in week view)
+- Real data integration: hooks updated from dummy data to server actions
+- Teamlid query function getActieveTeamleden
+- Status colors via STATUS_CONFIG (already existed)
+
+**Code structuur:**
+- `/modules/teamlid/queries.ts` - getActieveTeamleden server action
+- `/modules/agenda/hooks/useAgenda.ts` - updated useAfspraken, useZorgverleners
+- `/modules/agenda/components/WeekView.tsx` - new week grid component
+- `/modules/agenda/components/AgendaHeader.tsx` - added view toggle
+- `/app/admin/agenda/page.tsx` - supports both dag and week views
+
+**Real data integration:**
+- useAfspraken: calls getAfsprakenByDate, transforms AfspraakWithRelations to Afspraak
+- useZorgverleners: calls getActieveTeamleden, transforms Teamlid to Zorgverlener
+- Week view: calls getAfsprakenByWeek for entire week data
+- Colors assigned cyclically from palette: #2879D8, #59ECB7, #9C27B0, #FFC107, #4CAF50
+
+**UI patterns:**
+- DagView: grid met uren (8-19) en kolommen per zorgverlener
+- WeekView: grid met uren en kolommen per dag (7 dagen)
+- Status shown via colored left border + dot (STATUS_CONFIG)
+- Today highlighted in blue
+- Nieuwe afspraak button → redirects to /admin/afspraak/nieuw
+
+**Belangrijke beslissingen:**
+- Week starts on Monday (Belgian convention)
+- Separate hooks/queries for dag vs week (performance)
+- Transform database types to agenda module types (separation of concerns)
+- DRY: reuse existing AfspraakCard component for both views
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅ - after clean)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Stale .next types causing duplicate identifier errors → fix met `rm -rf .next`
+- Needed to export AgendaView type from module index for external imports
+
+**Volgende stappen:**
+- US-002: Afspraak wijzigen (CRUD - update)
