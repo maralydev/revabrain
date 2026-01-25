@@ -220,4 +220,51 @@
 - Needed to export AgendaView type from module index for external imports
 
 **Volgende stappen:**
-- US-002: Afspraak wijzigen (CRUD - update)
+- US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)
+
+### 2026-01-26 00:30 - US-002: Afspraak wijzigen (CRUD - update)
+
+**Wat gebouwd:**
+- updateAfspraak server action met conflict detection
+- getAfspraakById query function voor ophalen afspraak details
+- Edit page /admin/afspraak/[id]/edit met formulier
+- Afspraak click handler in agenda (navigeert naar edit page)
+- Access control: zorgverlener kan alleen eigen afspraken wijzigen (admin kan alles)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - updateAfspraak action
+- `/modules/afspraak/queries.ts` - getAfspraakById query
+- `/app/admin/afspraak/[id]/edit/page.tsx` - Edit formulier
+- `/app/admin/agenda/page.tsx` - handleAfspraakClick
+
+**Update logica:**
+- Laad bestaande afspraak data via getAfspraakById
+- Prefill formulier met huidige waarden
+- Bij wijziging datum/duur: conflict check met excludeAfspraakId (exclude current)
+- Access check: alleen eigen afspraken of admin
+- Partial update: alleen gewijzigde velden worden doorgegeven
+
+**Conflict detection:**
+- Hergebruikt checkConflicts functie uit create action
+- excludeAfspraakId parameter voorkomt conflict met zichzelf
+- Toont conflicterende afspraken indien overlap
+
+**UI patterns:**
+- Afspraak clickable in DagView en WeekView
+- Edit page identiek qua UX aan create page (consistency)
+- Patient selector herbruikbaar
+- Datum/tijd picker prefilled met bestaande waarden
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Typo "const nieuweD datum" → fixed
+- Dynamic route [id] requires getStaticParams of server-side rendering (Next.js handles)
+
+**Nog te implementeren:**
+- Herhalende reeksen: keuze "alleen deze" vs "hele reeks" (US-004 eerst)
+
+**Volgende stappen:**
+- US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)

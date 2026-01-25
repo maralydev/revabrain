@@ -89,6 +89,10 @@ export default function AgendaPage() {
     router.push('/admin/afspraak/nieuw')
   }
 
+  const handleAfspraakClick = (afspraak: Afspraak) => {
+    router.push(`/admin/afspraak/${afspraak.id}/edit`)
+  }
+
   const getStartOfWeek = (date: Date) => {
     const start = new Date(date)
     start.setHours(0, 0, 0, 0)
@@ -114,12 +118,14 @@ export default function AgendaPage() {
           datum={currentDate}
           zorgverleners={zorgverleners}
           afspraken={dagAfspraken}
+          onAfspraakClick={handleAfspraakClick}
         />
       ) : (
         <WeekView
           startDatum={getStartOfWeek(currentDate)}
           zorgverleners={zorgverleners}
           afspraken={weekAfspraken}
+          onAfspraakClick={handleAfspraakClick}
         />
       )}
     </div>

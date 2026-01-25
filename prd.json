@@ -95,8 +95,8 @@
         "Verify in browser"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Update via /admin/afspraak/[id]/edit. Conflict detection with excludeAfspraakId. Click on afspraak in agenda to edit. Access control: alleen eigen afspraken (of admin). Herhalende reeks: not yet implemented."
     },
     {
       "id": "US-005b",

@@ -75,3 +75,37 @@ export async function getAfsprakenByWeek(
     orderBy: { datum: 'asc' },
   });
 }
+
+/**
+ * Haal een specifieke afspraak op via ID
+ */
+export async function getAfspraakById(
+  afspraakId: number
+): Promise<AfspraakWithRelations | null> {
+  const session = await requireZorgverlener();
+
+  const afspraak = await prisma.afspraak.findUnique({
+    where: { id: afspraakId },
+    include: {
+      patient: true,
+      zorgverlener: {
+        select: {
+          id: true,
+          voornaam: true,
+          achternaam: true,
+        },
+      },
+    },
+  });
+
+  if (!afspraak) {
+    return null;
+  }
+
+  // Check toegang: alleen eigen afspraken (of admin)
+  if (afspraak.zorgverlenerId !== session.userId && !session.isAdmin) {
+    return null;
+  }
+
+  return afspraak;
+}

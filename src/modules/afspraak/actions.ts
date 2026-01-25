@@ -18,6 +18,21 @@ export interface CreateAfspraakResult {
   conflicts?: ConflictInfo[];
 }
 
+export interface UpdateAfspraakInput {
+  afspraakId: number;
+  patientId?: number;
+  datum?: Date;
+  duur?: 30 | 45 | 60 | 90;
+  type?: 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN';
+  notities?: string;
+}
+
+export interface UpdateAfspraakResult {
+  success: boolean;
+  error?: string;
+  conflicts?: ConflictInfo[];
+}
+
 export interface ConflictInfo {
   id: number;
   datum: Date;
@@ -127,6 +142,79 @@ export async function createAfspraak(
     };
   } catch (error) {
     console.error('Create afspraak error:', error);
+    return { success: false, error: 'Er is een fout opgetreden' };
+  }
+}
+
+/**
+ * Update een bestaande afspraak
+ */
+export async function updateAfspraak(
+  input: UpdateAfspraakInput
+): Promise<UpdateAfspraakResult> {
+  try {
+    const session = await requireZorgverlener();
+
+    // Validatie
+    if (!input.afspraakId) {
+      return { success: false, error: 'Afspraak ID ontbreekt' };
+    }
+
+    // Haal bestaande afspraak op
+    const bestaandeAfspraak = await prisma.afspraak.findUnique({
+      where: { id: input.afspraakId },
+    });
+
+    if (!bestaandeAfspraak) {
+      return { success: false, error: 'Afspraak niet gevonden' };
+    }
+
+    // Check of zorgverlener toegang heeft (alleen eigen afspraken wijzigen)
+    if (bestaandeAfspraak.zorgverlenerId !== session.userId && !session.isAdmin) {
+      return { success: false, error: 'Geen toegang tot deze afspraak' };
+    }
+
+    // Als datum of duur wijzigt: check conflicten
+    const nieuweDatum = input.datum || bestaandeAfspraak.datum;
+    const nieuweDuur = input.duur || bestaandeAfspraak.duur;
+
+    const datumWijzigt = input.datum && input.datum.getTime() !== bestaandeAfspraak.datum.getTime();
+    const duurWijzigt = input.duur && input.duur !== bestaandeAfspraak.duur;
+
+    if (datumWijzigt || duurWijzigt) {
+      const conflicts = await checkConflicts(
+        bestaandeAfspraak.zorgverlenerId,
+        nieuweDatum,
+        nieuweDuur,
+        input.afspraakId // Exclude current afspraak from conflict check
+      );
+
+      if (conflicts.length > 0) {
+        return {
+          success: false,
+          error: 'Er zijn conflicterende afspraken',
+          conflicts,
+        };
+      }
+    }
+
+    // Update afspraak
+    const updated = await prisma.afspraak.update({
+      where: { id: input.afspraakId },
+      data: {
+        ...(input.patientId && { patientId: input.patientId }),
+        ...(input.datum && { datum: input.datum }),
+        ...(input.duur && { duur: input.duur }),
+        ...(input.type && { type: input.type }),
+        ...(input.notities !== undefined && { notities: input.notities || null }),
+      },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error('Update afspraak error:', error);
     return { success: false, error: 'Er is een fout opgetreden' };
   }
 }
