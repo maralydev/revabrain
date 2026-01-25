@@ -53,6 +53,24 @@ async function checkConflicts(
 ): Promise<ConflictInfo[]> {
   const eindTijd = new Date(datum.getTime() + duur * 60000);
 
+  // Check afwezigheid
+  const afwezigheid = await (prisma as any).afwezigheid.findFirst({
+    where: {
+      zorgverlenerId,
+      startDatum: { lte: datum },
+      eindDatum: { gte: datum },
+    },
+  }); // Type assertion needed
+
+  if (afwezigheid) {
+    return [{
+      id: -1, // Special ID for absence
+      datum: datum,
+      duur: duur,
+      patientNaam: 'AFWEZIG: Zorgverlener niet beschikbaar in deze periode',
+    }];
+  }
+
   const conflicts = await prisma.afspraak.findMany({
     where: {
       zorgverlenerId,

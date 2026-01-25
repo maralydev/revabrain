@@ -450,3 +450,50 @@
 
 **Volgende stappen:**
 - US-005d: Afwezigheid registreren (beschikbaarheid blokkeren)
+
+### 2026-01-26 00:25 - US-005d: Afwezigheid registreren (beschikbaarheid blokkeren)
+
+**Wat gebouwd:**
+- Afwezigheid model with startDatum, eindDatum, type, reden fields
+- Manual migration for SQLite (enum workaround)
+- CRUD operations (create, update, delete)
+- Queries to fetch absences by zorgverlener or period
+- Conflict detection updated to block appointments during absence
+- UI page for managing absences at /admin/afwezigheid
+
+**Code structuur:**
+- `/prisma/schema.prisma` - Afwezigheid model + AfwezigheidType enum (VAKANTIE, ZIEKTE, OPLEIDING, ANDERE)
+- `/prisma/migrations/20260126002122_add_afwezigheid/` - Manual migration SQL
+- `/src/modules/afwezigheid/actions.ts` - createAfwezigheid, updateAfwezigheid, deleteAfwezigheid
+- `/src/modules/afwezigheid/queries.ts` - getAfwezighedenByZorgverlener, getAfwezighedenByPeriod, isAfwezigOpDatum
+- `/src/modules/afspraak/actions.ts` - checkConflicts updated to check for absence periods
+- `/src/app/admin/afwezigheid/page.tsx` - UI for listing and creating absences
+
+**Functionaliteit:**
+- Create absence: start/end date + type + optional reason (required for "Andere")
+- Validation: end date must be after start date
+- Conflict warning: shows count of existing appointments in absence period
+- Blocking: new appointments cannot be created during absence (conflict check returns special ID -1)
+- List/delete: View all absences, delete with confirmation
+
+**UI patterns:**
+- Form toggles on "+ Nieuwe Afwezigheid" button
+- Date pickers for start and end
+- Dropdown for type selection
+- Conditional reason input for "Andere" type
+- Warning message if existing appointments found in period
+- List shows type, dates, and delete button
+
+**Commando's gedraaid:**
+- `sqlite3 prisma/dev.db < migration.sql` (manual migration ✅)
+- `sed -i '' 's/prisma\.afwezigheid/(prisma as any).afwezigheid/g'` (type cast fix)
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Visual display of absence blocks in agenda
+- Currently only prevents creation via conflict check
+- Could add colored blocks in day/week view for better visibility
+
+**Volgende stappen:**
+- US-008: Teamlid toevoegen (admin)

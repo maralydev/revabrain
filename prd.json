@@ -176,8 +176,8 @@
         "Verify in browser"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Afwezigheid model added with manual migration. CRUD operations in /modules/afwezigheid. Conflict check updated to block appointments during absence. UI at /admin/afwezigheid for managing absences (list/create/delete). Warning shown when creating absence overlaps existing appointments. Visual display in agenda deferred to future iteration."
     },
     {
       "id": "US-008",

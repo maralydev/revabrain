@@ -69,6 +69,7 @@ model Teamlid {
   afspraken           Afspraak[]    @relation("ZorgverlenerAfspraken")
   ingeboekteAfspraken Afspraak[]    @relation("IngeboektDoor")
   herhalendeReeksen   HerhalendeReeks[]
+  afwezigheden        Afwezigheid[]
 }
 
 enum Rol {
@@ -193,4 +194,35 @@ enum Frequentie {
   TWEEMAAL_PER_WEEK
   MAANDELIJKS
   HANDMATIG
+}
+
+// ============================================
+// AFWEZIGHEID
+// Voor afwezigheidsperiodes (vakantie, ziekte, etc.)
+// ============================================
+model Afwezigheid {
+  id              Int       @id @default(autoincrement())
+
+  // Periode
+  startDatum      DateTime
+  eindDatum       DateTime
+
+  // Type & Reden
+  type            AfwezigheidType
+  reden           String?   // Voor type 'ANDERE'
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+
+  // Relatie
+  zorgverlener    Teamlid   @relation(fields: [zorgverlenerId], references: [id])
+  zorgverlenerId  Int
+}
+
+enum AfwezigheidType {
+  VAKANTIE
+  ZIEKTE
+  OPLEIDING
+  ANDERE
 }
