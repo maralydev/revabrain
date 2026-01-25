@@ -267,4 +267,51 @@
 - Herhalende reeksen: keuze "alleen deze" vs "hele reeks" (US-004 eerst)
 
 **Volgende stappen:**
-- US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)
+- US-005: Afspraak status wijzigen (workflow)
+
+### 2026-01-26 00:45 - US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)
+
+**Wat gebouwd:**
+- cancelAfspraak action: zet status naar GEANNULEERD
+- deleteAfspraak action: permanent delete met audit logging
+- Cancel + Delete buttons in edit page (danger zone)
+- Confirmation dialogs (browser confirm)
+- AfspraakCard toont geannuleerde afspraken met opacity + strikethrough
+- Audit logging zonder PII (alleen ID, datum, type, deletedBy)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - cancelAfspraak, deleteAfspraak
+- `/app/admin/afspraak/[id]/edit/page.tsx` - handleCancel, handleDelete, UI buttons
+- `/modules/agenda/components/AfspraakCard.tsx` - isCancelled styling
+
+**Cancel functionaliteit:**
+- Zet status op GEANNULEERD (blijft in database)
+- Afspraak blijft zichtbaar in agenda
+- Visual styling: opacity-60 + line-through text
+- Access control: alleen eigen afspraken (of admin)
+
+**Delete functionaliteit:**
+- Permanent verwijdering uit database
+- Confirmation dialog: "PERMANENT wilt verwijderen? Dit kan niet ongedaan gemaakt worden"
+- Audit log: ID, datum, type, deletedBy (GEEN patient naam of RR)
+- Access control: alleen eigen afspraken (of admin)
+
+**UI patterns:**
+- Danger zone section in edit page (separate from normal actions)
+- Orange border voor Cancel, Red border voor Delete
+- Explanatory text: verschil tussen cancel en delete
+- Geannuleerde afspraken: 60% opacity + strikethrough all text
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅ - after clean)
+
+**Valkuilen:**
+- Build error ENOENT pages-manifest.json → fix met `rm -rf .next`
+
+**Nog te implementeren:**
+- Herhalende reeksen: keuze "alleen deze" vs "alle toekomstige" (pending US-004)
+- Soft delete option (currently hard delete, but with logging)
+
+**Volgende stappen:**
+- US-005: Afspraak status wijzigen (workflow)

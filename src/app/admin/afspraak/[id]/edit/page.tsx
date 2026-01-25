@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAfspraakById } from '@/modules/afspraak/queries';
-import { updateAfspraak, ConflictInfo } from '@/modules/afspraak/actions';
+import { updateAfspraak, cancelAfspraak, deleteAfspraak, ConflictInfo } from '@/modules/afspraak/actions';
 import { searchPatients, PatientWithLastAfspraak } from '@/modules/patient/queries';
 import type { AfspraakWithRelations } from '@/modules/afspraak/queries';
 
@@ -121,6 +121,50 @@ export default function EditAfspraakPage() {
         if (result.conflicts) {
           setConflicts(result.conflicts);
         }
+      }
+    } catch (err) {
+      setError('Er is een fout opgetreden');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleCancel() {
+    if (!confirm('Weet je zeker dat je deze afspraak wilt annuleren? De afspraak blijft zichtbaar als geannuleerd.')) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const result = await cancelAfspraak(afspraakId);
+
+      if (result.success) {
+        router.push('/admin/agenda');
+        router.refresh();
+      } else {
+        setError(result.error || 'Fout bij annuleren');
+      }
+    } catch (err) {
+      setError('Er is een fout opgetreden');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm('Weet je zeker dat je deze afspraak PERMANENT wilt verwijderen? Dit kan niet ongedaan gemaakt worden.')) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const result = await deleteAfspraak(afspraakId);
+
+      if (result.success) {
+        router.push('/admin/agenda');
+        router.refresh();
+      } else {
+        setError(result.error || 'Fout bij verwijderen');
       }
     } catch (err) {
       setError('Er is een fout opgetreden');
@@ -302,21 +346,48 @@ export default function EditAfspraakPage() {
         )}
 
         {/* Actions */}
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={saving || !selectedPatient}
-            className="flex-1 py-2 px-4 bg-[#2879D8] text-white rounded-md hover:bg-[#1e60b0] disabled:opacity-50"
-          >
-            {saving ? 'Opslaan...' : 'Wijzigingen Opslaan'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Annuleren
-          </button>
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={saving || !selectedPatient}
+              className="flex-1 py-2 px-4 bg-[#2879D8] text-white rounded-md hover:bg-[#1e60b0] disabled:opacity-50"
+            >
+              {saving ? 'Opslaan...' : 'Wijzigingen Opslaan'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Terug
+            </button>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="border-t border-gray-300 pt-3">
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={saving}
+                className="flex-1 py-2 px-4 border border-orange-500 text-orange-600 rounded-md hover:bg-orange-50 disabled:opacity-50"
+              >
+                Afspraak Annuleren
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={saving}
+                className="flex-1 py-2 px-4 border border-red-500 text-red-600 rounded-md hover:bg-red-50 disabled:opacity-50"
+              >
+                Permanent Verwijderen
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Annuleren behoudt de afspraak als geannuleerd in de agenda. Permanent verwijderen kan niet ongedaan gemaakt worden.
+            </p>
+          </div>
         </div>
       </form>
     </div>

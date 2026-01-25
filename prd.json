@@ -110,8 +110,8 @@
         "Verify in browser"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Cancel: status → GEANNULEERD, visible with opacity+strikethrough. Delete: permanent with confirmation + audit log (no PII). Herhalende reeks: not yet implemented. Danger zone UI in edit page."
     },
     {
       "id": "US-005",

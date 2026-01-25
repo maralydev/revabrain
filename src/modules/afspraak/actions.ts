@@ -218,3 +218,99 @@ export async function updateAfspraak(
     return { success: false, error: 'Er is een fout opgetreden' };
   }
 }
+
+export interface CancelAfspraakResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Annuleer een afspraak (zet status op GEANNULEERD)
+ * Afspraak blijft zichtbaar in agenda maar doorgestreept/gedimd
+ */
+export async function cancelAfspraak(
+  afspraakId: number
+): Promise<CancelAfspraakResult> {
+  try {
+    const session = await requireZorgverlener();
+
+    // Haal bestaande afspraak op
+    const bestaandeAfspraak = await prisma.afspraak.findUnique({
+      where: { id: afspraakId },
+    });
+
+    if (!bestaandeAfspraak) {
+      return { success: false, error: 'Afspraak niet gevonden' };
+    }
+
+    // Check toegang
+    if (bestaandeAfspraak.zorgverlenerId !== session.userId && !session.isAdmin) {
+      return { success: false, error: 'Geen toegang tot deze afspraak' };
+    }
+
+    // Zet status op GEANNULEERD
+    await prisma.afspraak.update({
+      where: { id: afspraakId },
+      data: { status: 'GEANNULEERD' },
+    });
+
+    console.log('Afspraak geannuleerd', { id: afspraakId, userId: session.userId });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Cancel afspraak error:', error);
+    return { success: false, error: 'Er is een fout opgetreden' };
+  }
+}
+
+export interface DeleteAfspraakResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Verwijder een afspraak permanent
+ * Logging voor audit trail
+ */
+export async function deleteAfspraak(
+  afspraakId: number
+): Promise<DeleteAfspraakResult> {
+  try {
+    const session = await requireZorgverlener();
+
+    // Haal bestaande afspraak op
+    const bestaandeAfspraak = await prisma.afspraak.findUnique({
+      where: { id: afspraakId },
+      include: {
+        patient: { select: { voornaam: true, achternaam: true } },
+      },
+    });
+
+    if (!bestaandeAfspraak) {
+      return { success: false, error: 'Afspraak niet gevonden' };
+    }
+
+    // Check toegang
+    if (bestaandeAfspraak.zorgverlenerId !== session.userId && !session.isAdmin) {
+      return { success: false, error: 'Geen toegang tot deze afspraak' };
+    }
+
+    // Audit log (GEEN PII in logs)
+    console.log('Afspraak verwijderd', {
+      id: afspraakId,
+      datum: bestaandeAfspraak.datum,
+      type: bestaandeAfspraak.type,
+      deletedBy: session.userId,
+    });
+
+    // Permanent delete
+    await prisma.afspraak.delete({
+      where: { id: afspraakId },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Delete afspraak error:', error);
+    return { success: false, error: 'Er is een fout opgetreden' };
+  }
+}

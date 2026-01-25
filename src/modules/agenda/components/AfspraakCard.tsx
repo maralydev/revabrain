@@ -10,6 +10,7 @@ interface AfspraakCardProps {
 export function AfspraakCard({ afspraak, onClick }: AfspraakCardProps) {
   const statusConfig = STATUS_CONFIG[afspraak.status]
   const isAdmin = afspraak.type === 'ADMIN'
+  const isCancelled = afspraak.status === 'GEANNULEERD'
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })
@@ -43,13 +44,15 @@ export function AfspraakCard({ afspraak, onClick }: AfspraakCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow"
+      className={`bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow ${
+        isCancelled ? 'opacity-60' : ''
+      }`}
       style={{ borderLeftWidth: '4px', borderLeftColor: statusConfig.color }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900 truncate">
+            <span className={`font-medium text-gray-900 truncate ${isCancelled ? 'line-through' : ''}`}>
               {afspraak.patientNaam}
             </span>
             {afspraak.isHerhalend && (
@@ -58,10 +61,10 @@ export function AfspraakCard({ afspraak, onClick }: AfspraakCardProps) {
               </span>
             )}
           </div>
-          <div className="text-sm text-gray-500 mt-0.5">
+          <div className={`text-sm text-gray-500 mt-0.5 ${isCancelled ? 'line-through' : ''}`}>
             {formatTime(afspraak.datum)} - {formatTime(endTime)}
           </div>
-          <div className="text-xs text-gray-400 mt-1">
+          <div className={`text-xs text-gray-400 mt-1 ${isCancelled ? 'line-through' : ''}`}>
             {afspraak.type} - {afspraak.roc}
           </div>
         </div>
