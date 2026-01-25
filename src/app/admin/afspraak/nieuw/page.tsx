@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { searchPatients, PatientWithLastAfspraak } from '@/modules/patient/queries';
 import { createAfspraak, ConflictInfo } from '@/modules/afspraak/actions';
+import { createRecurringAfspraak, type Frequentie } from '@/modules/afspraak/recurring';
 
 export default function NieuweAfspraakPage() {
   const router = useRouter();
@@ -16,6 +17,11 @@ export default function NieuweAfspraakPage() {
   const [duur, setDuur] = useState<30 | 45 | 60 | 90>(60);
   const [type, setType] = useState<'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN'>('CONSULTATIE');
   const [notities, setNotities] = useState('');
+
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [totaalSessies, setTotaalSessies] = useState(12);
+  const [frequentie, setFrequentie] = useState<Frequentie>('WEKELIJKS');
+  const [plannedDates, setPlannedDates] = useState<Date[]>([]);
 
   const [conflicts, setConflicts] = useState<ConflictInfo[]>([]);
   const [error, setError] = useState('');
@@ -41,6 +47,7 @@ export default function NieuweAfspraakPage() {
     e.preventDefault();
     setError('');
     setConflicts([]);
+    setPlannedDates([]);
     setLoading(true);
 
     try {
@@ -58,21 +65,48 @@ export default function NieuweAfspraakPage() {
 
       const datumTijd = new Date(`${datum}T${tijd}:00`);
 
-      const result = await createAfspraak({
-        patientId: selectedPatient.id,
-        datum: datumTijd,
-        duur,
-        type,
-        notities: notities || undefined,
-      });
+      if (isRecurring) {
+        // Create recurring appointments
+        const result = await createRecurringAfspraak({
+          patientId: selectedPatient.id,
+          startDatum: datumTijd,
+          duur,
+          type,
+          totaalSessies,
+          frequentie,
+          notities: notities || undefined,
+        });
 
-      if (result.success) {
-        router.push('/admin/agenda');
-        router.refresh();
+        if (result.success) {
+          router.push('/admin/agenda');
+          router.refresh();
+        } else {
+          setError(result.error || 'Fout bij aanmaken herhalende reeks');
+          if (result.conflicts) {
+            setConflicts(result.conflicts);
+          }
+          if (result.plannedDates) {
+            setPlannedDates(result.plannedDates);
+          }
+        }
       } else {
-        setError(result.error || 'Fout bij aanmaken');
-        if (result.conflicts) {
-          setConflicts(result.conflicts);
+        // Create single appointment
+        const result = await createAfspraak({
+          patientId: selectedPatient.id,
+          datum: datumTijd,
+          duur,
+          type,
+          notities: notities || undefined,
+        });
+
+        if (result.success) {
+          router.push('/admin/agenda');
+          router.refresh();
+        } else {
+          setError(result.error || 'Fout bij aanmaken');
+          if (result.conflicts) {
+            setConflicts(result.conflicts);
+          }
         }
       }
     } catch (err) {
@@ -217,6 +251,71 @@ export default function NieuweAfspraakPage() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
         </div>
+
+        {/* Herhalende Afspraken */}
+        <div className="border-t border-gray-200 pt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              id="isRecurring"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
+            />
+            <label htmlFor="isRecurring" className="text-sm font-medium text-gray-700">
+              Herhalende afspraken (reeks)
+            </label>
+          </div>
+
+          {isRecurring && (
+            <div className="grid grid-cols-2 gap-4 pl-6 bg-blue-50 p-4 rounded">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Aantal sessies *
+                </label>
+                <input
+                  type="number"
+                  min="2"
+                  max="52"
+                  value={totaalSessies}
+                  onChange={(e) => setTotaalSessies(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frequentie *
+                </label>
+                <select
+                  value={frequentie}
+                  onChange={(e) => setFrequentie(e.target.value as Frequentie)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="WEKELIJKS">Wekelijks</option>
+                  <option value="TWEEMAAL_PER_WEEK">Tweemaal per week</option>
+                  <option value="MAANDELIJKS">Maandelijks</option>
+                </select>
+              </div>
+              <div className="col-span-2 text-sm text-gray-600">
+                Dit zal {totaalSessies} afspraken aanmaken vanaf de gekozen startdatum.
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Planned Dates Preview */}
+        {plannedDates.length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded p-4">
+            <p className="font-medium text-blue-800 mb-2">Geplande datums:</p>
+            <div className="grid grid-cols-3 gap-2 text-sm text-blue-700">
+              {plannedDates.map((date, index) => (
+                <div key={index}>
+                  {index + 1}. {new Date(date).toLocaleDateString('nl-BE')}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Conflicts Warning */}
         {conflicts.length > 0 && (

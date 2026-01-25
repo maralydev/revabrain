@@ -142,8 +142,8 @@
         "Verify in browser"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Herhalende reeks: checkbox in creation form, frequentie (WEKELIJKS/TWEEMAAL_PER_WEEK/MAANDELIJKS), totaalSessies (2-52). Conflict check voor alle geplande datums. Creates HerhalendeReeks + all Afspraak records. Planned dates preview shown on conflicts."
     },
     {
       "id": "US-005c",

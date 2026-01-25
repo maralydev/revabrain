@@ -345,4 +345,55 @@
 - `npm run build` (build ✅)
 
 **Volgende stappen:**
-- US-004: Herhalende afspraken (reeks boeken)
+- US-005c: Notities bij afspraak (incl. alerts)
+
+### 2026-01-26 01:15 - US-004: Herhalende afspraken (reeks boeken)
+
+**Wat gebouwd:**
+- createRecurringAfspraak server action
+- Recurring module met date calculation logic
+- Checkbox "Herhalende afspraken" in creation form
+- Frequency selector: WEKELIJKS, TWEEMAAL_PER_WEEK, MAANDELIJKS
+- Total sessions input (2-52 range)
+- Conflict detection voor alle geplande datums
+- Creates HerhalendeReeks record + all Afspraak records in one transaction
+
+**Code structuur:**
+- `/modules/afspraak/recurring.ts` - createRecurringAfspraak, calculateRecurringDates, checkRecurringConflicts
+- `/app/admin/afspraak/nieuw/page.tsx` - recurring UI, conditional submit logic
+
+**Functionaliteit:**
+- Calculate all dates based on frequency:
+  - WEKELIJKS: +7 days
+  - TWEEMAAL_PER_WEEK: +3 days
+  - MAANDELIJKS: +1 month
+- Check conflicts for ALL planned dates before creation
+- If conflicts: show all conflicts + planned dates, block creation
+- If no conflicts: create HerhalendeReeks + all Afspraak records
+- All afspraken linked via herhalendeReeksId
+
+**UI patterns:**
+- Checkbox toggles recurring section
+- Blue background section for recurring options
+- Info text: "Dit zal X afspraken aanmaken vanaf de gekozen startdatum"
+- Planned dates preview shown when conflicts occur
+- Submit uses createRecurringAfspraak if isRecurring=true
+
+**Database:**
+- HerhalendeReeks: id, totaalSessies, frequentie, patientId, zorgverlenerId
+- Afspraak.herhalendeReeksId links all appointments in series
+- All afspraken created with status TE_BEVESTIGEN
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅ - after clean)
+
+**Valkuilen:**
+- Build error ENOENT pages-manifest.json → fix met `rm -rf .next`
+
+**Nog te implementeren:**
+- Edit/cancel single vs entire series (mentioned in US-002 notes)
+- Display series info in agenda (sessieNummer/totaalSessies already in AfspraakCard UI)
+
+**Volgende stappen:**
+- US-005c: Notities bij afspraak (incl. alerts)
