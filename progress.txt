@@ -541,3 +541,45 @@
 
 **Volgende stappen:**
 - US-008b: Wachtwoord reset improvements (forced change flow)
+
+### 2026-01-26 00:45 - US-015: Patiëntgegevens exporteren (GDPR inzage)
+
+**Wat gebouwd:**
+- Patient data export functionality for GDPR compliance
+- Patient detail page with export button
+- JSON export with structured data
+- Export logging without PII
+
+**Code structuur:**
+- `/src/modules/patient/export.ts` - exportPatientData action
+- `/src/modules/patient/queries.ts` - Added getPatientById
+- `/src/app/admin/patient/[id]/page.tsx` - Patient detail page with export UI
+
+**Functionaliteit:**
+- Admin can export complete patient data
+- Export includes: personal info, address, contact person, all appointments with notes
+- Structured JSON format with metadata (export date, created/modified timestamps)
+- Client-side JSON download with filename: patient_surname_firstname_date.json
+- Export action logged (patient ID, appointment count, user) without PII
+
+**Export data structure:**
+- persoonlijk: full personal data
+- afspraken: array of all appointments with dates, duration, type, status, caregiver, notes
+- metadata: export date, created/modified dates
+
+**UI patterns:**
+- Green "Exporteer Data (GDPR)" button in patient detail header
+- Loading state during export
+- Automatic JSON file download
+- Info box explaining GDPR export purpose
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- PDF format export (currently JSON only)
+- Could add CSV format as alternative
+
+**Volgende stappen:**
+- US-016: Patiënt volledig verwijderen (GDPR recht op vergetelheid)

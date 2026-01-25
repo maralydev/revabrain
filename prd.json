@@ -269,8 +269,8 @@
         "Typecheck/lint/tests slagen"
       ],
       "priority": 17,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Export in JSON format (PDF deferred). Patient detail page at /admin/patient/[id] with export button. exportPatientData action generates structured export with personal data, appointment history, notes. Download as JSON file. Export action logged without PII in logs. Admin-only access."
     },
     {
       "id": "US-016",

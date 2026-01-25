@@ -75,3 +75,16 @@ export async function searchPatients(
       patient.afspraken.length > 0 ? patient.afspraken[0].datum : null,
   }));
 }
+
+/**
+ * Haal een specifieke patiënt op via ID
+ */
+export async function getPatientById(
+  patientId: number
+): Promise<Patient | null> {
+  await requireZorgverlener();
+
+  return prisma.patient.findUnique({
+    where: { id: patientId },
+  });
+}
