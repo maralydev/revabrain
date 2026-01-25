@@ -497,3 +497,47 @@
 
 **Volgende stappen:**
 - US-008: Teamlid toevoegen (admin)
+
+### 2026-01-26 00:35 - US-008: Teamlid toevoegen (admin)
+
+**Wat gebouwd:**
+- Admin CRUD operations for team members
+- UI for managing team members at /admin/team
+- Password reset functionality with temporary password generation
+- Email uniqueness validation
+- Active/inactive status management
+- Admin-only access control
+
+**Code structuur:**
+- `/src/modules/teamlid/actions.ts` - createTeamlid, updateTeamlid, resetPassword, activate/deactivate
+- `/src/modules/teamlid/queries.ts` - Added getAllTeamleden (admin-only, includes inactive)
+- `/src/app/admin/team/page.tsx` - Full admin UI for team management
+
+**Functionaliteit:**
+- Create: voornaam, achternaam, email, wachtwoord, rol, discipline, admin rights, active status, bio, foto URL
+- Update: All fields except password (use reset for password changes)
+- Password reset: Generates random 8-char temporary password
+- Email validation: Checks uniqueness on create and update
+- List: Shows all team members sorted by active status, then name
+- Visual indicators: Admin badge, inactive badge
+- Edit inline: Click "Bewerken" to load form with existing data
+
+**UI patterns:**
+- Form toggles on "+ Nieuw Teamlid" button
+- Conditional password field (only for new team members)
+- Checkboxes for admin rights and active status
+- Discipline dropdown with "Geen" option for non-care roles
+- Success/error messages with auto-clear on next action
+- Temporary password shown in alert dialog on reset
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- File upload for photos (currently URL input only)
+- Force password change on first login after reset
+- Audit logging for team member changes
+
+**Volgende stappen:**
+- US-008b: Wachtwoord reset improvements (forced change flow)

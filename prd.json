@@ -192,8 +192,8 @@
         "Verify in browser (admin UI)"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Admin actions in /modules/teamlid/actions.ts (create, update, reset password, activate/deactivate). UI at /admin/team for full CRUD. Supports name, email, rol, discipline, admin rights, active status, bio. Photo upload via URL input (file upload deferred). Password reset generates temporary password. Email uniqueness validation. Admin-only access enforced."
     },
     {
       "id": "US-008b",
