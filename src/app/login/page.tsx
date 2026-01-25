@@ -20,7 +20,12 @@ export default function LoginPage() {
       const result = await login(email, password);
 
       if (result.success) {
-        router.push('/agenda');
+        // Check if user must change password
+        if (result.mustChangePassword) {
+          router.push('/change-password');
+        } else {
+          router.push('/admin/agenda');
+        }
         router.refresh();
       } else {
         setError(result.error || 'Login failed');

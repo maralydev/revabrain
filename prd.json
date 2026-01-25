@@ -207,8 +207,8 @@
         "Verify in browser"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Password reset with forced change on next login. Added mustChangePassword field to Teamlid schema. resetPassword action sets flag and generates temporary password. Login checks flag and redirects to /change-password if true. changePassword action validates current password and updates to new password. Admin sees temporary password via alert. User must change password before accessing system. All actions logged without PII."
     },
     {
       "id": "US-008c",

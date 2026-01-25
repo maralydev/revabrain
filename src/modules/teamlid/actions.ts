@@ -191,10 +191,13 @@ export async function resetPassword(
     const tijdelijk = Math.random().toString(36).substring(2, 10);
     const hashedPassword = await bcrypt.hash(tijdelijk, 10);
 
-    // Update wachtwoord
-    await prisma.teamlid.update({
+    // Update wachtwoord and force password change
+    await (prisma as any).teamlid.update({
       where: { id: teamlidId },
-      data: { wachtwoord: hashedPassword },
+      data: {
+        wachtwoord: hashedPassword,
+        mustChangePassword: true,
+      },
     });
 
     console.log('Wachtwoord gereset', { teamlidId, door: session.userId });
@@ -225,4 +228,69 @@ export async function activateTeamlid(
   teamlidId: number
 ): Promise<UpdateTeamlidResult> {
   return updateTeamlid({ teamlidId, actief: true });
+}
+
+export interface ChangePasswordInput {
+  huidigWachtwoord: string;
+  nieuwWachtwoord: string;
+}
+
+export interface ChangePasswordResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Wijzig eigen wachtwoord (alle gebruikers)
+ */
+export async function changePassword(
+  input: ChangePasswordInput
+): Promise<ChangePasswordResult> {
+  try {
+    const session = await requireZorgverlener();
+
+    // Validatie
+    if (!input.huidigWachtwoord || !input.nieuwWachtwoord) {
+      return { success: false, error: 'Alle velden zijn verplicht' };
+    }
+
+    if (input.nieuwWachtwoord.length < 8) {
+      return { success: false, error: 'Nieuw wachtwoord moet minimaal 8 karakters zijn' };
+    }
+
+    // Haal huidige teamlid op
+    const teamlid = await prisma.teamlid.findUnique({
+      where: { id: session.userId },
+    });
+
+    if (!teamlid) {
+      return { success: false, error: 'Teamlid niet gevonden' };
+    }
+
+    // Verifieer huidig wachtwoord
+    const isValid = await bcrypt.compare(input.huidigWachtwoord, teamlid.wachtwoord);
+
+    if (!isValid) {
+      return { success: false, error: 'Huidig wachtwoord is onjuist' };
+    }
+
+    // Hash nieuw wachtwoord
+    const hashedPassword = await bcrypt.hash(input.nieuwWachtwoord, 10);
+
+    // Update wachtwoord en reset mustChangePassword flag
+    await (prisma as any).teamlid.update({
+      where: { id: session.userId },
+      data: {
+        wachtwoord: hashedPassword,
+        mustChangePassword: false,
+      },
+    });
+
+    console.log('Wachtwoord gewijzigd', { teamlidId: session.userId });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Change password error:', error);
+    return { success: false, error: 'Er is een fout opgetreden' };
+  }
 }

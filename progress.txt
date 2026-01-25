@@ -722,3 +722,63 @@
 **Volgende stappen:**
 - 16/24 stories done (66.7%)
 - 8 stories remaining
+
+### 2026-01-26 01:20 - US-008b: Wachtwoord reset met force change (admin)
+
+**Wat gebouwd:**
+- Forced password change on first login after reset
+- Password change flow for all users
+- Database field to track password reset status
+
+**Code structuur:**
+- Manual migration: Added `mustChangePassword` field to Teamlid table
+- `/prisma/schema.prisma` - Updated with mustChangePassword field
+- `/src/modules/teamlid/actions.ts` - Updated resetPassword + added changePassword
+- `/src/modules/auth/actions.ts` - Updated login to check mustChangePassword flag
+- `/src/app/login/page.tsx` - Redirect to /change-password if flag is true
+- `/src/app/change-password/page.tsx` - Password change UI
+
+**Functionaliteit:**
+- Admin clicks "Reset PW" button (already existed in /admin/team)
+- resetPassword generates 8-character temporary password
+- Sets mustChangePassword = true in database
+- Admin sees temporary password via alert (must communicate to user)
+- User logs in with temporary password
+- Login checks mustChangePassword flag
+- If true, redirects to /change-password (cannot access system)
+- changePassword validates current password
+- Requires new password (min 8 chars)
+- Confirmation field to prevent typos
+- Sets mustChangePassword = false on successful change
+- User can then access system normally
+
+**Validatie:**
+- Current password verification using bcrypt.compare
+- New password min 8 characters
+- Confirmation must match new password
+- All actions logged without PII
+
+**UI patterns:**
+- Dedicated /change-password page (cannot be bypassed)
+- Form with 3 fields: current, new, confirm
+- Clear error messages
+- Success redirects to /admin/agenda
+- Password reset button in team management (orange color)
+
+**Database changes:**
+- Added mustChangePassword BOOLEAN DEFAULT 0 to Teamlid table
+- Type assertion (user as any).mustChangePassword for field access
+- Field will be properly typed after Prisma client regeneration
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "ALTER TABLE Teamlid ADD COLUMN mustChangePassword INTEGER DEFAULT 0;"`
+- `rm -rf .next && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Optional: Email notification when password is reset
+- Optional: Password strength requirements (uppercase, special chars, etc.)
+- Optional: Password history (prevent reuse of recent passwords)
+
+**Volgende stappen:**
+- 17/24 stories done (70.8%)
+- 7 stories remaining

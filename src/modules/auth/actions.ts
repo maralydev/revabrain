@@ -12,6 +12,7 @@ import {
 export interface LoginResult {
   success: boolean;
   error?: string;
+  mustChangePassword?: boolean;
 }
 
 /**
@@ -56,7 +57,13 @@ export async function login(email: string, password: string): Promise<LoginResul
     const token = await createSession(sessionPayload);
     await setSessionCookie(token);
 
-    return { success: true };
+    // Check if user must change password
+    const mustChangePassword = (user as any).mustChangePassword || false;
+
+    return {
+      success: true,
+      mustChangePassword,
+    };
   } catch (error) {
     console.error('Login error:', error);
     return { success: false, error: 'Er is een fout opgetreden' };
