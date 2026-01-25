@@ -134,4 +134,42 @@
 - Voor echte case-insensitive search: data in lowercase opslaan of PostgreSQL gebruiken
 
 **Volgende stappen:**
-- US-001: Afspraak inplannen (CRUD - create)
+- US-003: Dag/week overzicht (agenda views)
+
+### 2026-01-25 23:45 - US-001: Afspraak inplannen (CRUD - create)
+
+**Wat gebouwd:**
+- Server action createAfspraak met conflict detection
+- Conflict detection met time overlap logic (start/eind tijd checks)
+- Query functions getAfsprakenByDate en getAfsprakenByWeek
+- Appointment creation form met patient search typeahead
+- Datum/tijd picker, duur selector (30/45/60/90 min), type selector
+- Conflict warning display in UI
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - createAfspraak, checkConflicts, ConflictInfo type
+- `/modules/afspraak/queries.ts` - getAfsprakenByDate, getAfsprakenByWeek, AfspraakWithRelations type
+- `/app/admin/afspraak/nieuw/page.tsx` - Creation form UI
+
+**Conflict detection logica:**
+- Berekent eind tijd: startTijd + duur (in milliseconds)
+- Zoekt overlappende afspraken (OR query met time ranges)
+- Filtert resultaten met actual time overlap check
+- Blokkeert creatie als conflicten bestaan, toont conflictlijst
+
+**Belangrijke beslissingen:**
+- Nieuwe afspraak krijgt status 'TE_BEVESTIGEN' bij creatie
+- Patient search hergebruikt searchPatients uit patient module (DRY)
+- Conflict detection exclude parameter voor toekomstig edit gebruik
+- AfspraakWithRelations type voor queries met patient + zorgverlener relations
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅ - na fix any types)
+- `npm run build` (build ✅ - na clean)
+
+**Valkuilen:**
+- TypeScript implicit any in filter/map callbacks → fix met explicit `any` type annotation
+- Build error ENOTEMPTY .next/server → fix met `rm -rf .next`
+
+**Volgende stappen:**
+- US-003: Dag/week overzicht (agenda views - HIGH PRIORITY)

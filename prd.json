@@ -63,8 +63,8 @@
         "Verify in browser (dag/week view of basis agenda UI)"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Afspraak creation met conflict detection. Patient search typeahead, datum/tijd picker, duur (30/45/60/90), type selector (INTAKE/CONSULTATIE/HUISBEZOEK/ADMIN). Conflict detection met time overlap logic. Form UI: /admin/afspraak/nieuw"
     },
     {
       "id": "US-003",
