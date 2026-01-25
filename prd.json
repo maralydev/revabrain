@@ -45,8 +45,8 @@
         "Verify in browser (indien UI aanwezig)"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Search met typeahead (debounced 300ms). Zoek op naam (partial) + RR (partial, min 3 digits). Resultaten tonen laatste afspraak datum. SQLite: geen case-insensitive search."
     },
     {
       "id": "US-001",

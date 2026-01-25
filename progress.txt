@@ -97,3 +97,41 @@
 
 **Volgende stappen:**
 - US-007: Patiënt zoeken (naam of RR)
+
+### 2026-01-25 23:30 - US-007: Patiënt zoeken (naam of RR)
+
+**Wat gebouwd:**
+- Search server action met multi-field search (naam + RR)
+- Debounced typeahead search (300ms delay)
+- Real-time resultaten tijdens typen
+- Laatste afspraak datum in search results
+- Loading indicator tijdens search
+
+**Search functionaliteit:**
+- Zoek op voornaam OF achternaam (partial match)
+- Zoek op RR (partial match, minimaal 3 cijfers)
+- Resultaten tonen: naam, RR (gemaskeerd), geboortedatum, telefoon, gemeente, laatste afspraak
+- Max 20 resultaten per query
+- Minimaal 2 karakters vereist voor search
+
+**Code wijzigingen:**
+- `/modules/patient/queries.ts` - searchPatients() functie + PatientWithLastAfspraak type
+- `/app/admin/patient/page.tsx` - Search UI met debouncing
+
+**Belangrijke beslissingen:**
+- 300ms debounce om aantal server requests te beperken
+- SQLite ondersteunt geen case-insensitive search (mode: 'insensitive' niet beschikbaar)
+- Oplossing: contains zonder mode (werkt voor meeste cases)
+- Type PatientWithLastAfspraak voor search results met afspraak data
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- SQLite + Prisma 5 ondersteunt geen `mode: 'insensitive'` in queries
+- Oplossing: gebruik contains zonder mode, works for most cases
+- Voor echte case-insensitive search: data in lowercase opslaan of PostgreSQL gebruiken
+
+**Volgende stappen:**
+- US-001: Afspraak inplannen (CRUD - create)

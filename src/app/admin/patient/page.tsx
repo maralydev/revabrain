@@ -1,21 +1,49 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Patient } from '@prisma/client';
 import Link from 'next/link';
-import { getRecentPatients } from '@/modules/patient/queries';
+import { getRecentPatients, searchPatients, PatientWithLastAfspraak } from '@/modules/patient/queries';
 import { formatteerRR } from '@/shared/utils/rijksregisternummer';
 
 export default function PatientOverzichtPage() {
-  const [patienten, setPatienten] = useState<Patient[]>([]);
+  const [patienten, setPatienten] = useState<PatientWithLastAfspraak[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searching, setSearching] = useState(false);
 
+  // Load initial patients
   useEffect(() => {
     getRecentPatients(50)
-      .then(setPatienten)
+      .then((data) => setPatienten(data.map((p) => ({ ...p, afspraken: [], laatsteAfspraakDatum: null }))))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      // Reset to recent patients if search cleared
+      if (searchQuery.length === 0) {
+        setSearching(true);
+        getRecentPatients(50)
+          .then((data) => setPatienten(data.map((p) => ({ ...p, afspraken: [], laatsteAfspraakDatum: null }))))
+          .catch(console.error)
+          .finally(() => setSearching(false));
+      }
+      return;
+    }
+
+    setSearching(true);
+    const timer = setTimeout(() => {
+      searchPatients(searchQuery)
+        .then(setPatienten)
+        .catch(console.error)
+        .finally(() => setSearching(false));
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   if (loading) {
     return (
@@ -35,7 +63,9 @@ export default function PatientOverzichtPage() {
           <h1 className="text-2xl font-bold" style={{ color: '#2879D8' }}>
             Patiënten
           </h1>
-          <p className="text-gray-600 mt-1">{patienten.length} geregistreerde patiënten</p>
+          <p className="text-gray-600 mt-1">
+            {searchQuery ? `${patienten.length} resultaten` : `${patienten.length} geregistreerde patiënten`}
+          </p>
         </div>
         <Link
           href="/admin/patient/nieuw"
@@ -43,6 +73,40 @@ export default function PatientOverzichtPage() {
         >
           + Nieuwe Patiënt
         </Link>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Zoek patiënt op naam of rijksregisternummer..."
+            className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2879D8] focus:border-[#2879D8]"
+          />
+          <svg
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          {searching && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-[#2879D8] border-r-transparent"></div>
+            </div>
+          )}
+        </div>
+        {searchQuery.length > 0 && searchQuery.length < 2 && (
+          <p className="mt-2 text-sm text-gray-500">Voer minimaal 2 karakters in om te zoeken</p>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -62,7 +126,7 @@ export default function PatientOverzichtPage() {
                 Gemeente
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Geregistreerd
+                Laatste Afspraak
               </th>
             </tr>
           </thead>
@@ -70,11 +134,11 @@ export default function PatientOverzichtPage() {
             {patienten.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                  Nog geen patiënten geregistreerd
+                  {searchQuery ? 'Geen patiënten gevonden' : 'Nog geen patiënten geregistreerd'}
                 </td>
               </tr>
             ) : (
-              patienten.map((patient: Patient) => (
+              patienten.map((patient) => (
                 <tr key={patient.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
@@ -92,7 +156,9 @@ export default function PatientOverzichtPage() {
                     {patient.gemeente || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(patient.aangemaakt).toLocaleDateString('nl-BE')}
+                    {patient.laatsteAfspraakDatum
+                      ? new Date(patient.laatsteAfspraakDatum).toLocaleDateString('nl-BE')
+                      : '-'}
                   </td>
                 </tr>
               ))
