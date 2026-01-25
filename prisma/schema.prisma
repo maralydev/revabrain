@@ -1,0 +1,195 @@
+// Prisma Schema voor RevaBrain
+// Neurologische revalidatiepraktijk - Agenda systeem
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// PATIENT
+// ============================================
+model Patient {
+  id                  Int       @id @default(autoincrement())
+  rijksregisternummer String    @unique
+  voornaam            String
+  achternaam          String
+  geboortedatum       DateTime
+  telefoonnummer      String
+  email               String?
+
+  // Adres
+  straat              String?
+  huisnummer          String?
+  postcode            String?
+  gemeente            String?
+
+  // Contactpersoon (voor kinderen/wilsonbekwamen)
+  contactpersoon          String?
+  contactpersoonTelefoon  String?
+
+  // Metadata
+  aangemaakt          DateTime  @default(now())
+  laatstGewijzigd     DateTime  @updatedAt
+
+  // Relaties
+  afspraken           Afspraak[]
+  herhalendeReeksen   HerhalendeReeks[]
+}
+
+// ============================================
+// TEAMLID (Zorgverlener + Medisch Secretariaat)
+// ============================================
+model Teamlid {
+  id            Int       @id @default(autoincrement())
+  voornaam      String
+  achternaam    String
+  email         String    @unique
+  wachtwoord    String    // Gehashed
+
+  // Rol & Rechten
+  rol           Rol       @default(ZORGVERLENER)
+  discipline    Discipline?  // Alleen voor zorgverleners
+  isAdmin       Boolean   @default(false)
+  actief        Boolean   @default(true)
+
+  // Profiel
+  foto          String?
+  bio           String?
+
+  // Metadata
+  aangemaakt    DateTime  @default(now())
+  laatstGewijzigd DateTime @updatedAt
+
+  // Relaties
+  afspraken           Afspraak[]    @relation("ZorgverlenerAfspraken")
+  ingeboekteAfspraken Afspraak[]    @relation("IngeboektDoor")
+  herhalendeReeksen   HerhalendeReeks[]
+}
+
+enum Rol {
+  ZORGVERLENER
+  SECRETARIAAT
+}
+
+enum Discipline {
+  LOGOPEDIE
+  KINESITHERAPIE
+  ERGOTHERAPIE
+  NEUROPSYCHOLOGIE
+  DIETIEK
+}
+
+// ============================================
+// AFSPRAAK
+// ============================================
+model Afspraak {
+  id              Int       @id @default(autoincrement())
+
+  // Wanneer
+  datum           DateTime
+  duur            Int       // Minuten: 30, 45, 60, 90
+
+  // Type & Reden
+  type            AfspraakType
+  roc             ROC?      // Reden tot Contact (niet voor ADMIN)
+  adminTitel      String?   // Titel voor admin-blokken (bv. "Teamvergadering")
+
+  // Status
+  status          AfspraakStatus @default(TE_BEVESTIGEN)
+
+  // Locatie (voor huisbezoek)
+  locatieStraat       String?
+  locatieHuisnummer   String?
+  locatiePostcode     String?
+  locatieGemeente     String?
+  reistijdMinuten     Int?      // Extra tijd voor reizen
+
+  // Extra info
+  notities        String?
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+
+  // Relaties
+  patient         Patient?  @relation(fields: [patientId], references: [id])
+  patientId       Int?      // Optioneel voor ADMIN blokken
+
+  zorgverlener    Teamlid   @relation("ZorgverlenerAfspraken", fields: [zorgverlenerId], references: [id])
+  zorgverlenerId  Int
+
+  ingeboektDoor   Teamlid   @relation("IngeboektDoor", fields: [ingeboektDoorId], references: [id])
+  ingeboektDoorId Int
+
+  // Herhalende afspraak (optioneel)
+  herhalendeReeks   HerhalendeReeks? @relation(fields: [herhalendeReeksId], references: [id])
+  herhalendeReeksId Int?
+}
+
+enum AfspraakType {
+  INTAKE
+  CONSULTATIE
+  HUISBEZOEK
+  ADMIN         // Vergadering, pauze, administratie - geen patiënten
+}
+
+enum ROC {
+  // Logopedie
+  ARTICULATIE
+  AFASIE
+  STOTTEREN
+  DYSFAGIE
+  PRELOGOPEDIE
+  TAALSTOORNIS
+  DYSARTHRIE
+  APRAXIE
+
+  // Algemeen
+  OVERIG
+}
+
+enum AfspraakStatus {
+  TE_BEVESTIGEN
+  BEVESTIGD
+  IN_WACHTZAAL
+  BINNEN
+  AFGEWERKT
+  NO_SHOW
+  GEANNULEERD
+}
+
+// ============================================
+// HERHALENDE REEKS
+// Voor patiënten met vaste wekelijkse sessies
+// ============================================
+model HerhalendeReeks {
+  id              Int       @id @default(autoincrement())
+
+  // Planning
+  totaalSessies   Int       // Bv. 12 sessies
+  frequentie      Frequentie
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+
+  // Relaties
+  patient         Patient   @relation(fields: [patientId], references: [id])
+  patientId       Int
+
+  zorgverlener    Teamlid   @relation(fields: [zorgverlenerId], references: [id])
+  zorgverlenerId  Int
+
+  afspraken       Afspraak[]
+}
+
+enum Frequentie {
+  WEKELIJKS
+  TWEEMAAL_PER_WEEK
+  MAANDELIJKS
+  HANDMATIG
+}

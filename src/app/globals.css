@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  /* RevaBrain kleuren */
+  --rb-primary: #2879D8;
+  --rb-primary-dark: #1e5fa8;
+  --rb-accent: #59ECB7;
+  --rb-light: #E7F6FC;
+  --rb-dark: #212529;
+
+  /* Status kleuren */
+  --status-te-bevestigen: #FFC107;
+  --status-bevestigd: #2879D8;
+  --status-wachtzaal: #9C27B0;
+  --status-binnen: #59ECB7;
+  --status-afgewerkt: #4CAF50;
+  --status-no-show: #F44336;
+  --status-geannuleerd: #9E9E9E;
+
+  /* UI */
+  --background: #F8FAFC;
+  --foreground: #212529;
+  --sidebar-width: 240px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

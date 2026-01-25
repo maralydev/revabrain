@@ -1,0 +1,59 @@
+# Progress Log — RevaBrain (Ralph loop)
+
+## Codebase Patterns
+
+- Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, Prisma ORM
+- Database: SQLite (dev) → PostgreSQL (prod)
+- Auth: Server-side enforcement, rollen: zorgverlener (eigen agenda) + admin (alles)
+- Privacy: RR = PII, NOOIT loggen in plaintext, mask in UI
+
+## Conventions
+
+- Modulaire code: max 200-300 regels per bestand
+- DRY principe strikt: herbruikbare componenten, geen dubbele logica
+- Geen dependencies tenzij noodzakelijk
+- Feature modules in `/modules/` of `/src/app/`
+- Kleuren: Primary #2879D8, Accent #59ECB7, Light #E7F6FC, Dark #212529
+
+## Learnings
+
+### 2026-01-25 22:30 - US-000: Project bootstrap & authenticatie (MVP)
+
+**Wat gebouwd:**
+- Auth flow met login/logout (server actions)
+- Role-based access control (middleware + helpers)
+- JWT sessions (jose library)
+- Login UI page
+- Test users script (better-sqlite3)
+- Prisma schema + migrations
+
+**Dependencies toegevoegd:**
+- bcryptjs (password hashing)
+- jose (JWT tokens, lightweight)
+- better-sqlite3 (seed scripts)
+- @types/bcryptjs, @types/better-sqlite3
+
+**Belangrijke beslissingen:**
+- Prisma downgrade van 7.x naar 5.x (stabiliteit, geen adapters nodig voor SQLite)
+- JWT tokens i.p.v. zwaardere session libraries (DRY principe)
+- Direct SQL seed script met better-sqlite3 (vermijdt Prisma enum compatibiliteit issues)
+
+**Commando's gedraaid:**
+- `npx prisma migrate reset --force` (eerste keer, database reset met user consent)
+- `npx prisma migrate dev --name initial_schema`
+- `npx prisma generate`
+- `npx tsx scripts/create-test-user.ts` (test users aanmaken)
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Test credentials:**
+- Admin: admin@revabrain.be / admin123
+- Zorgverlener: zorgverlener@revabrain.be / zorgverlener123
+
+**Valkuilen:**
+- Prisma 7 vereist adapters voor SQLite → downgraded to Prisma 5
+- SQLite ondersteunt geen native enums in sommige Prisma versies
+- Middleware in Next.js 16: ⚠️ deprecated warning (gebruik "proxy" in toekomst)
+
+**Volgende stappen:**
+- US-006: Patiënt registratie met RR validatie
