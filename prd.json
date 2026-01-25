@@ -30,8 +30,8 @@
         "Typecheck/lint/tests slagen (waar van toepassing)"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Patient registration met RR validation. Validatie: checksum mod 97, auto-derivation geboortedatum/geslacht, duplicate check, privacy: RR NOOIT gelogd"
     },
     {
       "id": "US-007",

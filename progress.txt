@@ -57,3 +57,43 @@
 
 **Volgende stappen:**
 - US-006: Patiënt registratie met RR validatie
+
+### 2026-01-25 23:15 - US-006: Nieuwe patiënt registreren (RR als primaire identifier)
+
+**Wat gebouwd:**
+- Patiënt registratie server action (validation + duplicate check)
+- RR validatie met Belgische checksum (mod 97)
+- Automatisch afleiden geboortedatum en geslacht uit RR
+- Registratie formulier UI met real-time RR validatie
+- Patiënten overzicht pagina (client-side data fetching)
+- Prisma singleton pattern voor database connections
+
+**Privacy & Security:**
+- RR NOOIT gelogd in plaintext (commentaar in code)
+- Dataminimalisatie: alleen noodzakelijke velden
+- Server-side validation (requireZorgverlener)
+- Duplicate RR detection
+
+**Code structuur:**
+- `/modules/patient/actions.ts` - Server actions (register)
+- `/modules/patient/queries.ts` - Server actions (queries)
+- `/app/admin/patient/page.tsx` - Overzicht (client component)
+- `/app/admin/patient/nieuw/page.tsx` - Registratie formulier
+- `/shared/lib/prisma.ts` - Prisma singleton (DRY)
+
+**Belangrijke beslissingen:**
+- Client-side data fetching i.p.v. server components (Next.js 16 Turbopack build issues)
+- Prisma singleton pattern (voorkomt multiple instances, build errors)
+- Bestaande RR utility hergebruikt (geen nieuwe dependencies)
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Server components + Prisma in Next.js 16 Turbopack build = errors
+- Oplossing: client components + server actions voor data fetching
+- Prisma singleton essentieel om connection pool problemen te vermijden
+
+**Volgende stappen:**
+- US-007: Patiënt zoeken (naam of RR)

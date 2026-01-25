@@ -1,15 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/shared/lib/prisma';
 import {
   verifyPassword,
   createSession,
   setSessionCookie,
   deleteSessionCookie,
 } from '@/shared/lib/auth';
-
-const prisma = new PrismaClient();
 
 export interface LoginResult {
   success: boolean;
