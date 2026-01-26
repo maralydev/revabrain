@@ -141,3 +141,4 @@ supabase/
 # Local database
 prisma/*.db
 prisma/*.db-journal
+prisma/dev.db
