@@ -52,8 +52,10 @@ model Teamlid {
   wachtwoord    String    // Gehashed
 
   // Rol & Rechten
-  rol           Rol       @default(ZORGVERLENER)
-  discipline    Discipline?  // Alleen voor zorgverleners
+  // Valid values: ZORGVERLENER, SECRETARIAAT
+  rol           String    @default("ZORGVERLENER")
+  // Valid values: LOGOPEDIE, KINESITHERAPIE, ERGOTHERAPIE, NEUROPSYCHOLOGIE, DIETIEK
+  discipline    String?   // Alleen voor zorgverleners
   isAdmin       Boolean   @default(false)
   actief        Boolean   @default(true)
   mustChangePassword Boolean @default(false)  // Force password change on next login
@@ -73,19 +75,6 @@ model Teamlid {
   afwezigheden        Afwezigheid[]
 }
 
-enum Rol {
-  ZORGVERLENER
-  SECRETARIAAT
-}
-
-enum Discipline {
-  LOGOPEDIE
-  KINESITHERAPIE
-  ERGOTHERAPIE
-  NEUROPSYCHOLOGIE
-  DIETIEK
-}
-
 // ============================================
 // AFSPRAAK
 // ============================================
@@ -97,12 +86,15 @@ model Afspraak {
   duur            Int       // Minuten: 30, 45, 60, 90
 
   // Type & Reden
-  type            AfspraakType
-  roc             ROC?      // Reden tot Contact (niet voor ADMIN)
+  // Valid values: INTAKE, CONSULTATIE, HUISBEZOEK, ADMIN
+  type            String
+  // Valid values: ARTICULATIE, AFASIE, STOTTEREN, DYSFAGIE, PRELOGOPEDIE, TAALSTOORNIS, DYSARTHRIE, APRAXIE, OVERIG
+  roc             String?   // Reden tot Contact (niet voor ADMIN)
   adminTitel      String?   // Titel voor admin-blokken (bv. "Teamvergadering")
 
   // Status
-  status          AfspraakStatus @default(TE_BEVESTIGEN)
+  // Valid values: TE_BEVESTIGEN, BEVESTIGD, IN_WACHTZAAL, BINNEN, AFGEWERKT, NO_SHOW, GEANNULEERD
+  status          String    @default("TE_BEVESTIGEN")
 
   // Locatie (voor huisbezoek)
   locatieStraat       String?
@@ -134,38 +126,6 @@ model Afspraak {
   herhalendeReeksId Int?
 }
 
-enum AfspraakType {
-  INTAKE
-  CONSULTATIE
-  HUISBEZOEK
-  ADMIN         // Vergadering, pauze, administratie - geen patiënten
-}
-
-enum ROC {
-  // Logopedie
-  ARTICULATIE
-  AFASIE
-  STOTTEREN
-  DYSFAGIE
-  PRELOGOPEDIE
-  TAALSTOORNIS
-  DYSARTHRIE
-  APRAXIE
-
-  // Algemeen
-  OVERIG
-}
-
-enum AfspraakStatus {
-  TE_BEVESTIGEN
-  BEVESTIGD
-  IN_WACHTZAAL
-  BINNEN
-  AFGEWERKT
-  NO_SHOW
-  GEANNULEERD
-}
-
 // ============================================
 // HERHALENDE REEKS
 // Voor patiënten met vaste wekelijkse sessies
@@ -175,7 +135,8 @@ model HerhalendeReeks {
 
   // Planning
   totaalSessies   Int       // Bv. 12 sessies
-  frequentie      Frequentie
+  // Valid values: WEKELIJKS, TWEEMAAL_PER_WEEK, MAANDELIJKS, HANDMATIG
+  frequentie      String
 
   // Metadata
   aangemaakt      DateTime  @default(now())
@@ -190,13 +151,6 @@ model HerhalendeReeks {
   afspraken       Afspraak[]
 }
 
-enum Frequentie {
-  WEKELIJKS
-  TWEEMAAL_PER_WEEK
-  MAANDELIJKS
-  HANDMATIG
-}
-
 // ============================================
 // AFWEZIGHEID
 // Voor afwezigheidsperiodes (vakantie, ziekte, etc.)
@@ -209,7 +163,8 @@ model Afwezigheid {
   eindDatum       DateTime
 
   // Type & Reden
-  type            AfwezigheidType
+  // Valid values: VAKANTIE, ZIEKTE, OPLEIDING, ANDERE
+  type            String
   reden           String?   // Voor type 'ANDERE'
 
   // Metadata
@@ -219,13 +174,6 @@ model Afwezigheid {
   // Relatie
   zorgverlener    Teamlid   @relation(fields: [zorgverlenerId], references: [id])
   zorgverlenerId  Int
-}
-
-enum AfwezigheidType {
-  VAKANTIE
-  ZIEKTE
-  OPLEIDING
-  ANDERE
 }
 
 // ============================================

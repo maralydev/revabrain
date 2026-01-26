@@ -3,10 +3,12 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
 // Types
+export type Rol = 'ZORGVERLENER' | 'SECRETARIAAT';
+
 export interface SessionPayload {
   userId: number;
   email: string;
-  rol: 'ZORGVERLENER' | 'SECRETARIAAT';
+  rol: string; // ZORGVERLENER | SECRETARIAAT
   isAdmin: boolean;
 }
 
