@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(git push:*)",
+      "Bash(ssh-keygen:*)",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr list:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(xargs:*)",
+      "Read(//Users/abdul/Documents/MARALYdev/revabrain/**)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(sqlite3:*)"
+    ]
+  }
+}

@@ -1,8 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
-import { FadeIn, SectionHeading } from '@/components/public/AnimatedComponents';
+import { FadeIn, SectionHeading, LinkWithArrow } from '@/components/public/AnimatedComponents';
 
 interface StorySectionProps {
   overline: string | undefined;
@@ -32,17 +31,7 @@ export default function StorySection({ overline, title, content, imageUrl, t }: 
             </FadeIn>
 
             <FadeIn delay={0.3}>
-              <Link
-                href="/team"
-                className="inline-flex items-center gap-3 text-[var(--rb-primary)] font-semibold hover:gap-4 transition-all group"
-              >
-                <span>Ontmoet ons team</span>
-                <span className="w-10 h-10 rounded-full bg-[var(--rb-light)] flex items-center justify-center group-hover:bg-[var(--rb-primary)] group-hover:text-white transition-all">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </span>
-              </Link>
+              <LinkWithArrow href="/team">Ontmoet ons team</LinkWithArrow>
             </FadeIn>
           </div>
 

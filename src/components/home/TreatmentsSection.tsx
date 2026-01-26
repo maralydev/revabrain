@@ -6,6 +6,8 @@ import {
   StaggerChildren,
   SectionHeading,
   GlowCard,
+  LinkWithArrow,
+  ArrowIcon,
 } from '@/components/public/AnimatedComponents';
 
 interface Discipline {
@@ -75,9 +77,7 @@ export default function TreatmentsSection({ overline, title, description, discip
                   </p>
                   <span className="inline-flex items-center gap-2 text-[var(--rb-primary)] text-sm font-medium group-hover:gap-3 transition-all">
                     Meer info
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+                    <ArrowIcon className="w-4 h-4" />
                   </span>
                 </GlowCard>
               </Link>
@@ -87,17 +87,7 @@ export default function TreatmentsSection({ overline, title, description, discip
 
         <FadeIn delay={0.4}>
           <div className="text-center mt-12">
-            <Link
-              href="/treatments"
-              className="inline-flex items-center gap-3 text-[var(--rb-primary)] font-semibold hover:gap-4 transition-all group"
-            >
-              <span>Bekijk alle behandelingen</span>
-              <span className="w-10 h-10 rounded-full bg-[var(--rb-light)] flex items-center justify-center group-hover:bg-[var(--rb-primary)] group-hover:text-white transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
-            </Link>
+            <LinkWithArrow href="/treatments">Bekijk alle behandelingen</LinkWithArrow>
           </div>
         </FadeIn>
       </div>
