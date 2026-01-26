@@ -72,7 +72,7 @@ function CostsContent() {
                 />
               </svg>
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Geconventioneerde praktijk</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{t('costs.conventionTitle')}</h3>
                 <p className="text-gray-700 leading-relaxed">{t('costs.convention')}</p>
               </div>
             </div>
@@ -84,7 +84,7 @@ function CostsContent() {
       <section className="py-12 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Huisbezoeken</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('costs.homeVisitsTitle')}</h2>
             <p className="text-gray-700 leading-relaxed">{t('costs.travel')}</p>
           </div>
         </div>
@@ -103,7 +103,7 @@ function CostsContent() {
             {t('costs.viewTariffs')} (RIZIV)
           </a>
           <p className="text-sm text-gray-500 mt-4">
-            U wordt doorverwezen naar de officiële RIZIV website
+            {t('costs.rizivNote')}
           </p>
         </div>
       </section>
@@ -112,17 +112,17 @@ function CostsContent() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold mb-4" style={{ color: '#2879D8' }}>
-            Vragen over tarieven of terugbetaling?
+            {t('costs.questionsTitle')}
           </h2>
           <p className="text-gray-600 mb-8">
-            Neem gerust contact met ons op voor meer informatie.
+            {t('costs.questionsSubtitle')}
           </p>
           <Link
             href="/contact"
             className="inline-block px-8 py-3 text-white rounded-full hover:opacity-90 font-semibold"
             style={{ backgroundColor: '#2879D8' }}
           >
-            Neem contact op
+            {t('costs.contactButton')}
           </Link>
         </div>
       </section>

@@ -1152,6 +1152,48 @@ CREATE TABLE ContactInfo (
 **Commando's gedraaid:**
 - `rm -rf .next && npm run build` (build ✅)
 
-**Volgende stappen:**
-- 23/24 stories done (95.8%)
-- 1 story remaining: US-008e (CMS)
+### 2026-01-26 - US-008e: Website content bewerken (CMS)
+
+**Wat gebouwd:**
+- PageContent database model for storing page/section content
+- CMS admin UI at /admin/settings/content
+- CRUD operations for page content
+- Draft/Published workflow
+
+**Code structuur:**
+- `/prisma/schema.prisma` - PageContent model (page, section, locale, title, content, imageUrl, published)
+- `/src/modules/page-content/queries.ts` - getAllPageContent, getPageContent, getContentById
+- `/src/modules/page-content/actions.ts` - savePageContent, updatePageContent, deletePageContent, togglePublished, seedPageContentStructure
+- `/src/app/admin/settings/content/page.tsx` - Admin CMS UI
+
+**Functionaliteit:**
+- Filter by page (home, team, costs, contact) and locale (nl, fr, en)
+- Section list with draft/published status badges
+- Edit form: section ID, title, content textarea, image URL, published checkbox
+- One-click publish/unpublish toggle
+- Delete with confirmation
+- Seed structure button to create initial sections
+- Preview link to view page
+- Instructions panel for admins
+
+**Database model:**
+```sql
+PageContent (
+  id, page, section, locale (unique combo),
+  title, content, imageUrl, published,
+  aangemaakt, laatstGewijzigd
+)
+```
+
+**Trade-offs:**
+- Textarea instead of rich text editor (Tiptap/Slate) - no new dependencies
+- Image URL input instead of file upload - simpler, no storage backend needed
+- Content structure is flexible (page + section + locale)
+
+**Commando's gedraaid:**
+- `sqlite3 prisma/dev.db "CREATE TABLE PageContent..."` (manual migration)
+- `rm -rf .next && npm run build` (build ✅)
+
+**Status:**
+- 24/24 stories done (100%)
+- ALL USER STORIES COMPLETE

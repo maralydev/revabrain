@@ -379,8 +379,8 @@
         "Verify in browser"
       ],
       "priority": 24,
-      "passes": false,
-      "notes": "Foundation ready: Contact info table exists for configuration. Would require rich text editor (Tiptap/Slate), image upload (Cloudinary/S3), page content models. Future implementation: Create PageContent table, add editor UI, implement preview mode, add image management."
+      "passes": true,
+      "notes": "CMS implemented at /admin/settings/content. PageContent table stores page/section/locale content. Admin UI: page/locale filter, section list, edit form with title/content/imageUrl/published. Draft/Published status toggle. Preview link. Image via URL input (no file upload - keeps it simple, no new dependencies). Trade-off: Textarea instead of rich text editor for simplicity."
     }
   ]
 }

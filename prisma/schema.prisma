@@ -272,3 +272,30 @@ model ContactInfo {
   aangemaakt      DateTime  @default(now())
   laatstGewijzigd DateTime  @updatedAt
 }
+
+// ============================================
+// PAGE CONTENT
+// CMS content voor publieke website pagina's
+// ============================================
+model PageContent {
+  id              Int       @id @default(autoincrement())
+
+  // Identificatie
+  page            String    // home, team, costs, contact
+  section         String    // hero, vision, story, etc.
+  locale          String    @default("nl")  // nl, fr, en
+
+  // Content
+  title           String?
+  content         String?   // Main text content
+  imageUrl        String?   // Optional image URL
+
+  // Status
+  published       Boolean   @default(false)
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+
+  @@unique([page, section, locale])
+}

@@ -31,7 +31,14 @@
   "team": {
     "title": "Ons Team",
     "subtitle": "Momenteel bieden wij logopedie aan voor volwassenen met een niet aangeboren hersenletsel of baby's en jonge kinderen met eet-en drinkproblemen. Ons team zal snel uitbreiden zodat wij u de optimale zorg kunnen bieden.",
-    "moreAbout": "Meer over"
+    "moreAbout": "Meer over",
+    "member1": {
+      "voornaam": "Imene",
+      "achternaam": "Chetti",
+      "discipline": "Logopedist",
+      "rol": "Praktijkcoördinator",
+      "bio": "Ik ben Imene, logopedist en praktijkeigenaar. In 2020 studeerde ik af als logopedist aan de Universiteit van Gent. Daarna volgde ik nog een master theoretische en experimentele psychologie om mijn kennis rond neurowetenschappen te verbreden. Ik deed afgelopen jaren talrijke ervaring op en volgde bijkomende opleidingen binnen het onderzoeken en behandelen van neurogene spraak-taal en cognitieve communicatiestoornissen. Daarnaast verdiepte ik me ook in slikstoornissen, aangezichtsverlamming en laryngectomie. Ook baby's en jonge kindjes met eet en drinkproblemen kunnen bij mij terecht. Als praktijkcoordinator tracht ik de aangename huiselijke sfeer te bewaken en juiste zorgverlening te kunnen toewijzen aan elke client."
+    }
   },
   "treatments": {
     "title": "Waarvoor u bij ons terecht kan",
@@ -55,9 +62,15 @@
     "step4": "Het anamnesegesprek, het logopedisch onderzoek en het opmaken van het bilan wordt per 30 minuten gefactureerd en dit met een maximum van 5 x 30 minuten.",
     "step5": "Indien nodig zal na enige tijd een evolutiebilan opgemaakt worden waarbij u mogelijks hertest wordt. Zo kunnen we progressie in kaart brengen en verdere terugbetaling garanderen.",
     "step6": "Overleg met andere betrokken disciplines is altijd mogelijk, dit wordt per 30' aangerekend.",
+    "conventionTitle": "Geconventioneerde praktijk",
     "convention": "Wij zijn een geconventioneerde praktijk en volgen de tarieven opgelegd door het RIZIV. Zo geniet u van de maximale wettelijke terugbetaling.",
+    "homeVisitsTitle": "Huisbezoeken",
     "travel": "Voor therapie aan huis rekenen we een verplaatsingsvergoeding van 3 euro per sessie aan. Dit dekt een deeltje van de transportkosten en tijd die wij spenderen aan verplaatsing.",
-    "viewTariffs": "Bekijk tarieven"
+    "viewTariffs": "Bekijk tarieven",
+    "rizivNote": "U wordt doorverwezen naar de officiële RIZIV website",
+    "questionsTitle": "Vragen over tarieven of terugbetaling?",
+    "questionsSubtitle": "Neem gerust contact met ons op voor meer informatie.",
+    "contactButton": "Neem contact op"
   },
   "contact": {
     "title": "Contactgegevens",

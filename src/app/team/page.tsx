@@ -5,18 +5,19 @@ export const dynamic = 'force-dynamic';
 import PublicLayout from '@/components/public/PublicLayout';
 import { useI18n } from '@/i18n/client';
 
-const teamMembers = [
-  {
-    voornaam: 'Imene',
-    achternaam: 'Chetti',
-    discipline: 'Logopedist',
-    rol: 'Praktijkcoördinator',
-    bio: 'Ik ben Imene, logopedist en praktijkeigenaar. In 2020 studeerde ik af als logopedist aan de Universiteit van Gent. Daarna volgde ik nog een master theoretische en experimentele psychologie om mijn kennis rond neurowetenschappen te verbreden. Ik deed afgelopen jaren talrijke ervaring op en volgde bijkomende opleidingen binnen het onderzoeken en behandelen van neurogene spraak-taal en cognitieve communicatiestoornissen. Daarnaast verdiepte ik me ook in slikstoornissen, aangezichtsverlamming en laryngectomie. Ook baby\'s en jonge kindjes met eet en drinkproblemen kunnen bij mij terecht. Als praktijkcoordinator tracht ik de aangename huiselijke sfeer te bewaken en juiste zorgverlening te kunnen toewijzen aan elke client.',
-  },
-];
-
 function TeamContent() {
   const { t } = useI18n();
+
+  // Team members from translations (supports multilingual bios)
+  const teamMembers = [
+    {
+      voornaam: t('team.member1.voornaam'),
+      achternaam: t('team.member1.achternaam'),
+      discipline: t('team.member1.discipline'),
+      rol: t('team.member1.rol'),
+      bio: t('team.member1.bio'),
+    },
+  ];
 
   return (
     <>

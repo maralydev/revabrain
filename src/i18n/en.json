@@ -31,7 +31,14 @@
   "team": {
     "title": "Our Team",
     "subtitle": "Currently we offer speech therapy for adults with acquired brain injury or babies and young children with eating and drinking problems. Our team will soon expand so that we can offer you optimal care.",
-    "moreAbout": "More about"
+    "moreAbout": "More about",
+    "member1": {
+      "voornaam": "Imene",
+      "achternaam": "Chetti",
+      "discipline": "Speech Therapist",
+      "rol": "Practice Coordinator",
+      "bio": "I am Imene, speech therapist and practice owner. In 2020, I graduated as a speech therapist from Ghent University. Afterwards, I completed a master's in theoretical and experimental psychology to broaden my knowledge of neuroscience. In recent years, I have gained extensive experience and followed additional training in examining and treating neurogenic speech-language and cognitive communication disorders. I have also specialized in swallowing disorders, facial paralysis, and laryngectomy. Babies and young children with eating and drinking problems can also come to me. As practice coordinator, I strive to maintain a pleasant, homely atmosphere and to assign the right care to each client."
+    }
   },
   "treatments": {
     "title": "What we treat",
@@ -55,9 +62,15 @@
     "step4": "The anamnesis interview, the speech therapy examination and drawing up the report are charged per 30 minutes with a maximum of 5 x 30 minutes.",
     "step5": "If necessary, an evolution report will be drawn up after some time where you may be retested.",
     "step6": "Consultation with other involved disciplines is always possible, this is charged per 30 minutes.",
+    "conventionTitle": "Conventioned practice",
     "convention": "We are a conventioned practice and follow the rates imposed by RIZIV. This way you enjoy the maximum legal reimbursement.",
+    "homeVisitsTitle": "Home visits",
     "travel": "For home therapy we charge a travel allowance of 3 euros per session.",
-    "viewTariffs": "View rates"
+    "viewTariffs": "View rates",
+    "rizivNote": "You will be redirected to the official RIZIV website",
+    "questionsTitle": "Questions about rates or reimbursement?",
+    "questionsSubtitle": "Feel free to contact us for more information.",
+    "contactButton": "Contact us"
   },
   "contact": {
     "title": "Contact Information",

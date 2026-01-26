@@ -31,7 +31,14 @@
   "team": {
     "title": "Notre Équipe",
     "subtitle": "Actuellement, nous proposons de la logopédie pour les adultes ayant subi une lésion cérébrale acquise ou pour les bébés et jeunes enfants présentant des problèmes d'alimentation. Notre équipe s'agrandira bientôt pour vous offrir des soins optimaux.",
-    "moreAbout": "En savoir plus sur"
+    "moreAbout": "En savoir plus sur",
+    "member1": {
+      "voornaam": "Imene",
+      "achternaam": "Chetti",
+      "discipline": "Logopède",
+      "rol": "Coordinatrice de cabinet",
+      "bio": "Je suis Imene, logopède et propriétaire du cabinet. En 2020, j'ai obtenu mon diplôme de logopède à l'Université de Gand. Ensuite, j'ai suivi un master en psychologie théorique et expérimentale pour élargir mes connaissances en neurosciences. Ces dernières années, j'ai acquis une vaste expérience et suivi des formations complémentaires dans l'examen et le traitement des troubles neurogènes de la parole, du langage et de la communication cognitive. Je me suis également spécialisée dans les troubles de la déglutition, la paralysie faciale et la laryngectomie. Les bébés et jeunes enfants ayant des problèmes d'alimentation peuvent également me consulter. En tant que coordinatrice, je veille à maintenir une atmosphère chaleureuse et à attribuer les soins appropriés à chaque client."
+    }
   },
   "treatments": {
     "title": "Ce que nous traitons",
@@ -55,9 +62,15 @@
     "step4": "L'entretien d'anamnèse, l'examen logopédique et l'établissement du bilan sont facturés par 30 minutes avec un maximum de 5 x 30 minutes.",
     "step5": "Si nécessaire, un bilan d'évolution sera établi après un certain temps où vous pourrez être retesté.",
     "step6": "Une consultation avec d'autres disciplines concernées est toujours possible, elle est facturée par 30 minutes.",
+    "conventionTitle": "Cabinet conventionné",
     "convention": "Nous sommes un cabinet conventionné et suivons les tarifs imposés par l'INAMI. Vous bénéficiez ainsi du remboursement légal maximal.",
+    "homeVisitsTitle": "Visites à domicile",
     "travel": "Pour les thérapies à domicile, nous facturons une indemnité de déplacement de 3 euros par séance.",
-    "viewTariffs": "Voir les tarifs"
+    "viewTariffs": "Voir les tarifs",
+    "rizivNote": "Vous serez redirigé vers le site officiel de l'INAMI",
+    "questionsTitle": "Des questions sur les tarifs ou le remboursement?",
+    "questionsSubtitle": "N'hésitez pas à nous contacter pour plus d'informations.",
+    "contactButton": "Nous contacter"
   },
   "contact": {
     "title": "Coordonnées",
