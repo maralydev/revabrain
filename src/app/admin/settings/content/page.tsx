@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getAllPageContent, type PageContentData } from '@/modules/page-content/queries';
 import { savePageContent, deletePageContent, togglePublished, seedPageContentStructure } from '@/modules/page-content/actions';
 
-const PAGES = ['home', 'team', 'costs', 'contact'];
+const PAGES = ['home', 'team', 'treatments', 'costs', 'contact'];
 const LOCALES = [
   { code: 'nl', name: 'Nederlands' },
   { code: 'fr', name: 'Français' },
@@ -15,6 +15,7 @@ const LOCALES = [
 const PAGE_LABELS: Record<string, string> = {
   home: 'Homepage',
   team: 'Team',
+  treatments: 'Behandelingen',
   costs: 'Tarieven',
   contact: 'Contact',
 };
@@ -31,8 +32,12 @@ export default function ContentManagementPage() {
   // Form state
   const [formSection, setFormSection] = useState('');
   const [formTitle, setFormTitle] = useState('');
+  const [formSubtitle, setFormSubtitle] = useState('');
   const [formContent, setFormContent] = useState('');
+  const [formContent2, setFormContent2] = useState('');
   const [formImageUrl, setFormImageUrl] = useState('');
+  const [formButtonText, setFormButtonText] = useState('');
+  const [formButtonUrl, setFormButtonUrl] = useState('');
   const [formPublished, setFormPublished] = useState(false);
 
   useEffect(() => {
@@ -49,8 +54,12 @@ export default function ContentManagementPage() {
   function resetForm() {
     setFormSection('');
     setFormTitle('');
+    setFormSubtitle('');
     setFormContent('');
+    setFormContent2('');
     setFormImageUrl('');
+    setFormButtonText('');
+    setFormButtonUrl('');
     setFormPublished(false);
     setEditItem(null);
     setIsCreating(false);
@@ -60,8 +69,12 @@ export default function ContentManagementPage() {
     setEditItem(item);
     setFormSection(item.section);
     setFormTitle(item.title || '');
+    setFormSubtitle(item.subtitle || '');
     setFormContent(item.content || '');
+    setFormContent2(item.content2 || '');
     setFormImageUrl(item.imageUrl || '');
+    setFormButtonText(item.buttonText || '');
+    setFormButtonUrl(item.buttonUrl || '');
     setFormPublished(item.published);
     setIsCreating(false);
   }
@@ -80,8 +93,12 @@ export default function ContentManagementPage() {
       section: formSection,
       locale: editItem?.locale || selectedLocale,
       title: formTitle || undefined,
+      subtitle: formSubtitle || undefined,
       content: formContent || undefined,
+      content2: formContent2 || undefined,
       imageUrl: formImageUrl || undefined,
+      buttonText: formButtonText || undefined,
+      buttonUrl: formButtonUrl || undefined,
       published: formPublished,
     });
 
@@ -326,17 +343,39 @@ export default function ContentManagementPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Ondertitel
+                  </label>
+                  <input
+                    type="text"
+                    value={formSubtitle}
+                    onChange={(e) => setFormSubtitle(e.target.value)}
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Optionele ondertitel/label"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Inhoud
                   </label>
                   <textarea
                     value={formContent}
                     onChange={(e) => setFormContent(e.target.value)}
-                    className="w-full px-3 py-2 border rounded h-40"
+                    className="w-full px-3 py-2 border rounded h-32"
                     placeholder="Tekst content..."
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Tip: Gebruik lege regels voor alinea&apos;s.
-                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Inhoud 2 (tweede alinea)
+                  </label>
+                  <textarea
+                    value={formContent2}
+                    onChange={(e) => setFormContent2(e.target.value)}
+                    className="w-full px-3 py-2 border rounded h-32"
+                    placeholder="Optionele tweede alinea..."
+                  />
                 </div>
 
                 <div>
@@ -348,8 +387,35 @@ export default function ContentManagementPage() {
                     value={formImageUrl}
                     onChange={(e) => setFormImageUrl(e.target.value)}
                     className="w-full px-3 py-2 border rounded"
-                    placeholder="https://..."
+                    placeholder="/images/... of https://..."
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Button Tekst
+                    </label>
+                    <input
+                      type="text"
+                      value={formButtonText}
+                      onChange={(e) => setFormButtonText(e.target.value)}
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="Neem contact op"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Button URL
+                    </label>
+                    <input
+                      type="text"
+                      value={formButtonUrl}
+                      onChange={(e) => setFormButtonUrl(e.target.value)}
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="/contact"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">

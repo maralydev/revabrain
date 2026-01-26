@@ -25,6 +25,17 @@ function ContactContent() {
   const [openingstijden, setOpeningstijden] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
+  // Default opening hours from revabrain.be
+  const defaultOpeningstijden = {
+    ma: '09:00-18:00',
+    di: '09:00-18:00',
+    wo: '09:00-18:00',
+    do: '09:00-18:00',
+    vr: '09:00-18:00',
+    za: 'Gesloten',
+    zo: 'Gesloten',
+  };
+
   useEffect(() => {
     async function load() {
       const info = await getContactInfo();
@@ -34,17 +45,11 @@ function ContactContent() {
           const parsed = JSON.parse(info.openingstijden);
           setOpeningstijden(parsed);
         } catch (e) {
-          // Default opening hours
-          setOpeningstijden({
-            ma: '09:00-17:00',
-            di: '09:00-17:00',
-            wo: '09:00-17:00',
-            do: '09:00-17:00',
-            vr: '09:00-16:00',
-            za: 'Gesloten',
-            zo: 'Gesloten',
-          });
+          setOpeningstijden(defaultOpeningstijden);
         }
+      } else {
+        // No database connection, use defaults
+        setOpeningstijden(defaultOpeningstijden);
       }
       setLoading(false);
     }
@@ -62,20 +67,20 @@ function ContactContent() {
     );
   }
 
-  // Fallback values
-  const telefoon = contactInfo?.telefoon || '+32 2 123 45 67';
+  // Fallback values from revabrain.be
+  const telefoon = contactInfo?.telefoon || '+32 498 68 68 42';
   const email = contactInfo?.email || 'info@revabrain.be';
-  const straat = contactInfo?.adresStraat || 'Voorbeeldstraat';
-  const nummer = contactInfo?.adresNummer || '1';
-  const postcode = contactInfo?.adresPostcode || '1000';
-  const gemeente = contactInfo?.adresGemeente || 'Brussel';
-  const latitude = contactInfo?.latitude || 50.8503;
-  const longitude = contactInfo?.longitude || 4.3517;
+  const straat = contactInfo?.adresStraat || 'Rue Des Frères Lefort';
+  const nummer = contactInfo?.adresNummer || '171, bus 003';
+  const postcode = contactInfo?.adresPostcode || '1840';
+  const gemeente = contactInfo?.adresGemeente || 'Tubeke';
+  const latitude = contactInfo?.latitude || 50.6912;
+  const longitude = contactInfo?.longitude || 4.2078;
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="bg-white py-12">
+      {/* Hero Section - pt-28 for fixed navbar */}
+      <section className="bg-white pt-28 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4" style={{ color: '#2879D8' }}>
             {t('contact.title')}

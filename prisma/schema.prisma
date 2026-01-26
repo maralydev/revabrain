@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 // ============================================
@@ -287,8 +286,12 @@ model PageContent {
 
   // Content
   title           String?
+  subtitle        String?   // Optional subtitle
   content         String?   // Main text content
+  content2        String?   // Secondary text content (for sections with multiple paragraphs)
   imageUrl        String?   // Optional image URL
+  buttonText      String?   // Optional CTA button text
+  buttonUrl       String?   // Optional CTA button URL
 
   // Status
   published       Boolean   @default(false)
@@ -298,4 +301,57 @@ model PageContent {
   laatstGewijzigd DateTime  @updatedAt
 
   @@unique([page, section, locale])
+}
+
+// ============================================
+// BEHANDELING (Treatment)
+// Voor publieke behandelingspagina's
+// ============================================
+model Behandeling {
+  id              Int       @id @default(autoincrement())
+
+  // Identificatie
+  slug            String    @unique  // neurologopedie, prelogopedie
+  locale          String    @default("nl")
+
+  // Content
+  title           String
+  description     String    // Short description
+  longDescription String?   // Detailed description
+  extraInfo       String?   // Additional info (like "wanneer hulp")
+
+  // Display
+  iconSvg         String?   // SVG icon markup
+  color           String?   // Accent color hex
+  volgorde        Int       @default(0)
+  actief          Boolean   @default(true)
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+
+  // Relaties
+  aandoeningen    Aandoening[]
+
+  @@unique([slug, locale])
+}
+
+// ============================================
+// AANDOENING (Condition)
+// Indicaties/aandoeningen per behandeling
+// ============================================
+model Aandoening {
+  id              Int       @id @default(autoincrement())
+
+  // Content
+  naam            String
+  beschrijving    String?
+  locale          String    @default("nl")
+
+  // Display
+  volgorde        Int       @default(0)
+
+  // Relatie
+  behandeling     Behandeling @relation(fields: [behandelingId], references: [id], onDelete: Cascade)
+  behandelingId   Int
 }

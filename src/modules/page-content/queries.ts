@@ -8,8 +8,12 @@ export interface PageContentData {
   section: string;
   locale: string;
   title: string | null;
+  subtitle: string | null;
   content: string | null;
+  content2: string | null;
   imageUrl: string | null;
+  buttonText: string | null;
+  buttonUrl: string | null;
   published: boolean;
   aangemaakt: Date;
   laatstGewijzigd: Date;

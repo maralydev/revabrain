@@ -9,8 +9,12 @@ export interface ContentInput {
   section: string;
   locale: string;
   title?: string;
+  subtitle?: string;
   content?: string;
+  content2?: string;
   imageUrl?: string;
+  buttonText?: string;
+  buttonUrl?: string;
   published?: boolean;
 }
 
@@ -23,7 +27,7 @@ export async function savePageContent(
   try {
     await requireAdmin();
 
-    const { page, section, locale, title, content, imageUrl, published } = input;
+    const { page, section, locale, title, subtitle, content, content2, imageUrl, buttonText, buttonUrl, published } = input;
 
     // Upsert: create if not exists, update if exists
     const result = await (prisma as any).pageContent.upsert({
@@ -32,8 +36,12 @@ export async function savePageContent(
       },
       update: {
         title: title ?? null,
+        subtitle: subtitle ?? null,
         content: content ?? null,
+        content2: content2 ?? null,
         imageUrl: imageUrl ?? null,
+        buttonText: buttonText ?? null,
+        buttonUrl: buttonUrl ?? null,
         published: published ?? false,
         laatstGewijzigd: new Date(),
       },
@@ -42,8 +50,12 @@ export async function savePageContent(
         section,
         locale,
         title: title ?? null,
+        subtitle: subtitle ?? null,
         content: content ?? null,
+        content2: content2 ?? null,
         imageUrl: imageUrl ?? null,
+        buttonText: buttonText ?? null,
+        buttonUrl: buttonUrl ?? null,
         published: published ?? false,
       },
     });
@@ -65,14 +77,18 @@ export async function updatePageContent(
   try {
     await requireAdmin();
 
-    const { title, content, imageUrl, published } = input;
+    const { title, subtitle, content, content2, imageUrl, buttonText, buttonUrl, published } = input;
 
     const result = await (prisma as any).pageContent.update({
       where: { id },
       data: {
         ...(title !== undefined && { title }),
+        ...(subtitle !== undefined && { subtitle }),
         ...(content !== undefined && { content }),
+        ...(content2 !== undefined && { content2 }),
         ...(imageUrl !== undefined && { imageUrl }),
+        ...(buttonText !== undefined && { buttonText }),
+        ...(buttonUrl !== undefined && { buttonUrl }),
         ...(published !== undefined && { published }),
         laatstGewijzigd: new Date(),
       },

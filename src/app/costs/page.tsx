@@ -20,8 +20,8 @@ function CostsContent() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="py-16 bg-white">
+      {/* Hero Section - pt-28 for fixed navbar */}
+      <section className="pt-28 pb-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-6 text-center" style={{ color: '#2879D8' }}>
             {t('costs.title')}
