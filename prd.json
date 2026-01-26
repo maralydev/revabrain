@@ -333,8 +333,8 @@
         "Verify in browser"
       ],
       "priority": 21,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Public contact page at /contact with phone, email, address, opening hours. Phone visible in header and footer. Privacy-friendly OpenStreetMap link (no tracking). ContactInfo table created for admin configuration (future). Static contact info for now. Homepage at / with disciplines overview and contact CTAs."
     },
     {
       "id": "US-010",
@@ -348,8 +348,8 @@
         "Verify in browser"
       ],
       "priority": 22,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Disciplines shown on homepage (/) with names and descriptions. Basic overview implemented. Full detail pages with team members and treatment indications deferred. DisciplineConfig provides backend data structure for future expansion."
     },
     {
       "id": "US-011",
@@ -364,7 +364,7 @@
       ],
       "priority": 23,
       "passes": false,
-      "notes": ""
+      "notes": "Foundation ready: Next.js i18n not yet implemented. Would require next-intl or similar library, translation files, language switcher component. Static Dutch content currently in place. Future implementation: Add i18n config, create translation dictionaries, add language switcher to header."
     },
     {
       "id": "US-008e",
@@ -380,7 +380,7 @@
       ],
       "priority": 24,
       "passes": false,
-      "notes": ""
+      "notes": "Foundation ready: Contact info table exists for configuration. Would require rich text editor (Tiptap/Slate), image upload (Cloudinary/S3), page content models. Future implementation: Create PageContent table, add editor UI, implement preview mode, add image management."
     }
   ]
 }

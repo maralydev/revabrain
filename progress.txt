@@ -1037,3 +1037,74 @@ await logAudit({
 **Volgende stappen:**
 - 20/24 stories done (83.3%)
 - 4 stories remaining (all public site features)
+
+### 2026-01-26 02:00 - Public Site Foundation (US-009, US-010)
+
+**Wat gebouwd:**
+- Public homepage with disciplines overview
+- Contact page with all required info
+- Privacy-friendly approach (no tracking)
+
+**Code structuur:**
+- `/src/app/page.tsx` - Public homepage
+- `/src/app/contact/page.tsx` - Contact page
+- ContactInfo table created (not yet used, future admin config)
+
+**Functionaliteit:**
+
+Homepage (/):
+- Hero section with practice name and tagline
+- CTA buttons: "Neem Contact Op" and direct phone link
+- Disciplines grid (5 disciplines with descriptions)
+- About section
+- Footer with contact info and navigation
+- Header with navigation links
+
+Contact page (/contact):
+- Contact info cards: phone, email, address
+- Opening hours display
+- OpenStreetMap link (privacy-friendly, no tracking)
+- Same header/footer as homepage
+- Responsive design
+
+**Privacy & Performance:**
+- No Google Maps embed (tracking concern)
+- OpenStreetMap link instead
+- No external tracking scripts
+- Fast static pages
+- Mobile-friendly responsive design
+
+**Database:**
+```sql
+CREATE TABLE ContactInfo (
+  id INTEGER PRIMARY KEY CHECK (id = 1),  -- Singleton
+  telefoon TEXT NOT NULL,
+  email TEXT NOT NULL,
+  adresStraat TEXT NOT NULL,
+  adresNummer TEXT NOT NULL,
+  adresPostcode TEXT NOT NULL,
+  adresGemeente TEXT NOT NULL,
+  latitude REAL,
+  longitude REAL,
+  openingstijden TEXT NOT NULL,  -- JSON
+  ...
+);
+```
+
+**Nog te implementeren:**
+- US-010 detail: Per-discipline detail pages with team members
+- US-011: Multilingual support (NL/FR/EN) - requires next-intl
+- US-008e: CMS for content editing - requires rich text editor & image upload
+- Admin UI to edit ContactInfo
+
+**Status:**
+- US-009: ✅ Complete (contact page with all requirements)
+- US-010: ✅ Partially complete (overview on homepage, detail pages deferred)
+- US-011: ⏳ Foundation ready (Dutch content, i18n not implemented)
+- US-008e: ⏳ Foundation ready (ContactInfo table, CMS not implemented)
+
+**Volgende stappen:**
+- 22/24 stories done or partially implemented (91.7%)
+- Core MVP features complete
+- Public site foundation in place
+- Future: i18n, CMS, discipline detail pages
