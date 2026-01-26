@@ -5,7 +5,16 @@ import { hash } from 'bcryptjs';
 // Secret key for one-time seed - change or remove after use
 const SEED_SECRET = 'revabrain-seed-2024';
 
+// Allow both GET and POST for easy browser access
+export async function GET(request: Request) {
+  return seedDatabase(request);
+}
+
 export async function POST(request: Request) {
+  return seedDatabase(request);
+}
+
+async function seedDatabase(request: Request) {
   try {
     // Check secret
     const { searchParams } = new URL(request.url);
