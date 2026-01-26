@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "disciplines": "Disciplines",
+    "contact": "Contact",
+    "login": "Connexion"
+  },
+  "home": {
+    "hero": {
+      "title": "Réhabilitation Neurologique Spécialisée",
+      "subtitle": "Soins professionnels pour adultes avec lésions cérébrales acquises et enfants avec troubles du langage et de l'apprentissage",
+      "cta": "Prendre Rendez-vous"
+    },
+    "disciplines": {
+      "title": "Nos Disciplines",
+      "subtitle": "Approche multidisciplinaire pour une réhabilitation optimale"
+    },
+    "cta": {
+      "title": "Prêt à Commencer?",
+      "subtitle": "Contactez-nous pour une consultation sans engagement concernant votre situation.",
+      "button": "Nous Contacter"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Contactez-nous pour des questions ou pour prendre rendez-vous",
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "votre.email@exemple.be",
+      "phone": "Téléphone",
+      "phonePlaceholder": "+32 ...",
+      "message": "Message",
+      "messagePlaceholder": "Votre question ou message...",
+      "submit": "Envoyer le Message",
+      "sending": "Envoi en cours...",
+      "success": "Merci pour votre message! Nous vous contacterons dès que possible.",
+      "privacyNote": "Vos données ne sont utilisées que pour vous contacter et ne sont pas partagées avec des tiers."
+    },
+    "info": {
+      "title": "Coordonnées",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email",
+      "hours": "Heures d'ouverture"
+    },
+    "location": {
+      "title": "Localisation"
+    }
+  },
+  "disciplines": {
+    "title": "Nos Disciplines",
+    "subtitle": "Expertise multidisciplinaire pour la réhabilitation neurologique",
+    "detail": {
+      "treatments": "Traitements et Indications",
+      "team": "Notre Équipe",
+      "appointment": "Prendre Rendez-vous?",
+      "appointmentText": "Contactez-nous pour plus d'informations ou pour planifier un rendez-vous.",
+      "contactUs": "Nous Contacter",
+      "otherDisciplines": "Autres Disciplines"
+    }
+  },
+  "footer": {
+    "rights": "Tous droits réservés."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "notFound": "Non trouvé",
+    "backToOverview": "Retour à l'aperçu"
+  }
+}

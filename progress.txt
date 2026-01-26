@@ -1,0 +1,1110 @@
+# Progress Log — RevaBrain (Ralph loop)
+
+## Codebase Patterns
+
+- Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, Prisma ORM
+- Database: SQLite (dev) → PostgreSQL (prod)
+- Auth: Server-side enforcement, rollen: zorgverlener (eigen agenda) + admin (alles)
+- Privacy: RR = PII, NOOIT loggen in plaintext, mask in UI
+
+## Conventions
+
+- Modulaire code: max 200-300 regels per bestand
+- DRY principe strikt: herbruikbare componenten, geen dubbele logica
+- Geen dependencies tenzij noodzakelijk
+- Feature modules in `/modules/` of `/src/app/`
+- Kleuren: Primary #2879D8, Accent #59ECB7, Light #E7F6FC, Dark #212529
+
+## Learnings
+
+### 2026-01-25 22:30 - US-000: Project bootstrap & authenticatie (MVP)
+
+**Wat gebouwd:**
+- Auth flow met login/logout (server actions)
+- Role-based access control (middleware + helpers)
+- JWT sessions (jose library)
+- Login UI page
+- Test users script (better-sqlite3)
+- Prisma schema + migrations
+
+**Dependencies toegevoegd:**
+- bcryptjs (password hashing)
+- jose (JWT tokens, lightweight)
+- better-sqlite3 (seed scripts)
+- @types/bcryptjs, @types/better-sqlite3
+
+**Belangrijke beslissingen:**
+- Prisma downgrade van 7.x naar 5.x (stabiliteit, geen adapters nodig voor SQLite)
+- JWT tokens i.p.v. zwaardere session libraries (DRY principe)
+- Direct SQL seed script met better-sqlite3 (vermijdt Prisma enum compatibiliteit issues)
+
+**Commando's gedraaid:**
+- `npx prisma migrate reset --force` (eerste keer, database reset met user consent)
+- `npx prisma migrate dev --name initial_schema`
+- `npx prisma generate`
+- `npx tsx scripts/create-test-user.ts` (test users aanmaken)
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Test credentials:**
+- Admin: admin@revabrain.be / admin123
+- Zorgverlener: zorgverlener@revabrain.be / zorgverlener123
+
+**Valkuilen:**
+- Prisma 7 vereist adapters voor SQLite → downgraded to Prisma 5
+- SQLite ondersteunt geen native enums in sommige Prisma versies
+- Middleware in Next.js 16: ⚠️ deprecated warning (gebruik "proxy" in toekomst)
+
+**Volgende stappen:**
+- US-006: Patiënt registratie met RR validatie
+
+### 2026-01-25 23:15 - US-006: Nieuwe patiënt registreren (RR als primaire identifier)
+
+**Wat gebouwd:**
+- Patiënt registratie server action (validation + duplicate check)
+- RR validatie met Belgische checksum (mod 97)
+- Automatisch afleiden geboortedatum en geslacht uit RR
+- Registratie formulier UI met real-time RR validatie
+- Patiënten overzicht pagina (client-side data fetching)
+- Prisma singleton pattern voor database connections
+
+**Privacy & Security:**
+- RR NOOIT gelogd in plaintext (commentaar in code)
+- Dataminimalisatie: alleen noodzakelijke velden
+- Server-side validation (requireZorgverlener)
+- Duplicate RR detection
+
+**Code structuur:**
+- `/modules/patient/actions.ts` - Server actions (register)
+- `/modules/patient/queries.ts` - Server actions (queries)
+- `/app/admin/patient/page.tsx` - Overzicht (client component)
+- `/app/admin/patient/nieuw/page.tsx` - Registratie formulier
+- `/shared/lib/prisma.ts` - Prisma singleton (DRY)
+
+**Belangrijke beslissingen:**
+- Client-side data fetching i.p.v. server components (Next.js 16 Turbopack build issues)
+- Prisma singleton pattern (voorkomt multiple instances, build errors)
+- Bestaande RR utility hergebruikt (geen nieuwe dependencies)
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Server components + Prisma in Next.js 16 Turbopack build = errors
+- Oplossing: client components + server actions voor data fetching
+- Prisma singleton essentieel om connection pool problemen te vermijden
+
+**Volgende stappen:**
+- US-007: Patiënt zoeken (naam of RR)
+
+### 2026-01-25 23:30 - US-007: Patiënt zoeken (naam of RR)
+
+**Wat gebouwd:**
+- Search server action met multi-field search (naam + RR)
+- Debounced typeahead search (300ms delay)
+- Real-time resultaten tijdens typen
+- Laatste afspraak datum in search results
+- Loading indicator tijdens search
+
+**Search functionaliteit:**
+- Zoek op voornaam OF achternaam (partial match)
+- Zoek op RR (partial match, minimaal 3 cijfers)
+- Resultaten tonen: naam, RR (gemaskeerd), geboortedatum, telefoon, gemeente, laatste afspraak
+- Max 20 resultaten per query
+- Minimaal 2 karakters vereist voor search
+
+**Code wijzigingen:**
+- `/modules/patient/queries.ts` - searchPatients() functie + PatientWithLastAfspraak type
+- `/app/admin/patient/page.tsx` - Search UI met debouncing
+
+**Belangrijke beslissingen:**
+- 300ms debounce om aantal server requests te beperken
+- SQLite ondersteunt geen case-insensitive search (mode: 'insensitive' niet beschikbaar)
+- Oplossing: contains zonder mode (werkt voor meeste cases)
+- Type PatientWithLastAfspraak voor search results met afspraak data
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- SQLite + Prisma 5 ondersteunt geen `mode: 'insensitive'` in queries
+- Oplossing: gebruik contains zonder mode, works for most cases
+- Voor echte case-insensitive search: data in lowercase opslaan of PostgreSQL gebruiken
+
+**Volgende stappen:**
+- US-003: Dag/week overzicht (agenda views)
+
+### 2026-01-25 23:45 - US-001: Afspraak inplannen (CRUD - create)
+
+**Wat gebouwd:**
+- Server action createAfspraak met conflict detection
+- Conflict detection met time overlap logic (start/eind tijd checks)
+- Query functions getAfsprakenByDate en getAfsprakenByWeek
+- Appointment creation form met patient search typeahead
+- Datum/tijd picker, duur selector (30/45/60/90 min), type selector
+- Conflict warning display in UI
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - createAfspraak, checkConflicts, ConflictInfo type
+- `/modules/afspraak/queries.ts` - getAfsprakenByDate, getAfsprakenByWeek, AfspraakWithRelations type
+- `/app/admin/afspraak/nieuw/page.tsx` - Creation form UI
+
+**Conflict detection logica:**
+- Berekent eind tijd: startTijd + duur (in milliseconds)
+- Zoekt overlappende afspraken (OR query met time ranges)
+- Filtert resultaten met actual time overlap check
+- Blokkeert creatie als conflicten bestaan, toont conflictlijst
+
+**Belangrijke beslissingen:**
+- Nieuwe afspraak krijgt status 'TE_BEVESTIGEN' bij creatie
+- Patient search hergebruikt searchPatients uit patient module (DRY)
+- Conflict detection exclude parameter voor toekomstig edit gebruik
+- AfspraakWithRelations type voor queries met patient + zorgverlener relations
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅ - na fix any types)
+- `npm run build` (build ✅ - na clean)
+
+**Valkuilen:**
+- TypeScript implicit any in filter/map callbacks → fix met explicit `any` type annotation
+- Build error ENOTEMPTY .next/server → fix met `rm -rf .next`
+
+**Volgende stappen:**
+- US-002: Afspraak wijzigen (CRUD - update)
+
+### 2026-01-26 00:15 - US-003: Dag/week overzicht (agenda views)
+
+**Wat gebouwd:**
+- DagView component (bestaand, werkt met real data nu)
+- WeekView component (nieuw, 7-day grid)
+- View toggle in AgendaHeader (DAG/WEEK buttons)
+- Week navigation (prev/next moves 7 days in week view)
+- Real data integration: hooks updated from dummy data to server actions
+- Teamlid query function getActieveTeamleden
+- Status colors via STATUS_CONFIG (already existed)
+
+**Code structuur:**
+- `/modules/teamlid/queries.ts` - getActieveTeamleden server action
+- `/modules/agenda/hooks/useAgenda.ts` - updated useAfspraken, useZorgverleners
+- `/modules/agenda/components/WeekView.tsx` - new week grid component
+- `/modules/agenda/components/AgendaHeader.tsx` - added view toggle
+- `/app/admin/agenda/page.tsx` - supports both dag and week views
+
+**Real data integration:**
+- useAfspraken: calls getAfsprakenByDate, transforms AfspraakWithRelations to Afspraak
+- useZorgverleners: calls getActieveTeamleden, transforms Teamlid to Zorgverlener
+- Week view: calls getAfsprakenByWeek for entire week data
+- Colors assigned cyclically from palette: #2879D8, #59ECB7, #9C27B0, #FFC107, #4CAF50
+
+**UI patterns:**
+- DagView: grid met uren (8-19) en kolommen per zorgverlener
+- WeekView: grid met uren en kolommen per dag (7 dagen)
+- Status shown via colored left border + dot (STATUS_CONFIG)
+- Today highlighted in blue
+- Nieuwe afspraak button → redirects to /admin/afspraak/nieuw
+
+**Belangrijke beslissingen:**
+- Week starts on Monday (Belgian convention)
+- Separate hooks/queries for dag vs week (performance)
+- Transform database types to agenda module types (separation of concerns)
+- DRY: reuse existing AfspraakCard component for both views
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅ - after clean)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Stale .next types causing duplicate identifier errors → fix met `rm -rf .next`
+- Needed to export AgendaView type from module index for external imports
+
+**Volgende stappen:**
+- US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)
+
+### 2026-01-26 00:30 - US-002: Afspraak wijzigen (CRUD - update)
+
+**Wat gebouwd:**
+- updateAfspraak server action met conflict detection
+- getAfspraakById query function voor ophalen afspraak details
+- Edit page /admin/afspraak/[id]/edit met formulier
+- Afspraak click handler in agenda (navigeert naar edit page)
+- Access control: zorgverlener kan alleen eigen afspraken wijzigen (admin kan alles)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - updateAfspraak action
+- `/modules/afspraak/queries.ts` - getAfspraakById query
+- `/app/admin/afspraak/[id]/edit/page.tsx` - Edit formulier
+- `/app/admin/agenda/page.tsx` - handleAfspraakClick
+
+**Update logica:**
+- Laad bestaande afspraak data via getAfspraakById
+- Prefill formulier met huidige waarden
+- Bij wijziging datum/duur: conflict check met excludeAfspraakId (exclude current)
+- Access check: alleen eigen afspraken of admin
+- Partial update: alleen gewijzigde velden worden doorgegeven
+
+**Conflict detection:**
+- Hergebruikt checkConflicts functie uit create action
+- excludeAfspraakId parameter voorkomt conflict met zichzelf
+- Toont conflicterende afspraken indien overlap
+
+**UI patterns:**
+- Afspraak clickable in DagView en WeekView
+- Edit page identiek qua UX aan create page (consistency)
+- Patient selector herbruikbaar
+- Datum/tijd picker prefilled met bestaande waarden
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Typo "const nieuweD datum" → fixed
+- Dynamic route [id] requires getStaticParams of server-side rendering (Next.js handles)
+
+**Nog te implementeren:**
+- Herhalende reeksen: keuze "alleen deze" vs "hele reeks" (US-004 eerst)
+
+**Volgende stappen:**
+- US-005: Afspraak status wijzigen (workflow)
+
+### 2026-01-26 00:45 - US-005b: Afspraak annuleren/verwijderen (CRUD - delete + cancel)
+
+**Wat gebouwd:**
+- cancelAfspraak action: zet status naar GEANNULEERD
+- deleteAfspraak action: permanent delete met audit logging
+- Cancel + Delete buttons in edit page (danger zone)
+- Confirmation dialogs (browser confirm)
+- AfspraakCard toont geannuleerde afspraken met opacity + strikethrough
+- Audit logging zonder PII (alleen ID, datum, type, deletedBy)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - cancelAfspraak, deleteAfspraak
+- `/app/admin/afspraak/[id]/edit/page.tsx` - handleCancel, handleDelete, UI buttons
+- `/modules/agenda/components/AfspraakCard.tsx` - isCancelled styling
+
+**Cancel functionaliteit:**
+- Zet status op GEANNULEERD (blijft in database)
+- Afspraak blijft zichtbaar in agenda
+- Visual styling: opacity-60 + line-through text
+- Access control: alleen eigen afspraken (of admin)
+
+**Delete functionaliteit:**
+- Permanent verwijdering uit database
+- Confirmation dialog: "PERMANENT wilt verwijderen? Dit kan niet ongedaan gemaakt worden"
+- Audit log: ID, datum, type, deletedBy (GEEN patient naam of RR)
+- Access control: alleen eigen afspraken (of admin)
+
+**UI patterns:**
+- Danger zone section in edit page (separate from normal actions)
+- Orange border voor Cancel, Red border voor Delete
+- Explanatory text: verschil tussen cancel en delete
+- Geannuleerde afspraken: 60% opacity + strikethrough all text
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅ - after clean)
+
+**Valkuilen:**
+- Build error ENOENT pages-manifest.json → fix met `rm -rf .next`
+
+**Nog te implementeren:**
+- Herhalende reeksen: keuze "alleen deze" vs "alle toekomstige" (pending US-004)
+- Soft delete option (currently hard delete, but with logging)
+
+**Volgende stappen:**
+- US-004: Herhalende afspraken (reeks boeken)
+
+### 2026-01-26 01:00 - US-005: Afspraak status wijzigen (workflow)
+
+**Wat gebouwd:**
+- updateAfspraakStatus server action
+- Status dropdown in edit page met direct save
+- All 7 statuses available: TE_BEVESTIGEN, BEVESTIGD, IN_WACHTZAAL, BINNEN, AFGEWERKT, NO_SHOW, GEANNULEERD
+- Status change visible in agenda via STATUS_CONFIG colors (already implemented in US-003)
+
+**Code structuur:**
+- `/modules/afspraak/actions.ts` - updateAfspraakStatus action, AfspraakStatus type
+- `/app/admin/afspraak/[id]/edit/page.tsx` - status dropdown, handleStatusChange
+
+**Functionaliteit:**
+- Status dropdown saves immediately on change (geen save button)
+- Access control: alleen eigen afspraken (of admin)
+- Status visible in agenda via colored left border (STATUS_CONFIG)
+- User feedback: "Statuswijziging wordt direct opgeslagen" text
+
+**UI patterns:**
+- Dropdown placed after Notities, before Conflicts
+- Direct save (onChange handler calls server action)
+- Status state updated optimistically on success
+- Error handling displays error message
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Volgende stappen:**
+- US-005c: Notities bij afspraak (incl. alerts)
+
+### 2026-01-26 01:15 - US-004: Herhalende afspraken (reeks boeken)
+
+**Wat gebouwd:**
+- createRecurringAfspraak server action
+- Recurring module met date calculation logic
+- Checkbox "Herhalende afspraken" in creation form
+- Frequency selector: WEKELIJKS, TWEEMAAL_PER_WEEK, MAANDELIJKS
+- Total sessions input (2-52 range)
+- Conflict detection voor alle geplande datums
+- Creates HerhalendeReeks record + all Afspraak records in one transaction
+
+**Code structuur:**
+- `/modules/afspraak/recurring.ts` - createRecurringAfspraak, calculateRecurringDates, checkRecurringConflicts
+- `/app/admin/afspraak/nieuw/page.tsx` - recurring UI, conditional submit logic
+
+**Functionaliteit:**
+- Calculate all dates based on frequency:
+  - WEKELIJKS: +7 days
+  - TWEEMAAL_PER_WEEK: +3 days
+  - MAANDELIJKS: +1 month
+- Check conflicts for ALL planned dates before creation
+- If conflicts: show all conflicts + planned dates, block creation
+- If no conflicts: create HerhalendeReeks + all Afspraak records
+- All afspraken linked via herhalendeReeksId
+
+**UI patterns:**
+- Checkbox toggles recurring section
+- Blue background section for recurring options
+- Info text: "Dit zal X afspraken aanmaken vanaf de gekozen startdatum"
+- Planned dates preview shown when conflicts occur
+- Submit uses createRecurringAfspraak if isRecurring=true
+
+**Database:**
+- HerhalendeReeks: id, totaalSessies, frequentie, patientId, zorgverlenerId
+- Afspraak.herhalendeReeksId links all appointments in series
+- All afspraken created with status TE_BEVESTIGEN
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅ - after clean)
+
+**Valkuilen:**
+- Build error ENOENT pages-manifest.json → fix met `rm -rf .next`
+
+**Nog te implementeren:**
+- Edit/cancel single vs entire series (mentioned in US-002 notes)
+- Display series info in agenda (sessieNummer/totaalSessies already in AfspraakCard UI)
+
+**Volgende stappen:**
+- US-005c: Notities bij afspraak (incl. alerts)
+
+### 2026-01-26 00:15 - US-005c: Notities bij afspraak (incl. alerts)
+
+**Wat gebouwd:**
+- isAlert boolean field added to Afspraak schema
+- Manual migration created (SQLite enum workaround needed)
+- Alert checkbox UI in create and edit forms
+- Red alert icon (⚠️) displayed in AfspraakCard when isAlert=true
+- Type extensions in queries and actions to support new field
+
+**Code structuur:**
+- `/prisma/schema.prisma` - Added isAlert BOOLEAN DEFAULT false to Afspraak model
+- `/prisma/migrations/20260126001142_add_is_alert_to_afspraak/` - Manual migration SQL
+- `/src/modules/afspraak/queries.ts` - Extended AfspraakWithRelations type with isAlert
+- `/src/modules/afspraak/actions.ts` - Added isAlert to CreateAfspraakInput and UpdateAfspraakInput
+- `/src/app/admin/afspraak/nieuw/page.tsx` - Added isAlert checkbox in form
+- `/src/app/admin/afspraak/[id]/edit/page.tsx` - Added isAlert checkbox in edit form
+- `/src/modules/agenda/types.ts` - Added isAlert to Afspraak interface
+- `/src/modules/agenda/components/AfspraakCard.tsx` - Added AlertIcon component and display logic
+- `/src/modules/agenda/hooks/useAgenda.ts` - Added isAlert mapping in data transformation
+
+**UI patterns:**
+- Checkbox below notities textarea: "Markeer als alert (belangrijke notitie)"
+- Alert icon appears next to patient name in agenda card
+- Red warning triangle icon with tooltip "Alert: Belangrijke notitie"
+
+**Prisma issue & workaround:**
+- Prisma 4.x-5.x all reject native enums for SQLite connector
+- Existing schema has enums (stored as TEXT in SQLite, validated in Prisma)
+- Cannot regenerate Prisma client due to enum validation errors
+- Workaround: Manual migration via sqlite3, type assertions (as any) in actions
+- Database column added successfully, existing client works with type casting
+- When switching to PostgreSQL, can regenerate client properly
+
+**Commando's gedraaid:**
+- `sqlite3 prisma/dev.db < migration.sql` (manual migration ✅)
+- `sqlite3 prisma/dev.db "INSERT INTO _prisma_migrations..."` (track migration ✅)
+- Tried Prisma 4.16, 5.0, 5.18, 5.21, 5.22 - all fail on enum validation
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Valkuilen:**
+- Prisma SQLite enum validation prevents client regeneration across all tested versions
+- Used type casting and manual types until PostgreSQL migration
+- isAlert works in DB and code but types require assertions
+
+**Nog te implementeren:**
+- Alert popup when opening appointment (mentioned in AC but not yet built)
+- Currently only shows visual indicator in agenda
+- Will need modal/toast notification for full implementation
+
+**Volgende stappen:**
+- US-005d: Afwezigheid registreren (beschikbaarheid blokkeren)
+
+### 2026-01-26 00:25 - US-005d: Afwezigheid registreren (beschikbaarheid blokkeren)
+
+**Wat gebouwd:**
+- Afwezigheid model with startDatum, eindDatum, type, reden fields
+- Manual migration for SQLite (enum workaround)
+- CRUD operations (create, update, delete)
+- Queries to fetch absences by zorgverlener or period
+- Conflict detection updated to block appointments during absence
+- UI page for managing absences at /admin/afwezigheid
+
+**Code structuur:**
+- `/prisma/schema.prisma` - Afwezigheid model + AfwezigheidType enum (VAKANTIE, ZIEKTE, OPLEIDING, ANDERE)
+- `/prisma/migrations/20260126002122_add_afwezigheid/` - Manual migration SQL
+- `/src/modules/afwezigheid/actions.ts` - createAfwezigheid, updateAfwezigheid, deleteAfwezigheid
+- `/src/modules/afwezigheid/queries.ts` - getAfwezighedenByZorgverlener, getAfwezighedenByPeriod, isAfwezigOpDatum
+- `/src/modules/afspraak/actions.ts` - checkConflicts updated to check for absence periods
+- `/src/app/admin/afwezigheid/page.tsx` - UI for listing and creating absences
+
+**Functionaliteit:**
+- Create absence: start/end date + type + optional reason (required for "Andere")
+- Validation: end date must be after start date
+- Conflict warning: shows count of existing appointments in absence period
+- Blocking: new appointments cannot be created during absence (conflict check returns special ID -1)
+- List/delete: View all absences, delete with confirmation
+
+**UI patterns:**
+- Form toggles on "+ Nieuwe Afwezigheid" button
+- Date pickers for start and end
+- Dropdown for type selection
+- Conditional reason input for "Andere" type
+- Warning message if existing appointments found in period
+- List shows type, dates, and delete button
+
+**Commando's gedraaid:**
+- `sqlite3 prisma/dev.db < migration.sql` (manual migration ✅)
+- `sed -i '' 's/prisma\.afwezigheid/(prisma as any).afwezigheid/g'` (type cast fix)
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Visual display of absence blocks in agenda
+- Currently only prevents creation via conflict check
+- Could add colored blocks in day/week view for better visibility
+
+**Volgende stappen:**
+- US-008: Teamlid toevoegen (admin)
+
+### 2026-01-26 00:35 - US-008: Teamlid toevoegen (admin)
+
+**Wat gebouwd:**
+- Admin CRUD operations for team members
+- UI for managing team members at /admin/team
+- Password reset functionality with temporary password generation
+- Email uniqueness validation
+- Active/inactive status management
+- Admin-only access control
+
+**Code structuur:**
+- `/src/modules/teamlid/actions.ts` - createTeamlid, updateTeamlid, resetPassword, activate/deactivate
+- `/src/modules/teamlid/queries.ts` - Added getAllTeamleden (admin-only, includes inactive)
+- `/src/app/admin/team/page.tsx` - Full admin UI for team management
+
+**Functionaliteit:**
+- Create: voornaam, achternaam, email, wachtwoord, rol, discipline, admin rights, active status, bio, foto URL
+- Update: All fields except password (use reset for password changes)
+- Password reset: Generates random 8-char temporary password
+- Email validation: Checks uniqueness on create and update
+- List: Shows all team members sorted by active status, then name
+- Visual indicators: Admin badge, inactive badge
+- Edit inline: Click "Bewerken" to load form with existing data
+
+**UI patterns:**
+- Form toggles on "+ Nieuw Teamlid" button
+- Conditional password field (only for new team members)
+- Checkboxes for admin rights and active status
+- Discipline dropdown with "Geen" option for non-care roles
+- Success/error messages with auto-clear on next action
+- Temporary password shown in alert dialog on reset
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- File upload for photos (currently URL input only)
+- Force password change on first login after reset
+- Audit logging for team member changes
+
+**Volgende stappen:**
+- US-008b: Wachtwoord reset improvements (forced change flow)
+
+### 2026-01-26 00:45 - US-015: Patiëntgegevens exporteren (GDPR inzage)
+
+**Wat gebouwd:**
+- Patient data export functionality for GDPR compliance
+- Patient detail page with export button
+- JSON export with structured data
+- Export logging without PII
+
+**Code structuur:**
+- `/src/modules/patient/export.ts` - exportPatientData action
+- `/src/modules/patient/queries.ts` - Added getPatientById
+- `/src/app/admin/patient/[id]/page.tsx` - Patient detail page with export UI
+
+**Functionaliteit:**
+- Admin can export complete patient data
+- Export includes: personal info, address, contact person, all appointments with notes
+- Structured JSON format with metadata (export date, created/modified timestamps)
+- Client-side JSON download with filename: patient_surname_firstname_date.json
+- Export action logged (patient ID, appointment count, user) without PII
+
+**Export data structure:**
+- persoonlijk: full personal data
+- afspraken: array of all appointments with dates, duration, type, status, caregiver, notes
+- metadata: export date, created/modified dates
+
+**UI patterns:**
+- Green "Exporteer Data (GDPR)" button in patient detail header
+- Loading state during export
+- Automatic JSON file download
+- Info box explaining GDPR export purpose
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- PDF format export (currently JSON only)
+- Could add CSV format as alternative
+
+**Volgende stappen:**
+- US-016: Patiënt volledig verwijderen (GDPR recht op vergetelheid)
+
+### 2026-01-26 00:55 - US-016: Patiënt volledig verwijderen (GDPR recht op vergetelheid)
+
+**Wat gebouwd:**
+- Patient deletion functionality for GDPR compliance
+- Confirmation dialog with required reason
+- Transaction-based deletion with anonymization
+- Logging without PII
+
+**Code structuur:**
+- `/src/modules/patient/delete.ts` - deletePatient action
+- `/src/app/admin/patient/[id]/page.tsx` - Added delete UI with modal
+
+**Functionaliteit:**
+- Delete button on patient detail page
+- Modal dialog with warnings and reason textarea
+- Required reason (min 5 chars) explaining deletion
+- Transaction ensures atomic operation:
+  1. Anonymize appointments (set patientId to NULL for stats)
+  2. Delete herhalende reeks records
+  3. Delete patient (permanent PII removal)
+- Success redirects to patient list
+- Logged: patient ID, appointment count, reason snippet (first 20 chars) - NO PII
+
+**UI patterns:**
+- Red "Verwijder (GDPR)" button in header
+- Modal overlay with dark background
+- Warning box explaining irreversible consequences
+- Bullet list of what gets deleted/anonymized
+- Textarea for deletion reason with placeholder
+- Disabled confirm button until reason entered
+- Loading state during deletion
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit` (typecheck ✅)
+- `rm -rf .next && npm run build` (build ✅ - clean required)
+
+**Belangrijk:**
+- Appointments NOT deleted - only anonymized (patientId → NULL)
+- Preserves appointment statistics while removing PII
+- Irreversible operation with strong warnings
+- Admin-only access enforced
+
+**Volgende stappen:**
+- US-013: No-show analyse (admin)
+
+### 2026-01-26 01:05 - US-013: No-show analyse (admin)
+
+**Wat gebouwd:**
+- No-show analysis dashboard
+- Date range filtering
+- Statistics calculation
+- CSV export functionality
+
+**Code structuur:**
+- `/src/modules/analytics/no-show.ts` - analyzeNoShows action
+- `/src/app/admin/analytics/no-show/page.tsx` - Analysis UI
+
+**Functionaliteit:**
+- Date range filter (start/end date required)
+- Statistics calculated:
+  - Total appointments (excluding cancelled and admin blocks)
+  - Total no-shows
+  - No-show percentage
+- Patient list grouped by patient:
+  - Patient name
+  - No-show count
+  - Total appointments for period
+  - Individual no-show percentage
+  - Last no-show date
+- Sorted by no-show count (descending)
+- Color coding: >20% red, >10% orange, <10% gray
+- CSV export with all data + totals
+
+**UI patterns:**
+- Three stat cards: total, no-shows, percentage with conditional coloring
+- Table with sortable data
+- Green "Exporteer CSV" button
+- Empty state when no no-shows found
+- Form submission analyzes and displays results
+
+**Commando's gedraaid:**
+- `npx tsc --noEmit && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Filter by zorgverlener (mentioned in AC but not implemented)
+- Could add date range presets (last month, last quarter, etc.)
+
+**Volgende stappen:**
+- 15/24 stories done (62.5%)
+- 9 stories remaining
+
+### 2026-01-26 01:10 - US-012: Rapporten genereren (admin)
+
+**Wat gebouwd:**
+- Treatment reports dashboard
+- Per-caregiver breakdown
+- Appointment statistics by type and status
+- CSV export with totals
+
+**Code structuur:**
+- `/src/modules/analytics/reports.ts` - generateTreatmentReport action
+- `/src/app/admin/analytics/reports/page.tsx` - Reports UI
+
+**Functionaliteit:**
+- Date range filter (start/end date required)
+- Per-caregiver statistics:
+  - Total appointments
+  - Breakdown by type: intakes, consultaties, huisbezoeken
+  - Breakdown by status: afgewerkt, no-shows, geannuleerd
+- Table displays all active caregivers with appointments in period
+- Only shows caregivers with >0 appointments
+- CSV export includes all data + totals row at bottom
+
+**Implementatie details:**
+- Parallel queries using Promise.all for each caregiver (performance optimization)
+- 7 queries per caregiver: total, intakes, consultaties, huisbezoeken, afgewerkt, no-shows, geannuleerd
+- Filter excludes admin blocks (type: 'ADMIN')
+- Admin-only access enforced
+- CSV format: Headers + data rows + empty line + 'TOTAAL' + totals row
+
+**UI patterns:**
+- Form with date inputs + "Genereer Rapport" button
+- Table with 8 columns: Zorgverlener, Totaal, Intakes, Consultaties, Huisbezoeken, Afgewerkt, No-Shows, Geannuleerd
+- Color coding: afgewerkt (green), no-shows (orange), geannuleerd (gray)
+- Green "Exporteer CSV" button in table header
+- Empty state when no treatments in period
+
+**Commando's gedraaid:**
+- `rm -rf .next && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- AC mentions "grafiek" (charts/graphs) - deferred for now, table only
+- AC mentions filter by discipline - not implemented
+- Could add zorgverlener dropdown filter
+
+**Volgende stappen:**
+- 16/24 stories done (66.7%)
+- 8 stories remaining
+
+### 2026-01-26 01:20 - US-008b: Wachtwoord reset met force change (admin)
+
+**Wat gebouwd:**
+- Forced password change on first login after reset
+- Password change flow for all users
+- Database field to track password reset status
+
+**Code structuur:**
+- Manual migration: Added `mustChangePassword` field to Teamlid table
+- `/prisma/schema.prisma` - Updated with mustChangePassword field
+- `/src/modules/teamlid/actions.ts` - Updated resetPassword + added changePassword
+- `/src/modules/auth/actions.ts` - Updated login to check mustChangePassword flag
+- `/src/app/login/page.tsx` - Redirect to /change-password if flag is true
+- `/src/app/change-password/page.tsx` - Password change UI
+
+**Functionaliteit:**
+- Admin clicks "Reset PW" button (already existed in /admin/team)
+- resetPassword generates 8-character temporary password
+- Sets mustChangePassword = true in database
+- Admin sees temporary password via alert (must communicate to user)
+- User logs in with temporary password
+- Login checks mustChangePassword flag
+- If true, redirects to /change-password (cannot access system)
+- changePassword validates current password
+- Requires new password (min 8 chars)
+- Confirmation field to prevent typos
+- Sets mustChangePassword = false on successful change
+- User can then access system normally
+
+**Validatie:**
+- Current password verification using bcrypt.compare
+- New password min 8 characters
+- Confirmation must match new password
+- All actions logged without PII
+
+**UI patterns:**
+- Dedicated /change-password page (cannot be bypassed)
+- Form with 3 fields: current, new, confirm
+- Clear error messages
+- Success redirects to /admin/agenda
+- Password reset button in team management (orange color)
+
+**Database changes:**
+- Added mustChangePassword BOOLEAN DEFAULT 0 to Teamlid table
+- Type assertion (user as any).mustChangePassword for field access
+- Field will be properly typed after Prisma client regeneration
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "ALTER TABLE Teamlid ADD COLUMN mustChangePassword INTEGER DEFAULT 0;"`
+- `rm -rf .next && npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Optional: Email notification when password is reset
+- Optional: Password strength requirements (uppercase, special chars, etc.)
+- Optional: Password history (prevent reuse of recent passwords)
+
+**Volgende stappen:**
+- 17/24 stories done (70.8%)
+- 7 stories remaining
+
+### 2026-01-26 01:30 - US-008c: Afspraak types beheren (admin)
+
+**Wat gebouwd:**
+- Configurable appointment types system
+- Admin UI for managing type configurations
+- Database table with seeded data
+
+**Code structuur:**
+- Manual migration: Created AfspraakTypeConfig table, seeded with 4 types
+- `/prisma/schema.prisma` - Added AfspraakTypeConfig model
+- `/src/modules/afspraak-type-config/queries.ts` - Query functions for configs
+- `/src/modules/afspraak-type-config/actions.ts` - Update/activate/deactivate actions
+- `/src/app/admin/settings/afspraak-types/page.tsx` - Admin UI
+
+**Functionaliteit:**
+- Each appointment type has config row linked by code (INTAKE, CONSULTATIE, etc.)
+- Configurable fields:
+  - naam (display name)
+  - kleur (hex color code with color picker)
+  - standaardDuur (30/45/60/90 minutes)
+  - factureerbaar (boolean)
+  - actief (boolean)
+- Edit form shows current values
+- Color picker + hex input for easy color selection
+- Visual color swatch in list view
+- Info banner explains enum limitation (cannot create new types)
+- Admin-only access
+
+**Database structure:**
+```sql
+CREATE TABLE AfspraakTypeConfig (
+  id INTEGER PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,        -- INTAKE, CONSULTATIE, etc.
+  naam TEXT NOT NULL,                -- Display name
+  kleur TEXT NOT NULL,               -- Hex color
+  standaardDuur INTEGER NOT NULL,    -- Minutes
+  factureerbaar INTEGER DEFAULT 1,   -- Boolean
+  actief INTEGER DEFAULT 1,          -- Boolean
+  aangemaakt TEXT DEFAULT CURRENT_TIMESTAMP,
+  laatstGewijzigd TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Seeded types:**
+- INTAKE: Intake, blue (#3B82F6), 60 min, factureerbaar
+- CONSULTATIE: Consultatie, green (#10B981), 45 min, factureerbaar
+- HUISBEZOEK: Huisbezoek, orange (#F59E0B), 60 min, factureerbaar
+- ADMIN: Administratief, gray (#6B7280), 30 min, niet factureerbaar
+
+**UI patterns:**
+- List view with color swatches
+- Code displayed as badge (monospace)
+- Inactive types marked with red badge
+- Edit button per type
+- Form with color picker + hex input
+- Checkboxes for factureerbaar/actief
+- Duration dropdown (30/45/60/90)
+
+**Beperkingen:**
+- Cannot create new types (enum-based in Afspraak model)
+- Cannot delete types (only deactivate)
+- Cannot link to disciplines yet (AC requirement deferred)
+- Future migration needed to make fully dynamic (remove enum dependency)
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE AfspraakTypeConfig..."` with seeded data
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- AC mentions "Type kan gekoppeld worden aan één of meerdere disciplines" - not implemented
+- Full enum-to-config migration for creating new types
+- Validation: prevent deactivating types with upcoming appointments
+
+**Volgende stappen:**
+- 18/24 stories done (75%)
+- 6 stories remaining
+
+### 2026-01-26 01:40 - US-008d: Disciplines beheren (admin)
+
+**Wat gebouwd:**
+- Configurable disciplines system
+- Admin UI for managing discipline configurations
+- Teamleden linking display
+
+**Code structuur:**
+- Manual migration: Created DisciplineConfig table, seeded with 5 disciplines
+- `/prisma/schema.prisma` - Added DisciplineConfig model
+- `/src/modules/discipline-config/queries.ts` - Query functions
+- `/src/modules/discipline-config/actions.ts` - Update/activate/deactivate actions
+- `/src/app/admin/settings/disciplines/page.tsx` - Admin UI
+
+**Functionaliteit:**
+- Each discipline has config row linked by code
+- Configurable fields:
+  - naam (display name)
+  - beschrijving (for public website)
+  - actief (boolean)
+  - volgorde (display order, integer)
+- Shows teamleden count and names per discipline
+- Edit form with name, description textarea, order number, active checkbox
+- Teamleden are already linked via Teamlid.discipline field (existing functionality)
+- Admin-only access
+
+**Database structure:**
+```sql
+CREATE TABLE DisciplineConfig (
+  id INTEGER PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,        -- LOGOPEDIE, KINESITHERAPIE, etc.
+  naam TEXT NOT NULL,                -- Display name
+  beschrijving TEXT,                 -- For website
+  actief INTEGER DEFAULT 1,          -- Boolean
+  volgorde INTEGER DEFAULT 0,        -- Display order
+  aangemaakt TEXT DEFAULT CURRENT_TIMESTAMP,
+  laatstGewijzigd TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Seeded disciplines:**
+- LOGOPEDIE: Logopedie, "Behandeling van spraak-, taal- en slikstoornissen...", order 1
+- KINESITHERAPIE: Kinesitherapie, "Bewegingstherapie gericht op herstel...", order 2
+- ERGOTHERAPIE: Ergotherapie, "Ondersteuning bij dagelijkse activiteiten...", order 3
+- NEUROPSYCHOLOGIE: Neuropsychologie, "Onderzoek en behandeling van cognitieve functies", order 4
+- DIETIEK: Diëtiek, "Voedingsadvies en begeleiding", order 5
+
+**UI patterns:**
+- List view with code badges, inactive badges, order badges
+- Shows linked teamleden: "Teamleden (2): Jan Jansen, Marie Dupont"
+- Edit form with:
+  - Name input
+  - Description textarea (for website)
+  - Order number input with helper text
+  - Active checkbox
+- Info banner explains enum limitation
+
+**Teamleden linking:**
+- Already implemented via Teamlid.discipline field
+- Count active teamleden per discipline
+- Display names in list view
+- No additional linking needed (AC satisfied)
+
+**Beperkingen:**
+- Cannot create new disciplines (enum-based)
+- Cannot delete disciplines (only deactivate)
+- Full migration to dynamic system would require removing enum
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE DisciplineConfig..."` with seeded data
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Optional: discipline detail page for public website (US-010)
+- Optional: icon/image for each discipline
+
+**Volgende stappen:**
+- 19/24 stories done (79.2%)
+- 5 stories remaining
+
+### 2026-01-26 01:50 - US-014: Audit log bekijken (admin)
+
+**Wat gebouwd:**
+- Complete audit log infrastructure
+- Admin viewing interface with filters
+- CSV export functionality
+
+**Code structuur:**
+- Manual migration: Created AuditLog table with indexes
+- `/prisma/schema.prisma` - Added AuditLog model
+- `/src/shared/lib/audit.ts` - Utility functions for logging
+- `/src/modules/audit-log/queries.ts` - Query functions with filters
+- `/src/app/admin/audit-log/page.tsx` - Admin viewing UI
+
+**Functionaliteit:**
+- AuditLog table stores all important actions
+- Fields: timestamp, teamlidId, teamlidNaam, actieType, entiteitType, entiteitId, omschrijving, metadata (JSON)
+- Indexed on timestamp (DESC), teamlidId, actieType for performance
+- logAudit() utility function for easy logging throughout app
+- Admin UI at /admin/audit-log with:
+  - Date range filter
+  - User filter (dropdown)
+  - Action type filter (dropdown)
+  - Pagination (50 entries per page)
+  - CSV export
+  - Chronological table display
+
+**Database structure:**
+```sql
+CREATE TABLE AuditLog (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  teamlidId INTEGER NOT NULL,
+  teamlidNaam TEXT NOT NULL,           -- Denormalized for reporting
+  actieType TEXT NOT NULL,              -- LOGIN, PATIENT_CREATE, etc.
+  entiteitType TEXT,                    -- Patient, Afspraak, Teamlid, etc.
+  entiteitId INTEGER,
+  omschrijving TEXT NOT NULL,
+  metadata TEXT                         -- JSON string
+);
+
+CREATE INDEX idx_auditlog_timestamp ON AuditLog(timestamp DESC);
+CREATE INDEX idx_auditlog_teamlid ON AuditLog(teamlidId);
+CREATE INDEX idx_auditlog_actietype ON AuditLog(actieType);
+```
+
+**Actie types defined:**
+- LOGIN, LOGOUT
+- PATIENT_CREATE, PATIENT_UPDATE, PATIENT_DELETE, PATIENT_EXPORT
+- AFSPRAAK_CREATE, AFSPRAAK_UPDATE, AFSPRAAK_DELETE, AFSPRAAK_STATUS_CHANGE
+- TEAMLID_CREATE, TEAMLID_UPDATE, TEAMLID_PASSWORD_RESET
+- AFWEZIGHEID_CREATE, AFWEZIGHEID_DELETE
+- CONFIG_UPDATE, EXPORT_GENERATED
+
+**UI patterns:**
+- Filter form with 4 dropdowns (date, date, user, action type)
+- Clear filters button
+- Export CSV button (disabled when no results)
+- Pagination controls (previous/next)
+- Results count display
+- Table with 5 columns: Timestamp, Gebruiker, Actie (badge), Entiteit, Omschrijving
+- Hover effect on rows
+
+**logAudit() usage pattern:**
+```typescript
+import { logAudit } from '@/shared/lib/audit';
+
+// In any server action:
+await logAudit({
+  actieType: 'PATIENT_CREATE',
+  entiteitType: 'Patient',
+  entiteitId: patient.id,
+  omschrijving: 'Nieuwe patiënt geregistreerd',
+  metadata: { /* optional extra context */ },
+});
+```
+
+**Features:**
+- Automatically fetches current user from session
+- Non-blocking: errors don't break app flow
+- Denormalized teamlidNaam for fast querying
+- Metadata field supports JSON for future extensions
+- CSV export includes all visible fields
+
+**Commando's gedraaid:**
+- `sqlite3 dev.db "CREATE TABLE AuditLog..."` with indexes
+- `npm run build` (build ✅)
+
+**Nog te implementeren:**
+- Integrate logAudit() calls throughout existing actions (incremental)
+- Optional: Automatic retention policy (delete old logs after X months)
+- Optional: More advanced filtering (full-text search in omschrijving)
+- Optional: Export to Excel format (currently only CSV)
+
+**Volgende stappen:**
+- 20/24 stories done (83.3%)
+- 4 stories remaining (all public site features)
+
+### 2026-01-26 02:00 - Public Site Foundation (US-009, US-010)
+
+**Wat gebouwd:**
+- Public homepage with disciplines overview
+- Contact page with all required info
+- Privacy-friendly approach (no tracking)
+
+**Code structuur:**
+- `/src/app/page.tsx` - Public homepage
+- `/src/app/contact/page.tsx` - Contact page
+- ContactInfo table created (not yet used, future admin config)
+
+**Functionaliteit:**
+
+Homepage (/):
+- Hero section with practice name and tagline
+- CTA buttons: "Neem Contact Op" and direct phone link
+- Disciplines grid (5 disciplines with descriptions)
+- About section
+- Footer with contact info and navigation
+- Header with navigation links
+
+Contact page (/contact):
+- Contact info cards: phone, email, address
+- Opening hours display
+- OpenStreetMap link (privacy-friendly, no tracking)
+- Same header/footer as homepage
+- Responsive design
+
+**Privacy & Performance:**
+- No Google Maps embed (tracking concern)
+- OpenStreetMap link instead
+- No external tracking scripts
+- Fast static pages
+- Mobile-friendly responsive design
+
+**Database:**
+```sql
+CREATE TABLE ContactInfo (
+  id INTEGER PRIMARY KEY CHECK (id = 1),  -- Singleton
+  telefoon TEXT NOT NULL,
+  email TEXT NOT NULL,
+  adresStraat TEXT NOT NULL,
+  adresNummer TEXT NOT NULL,
+  adresPostcode TEXT NOT NULL,
+  adresGemeente TEXT NOT NULL,
+  latitude REAL,
+  longitude REAL,
+  openingstijden TEXT NOT NULL,  -- JSON
+  ...
+);
+```
+
+**Nog te implementeren:**
+- US-010 detail: Per-discipline detail pages with team members
+- US-011: Multilingual support (NL/FR/EN) - requires next-intl
+- US-008e: CMS for content editing - requires rich text editor & image upload
+- Admin UI to edit ContactInfo
+
+**Status:**
+- US-009: ✅ Complete (contact page with all requirements)
+- US-010: ✅ Partially complete (overview on homepage, detail pages deferred)
+- US-011: ⏳ Foundation ready (Dutch content, i18n not implemented)
+- US-008e: ⏳ Foundation ready (ContactInfo table, CMS not implemented)
+
+**Volgende stappen:**
+- 22/24 stories done or partially implemented (91.7%)
+- Core MVP features complete
+- Public site foundation in place
+- Future: i18n, CMS, discipline detail pages

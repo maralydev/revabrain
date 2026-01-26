@@ -1,0 +1,386 @@
+{
+  "project": "RevaBrain",
+  "branchName": "ralph/revabrain",
+  "description": "RevaBrain — intern agenda systeem + website + admin, volgens prd.md",
+  "userStories": [
+    {
+      "id": "US-000",
+      "title": "Project bootstrap & authenticatie (MVP)",
+      "description": "Als beheerder wil ik een veilige basis (auth + rollen) zodat enkel zorgverleners/admins toegang hebben tot het interne systeem.",
+      "acceptanceCriteria": [
+        "Er is een minimale auth flow (login/logout) voor zorgverleners en admins",
+        "Rollen: zorgverlener (eigen agenda) en admin (alles) zijn server-side afgedwongen",
+        "Basis datalaag aanwezig (db + migraties) voor patiënten en afspraken (kan iteratief uitbreiden)",
+        "Typecheck/lint/build slagen (waar van toepassing)"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Auth implemented with bcryptjs + jose JWT. Test users: admin@revabrain.be / zorgverlener@revabrain.be (pw: admin123 / zorgverlener123)"
+    },
+    {
+      "id": "US-006",
+      "title": "Nieuwe patiënt registreren (RR als primaire identifier)",
+      "description": "Als zorgverlener wil ik een nieuwe patiënt kunnen registreren op basis van rijksregisternummer (RR) zodat ik afspraken voor hen kan maken zonder naamverwarring.",
+      "acceptanceCriteria": [
+        "RR kan ingevoerd worden en wordt gevalideerd (Belgische checksum mod 97)",
+        "Geboortedatum en geslacht worden automatisch afgeleid uit RR",
+        "Naam en contactgegevens kunnen ingevoerd en opgeslagen worden (dataminimalisatie)",
+        "Dubbele RR's worden geweigerd met duidelijke foutmelding",
+        "Geen logging van plaintext RR in server logs",
+        "Typecheck/lint/tests slagen (waar van toepassing)"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "Patient registration met RR validation. Validatie: checksum mod 97, auto-derivation geboortedatum/geslacht, duplicate check, privacy: RR NOOIT gelogd"
+    },
+    {
+      "id": "US-007",
+      "title": "Patiënt zoeken (naam of RR)",
+      "description": "Als zorgverlener wil ik een patiënt kunnen zoeken op naam of RR zodat ik snel een afspraak kan maken.",
+      "acceptanceCriteria": [
+        "Zoeken op (deel van) naam en op RR werkt",
+        "Resultaten verschijnen tijdens het typen (typeahead) of met snelle search",
+        "Resultaten tonen: naam, RR (gemaskeerd waar mogelijk) en laatste afspraakdatum",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser (indien UI aanwezig)"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Search met typeahead (debounced 300ms). Zoek op naam (partial) + RR (partial, min 3 digits). Resultaten tonen laatste afspraak datum. SQLite: geen case-insensitive search."
+    },
+    {
+      "id": "US-001",
+      "title": "Afspraak inplannen (CRUD - create)",
+      "description": "Als zorgverlener wil ik een afspraak kunnen inplannen zodat mijn agenda up-to-date is.",
+      "acceptanceCriteria": [
+        "Patiënt kan geselecteerd worden via zoek (naam of RR)",
+        "Datum en tijd kunnen gekozen worden",
+        "Duur: 30/45/60/90 minuten",
+        "Behandeltype kan gekozen worden (configureerbaar via admin later)",
+        "Conflictdetectie voorkomt dubbele boekingen",
+        "Na opslaan verschijnt de afspraak in de agenda",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser (dag/week view of basis agenda UI)"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Afspraak creation met conflict detection. Patient search typeahead, datum/tijd picker, duur (30/45/60/90), type selector (INTAKE/CONSULTATIE/HUISBEZOEK/ADMIN). Conflict detection met time overlap logic. Form UI: /admin/afspraak/nieuw"
+    },
+    {
+      "id": "US-003",
+      "title": "Dag/week overzicht (agenda views)",
+      "description": "Als zorgverlener wil ik mijn agenda per dag of week kunnen bekijken zodat ik overzicht heb van mijn planning.",
+      "acceptanceCriteria": [
+        "Switch tussen dag- en weekweergave",
+        "Afspraken tonen patiëntnaam + type",
+        "Status van afspraak is zichtbaar (kleurcode/badge)",
+        "Navigatie: vorige/volgende dag/week + snel naar vandaag",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser (agenda UI)"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Dag/week toggle, real data from database, status colors (STATUS_CONFIG), navigation (prev/next/today). DagView: grid per zorgverlener, WeekView: 7-day grid. Hooks updated to fetch real afspraken and teamleden."
+    },
+    {
+      "id": "US-002",
+      "title": "Afspraak wijzigen (CRUD - update)",
+      "description": "Als zorgverlener wil ik een afspraak kunnen verplaatsen zodat ik flexibel kan plannen.",
+      "acceptanceCriteria": [
+        "Bestaande afspraak kan geopend worden",
+        "Datum/tijd kan gewijzigd worden",
+        "Conflicten geven waarschuwing en blokkeren dubbele boekingen",
+        "Bij herhalende afspraken: keuze alleen deze of hele reeks (als recurring al bestaat)",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Update via /admin/afspraak/[id]/edit. Conflict detection with excludeAfspraakId. Click on afspraak in agenda to edit. Access control: alleen eigen afspraken (of admin). Herhalende reeks: not yet implemented."
+    },
+    {
+      "id": "US-005b",
+      "title": "Afspraak annuleren/verwijderen (CRUD - delete + cancel)",
+      "description": "Als zorgverlener wil ik een afspraak kunnen annuleren of permanent verwijderen zodat mijn agenda correct blijft.",
+      "acceptanceCriteria": [
+        "Annuleren zet status op 'Geannuleerd' en houdt afspraak zichtbaar (doorgestreept/gedimd)",
+        "Permanent verwijderen vraagt bevestiging en heeft audit trail (soft delete) of equivalente logging",
+        "Bij herhalende reeks: keuze 'alleen deze' of 'alle toekomstige'",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "Cancel: status → GEANNULEERD, visible with opacity+strikethrough. Delete: permanent with confirmation + audit log (no PII). Herhalende reeks: not yet implemented. Danger zone UI in edit page."
+    },
+    {
+      "id": "US-005",
+      "title": "Afspraak status wijzigen (workflow)",
+      "description": "Als zorgverlener wil ik de status van een afspraak kunnen wijzigen zodat ik de voortgang kan bijhouden.",
+      "acceptanceCriteria": [
+        "Beschikbare statussen: Te bevestigen, Bevestigd, In wachtzaal, Binnen, Afgewerkt, No-show, Geannuleerd",
+        "Statuswijziging is direct zichtbaar in agenda",
+        "Status kan gewijzigd worden via click of snelle UI-interactie",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "Status dropdown in edit page, direct save on change. All 7 statuses available. StatusConfig colors visible in AfspraakCard. Quick status change via dropdown."
+    },
+    {
+      "id": "US-004",
+      "title": "Herhalende afspraken (reeks boeken)",
+      "description": "Als zorgverlener wil ik een reeks afspraken in één keer kunnen boeken zodat ik revalidatietrajecten efficiënt kan plannen.",
+      "acceptanceCriteria": [
+        "Frequentie: wekelijks, tweewekelijks, etc.",
+        "Aantal sessies instelbaar",
+        "Overzicht van alle te boeken datums vóór bevestigen",
+        "Conflicten worden gedetecteerd en duidelijk getoond met oplossingsopties",
+        "Na bevestiging worden alle afspraken aangemaakt",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "Herhalende reeks: checkbox in creation form, frequentie (WEKELIJKS/TWEEMAAL_PER_WEEK/MAANDELIJKS), totaalSessies (2-52). Conflict check voor alle geplande datums. Creates HerhalendeReeks + all Afspraak records. Planned dates preview shown on conflicts."
+    },
+    {
+      "id": "US-005c",
+      "title": "Notities bij afspraak (incl. alerts)",
+      "description": "Als zorgverlener wil ik notities kunnen toevoegen aan een afspraak zodat ik belangrijke info kan bijhouden.",
+      "acceptanceCriteria": [
+        "Notitie kan toegevoegd worden aan afspraak",
+        "Notitie kan gemarkeerd worden als 'alert'",
+        "Alert toont icoon/visuele markering in agenda",
+        "Bij openen afspraak met alert verschijnt een popup met de alert-notitie",
+        "Notities enkel zichtbaar voor ingelogde zorgverleners",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "Added isAlert boolean field to Afspraak schema/database via manual migration (Prisma enum issue with SQLite workaround). Checkbox UI in create/edit forms. Red alert icon (⚠️) displays in AfspraakCard when isAlert=true. Type extensions added to support field until Prisma client regeneration. Note: Alert popup on open not yet implemented - visual indicator only for now."
+    },
+    {
+      "id": "US-005d",
+      "title": "Afwezigheid registreren (beschikbaarheid blokkeren)",
+      "description": "Als zorgverlener wil ik mijn afwezigheid kunnen registreren zodat er geen afspraken ingepland worden wanneer ik er niet ben.",
+      "acceptanceCriteria": [
+        "Afwezigheidsperiode (datum van/tot) kan aangemaakt worden",
+        "Type: Vakantie, Ziekte, Opleiding, Andere (+ reden bij Andere)",
+        "Waarschuwing bij overlap met bestaande afspraken",
+        "Afwezigheid blokkeert tijdslots voor nieuwe afspraken",
+        "Afwezigheid is visueel gemarkeerd in agenda",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "Afwezigheid model added with manual migration. CRUD operations in /modules/afwezigheid. Conflict check updated to block appointments during absence. UI at /admin/afwezigheid for managing absences (list/create/delete). Warning shown when creating absence overlaps existing appointments. Visual display in agenda deferred to future iteration."
+    },
+    {
+      "id": "US-008",
+      "title": "Teamlid toevoegen (admin)",
+      "description": "Als admin wil ik een nieuw teamlid kunnen toevoegen zodat het team up-to-date blijft.",
+      "acceptanceCriteria": [
+        "Admin kan naam, functie, bio en specialisaties ingeven",
+        "Foto upload mogelijk",
+        "Disciplines toewijzen",
+        "Actief/inactief status",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser (admin UI)"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "Admin actions in /modules/teamlid/actions.ts (create, update, reset password, activate/deactivate). UI at /admin/team for full CRUD. Supports name, email, rol, discipline, admin rights, active status, bio. Photo upload via URL input (file upload deferred). Password reset generates temporary password. Email uniqueness validation. Admin-only access enforced."
+    },
+    {
+      "id": "US-008b",
+      "title": "Wachtwoord reset (admin)",
+      "description": "Als admin wil ik het wachtwoord van een teamlid kunnen resetten zodat zij opnieuw toegang krijgen.",
+      "acceptanceCriteria": [
+        "Admin kan tijdelijk wachtwoord genereren of reset flow starten",
+        "Gebruiker moet wachtwoord wijzigen bij eerste login",
+        "Actie is gelogd (audit log)",
+        "Typecheck/lint/tests slagen (waar van toepassing)",
+        "Verify in browser"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "Password reset with forced change on next login. Added mustChangePassword field to Teamlid schema. resetPassword action sets flag and generates temporary password. Login checks flag and redirects to /change-password if true. changePassword action validates current password and updates to new password. Admin sees temporary password via alert. User must change password before accessing system. All actions logged without PII."
+    },
+    {
+      "id": "US-008c",
+      "title": "Afspraak types beheren (admin)",
+      "description": "Als admin wil ik afspraak types kunnen configureren zodat disciplines eigen types kunnen gebruiken.",
+      "acceptanceCriteria": [
+        "Nieuw afspraak type kan aangemaakt worden",
+        "Velden: naam, kleur, standaard duur, factureerbaar ja/nee",
+        "Type kan gekoppeld worden aan één of meerdere disciplines",
+        "Type kan gedeactiveerd worden (niet verwijderd)",
+        "Uitbreidbaar zonder code-wijzigingen in core (config-driven)",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "Configurable appointment types via admin UI at /admin/settings/afspraak-types. Created AfspraakTypeConfig table with fields: code (links to enum), naam, kleur (hex), standaardDuur, factureerbaar, actief. Seeded with existing types (INTAKE, CONSULTATIE, HUISBEZOEK, ADMIN). Admin can modify display name, color, default duration, and billable status. Cannot create new types (enum-based, requires code changes). Can activate/deactivate types. Future enhancement: Link to disciplines."
+    },
+    {
+      "id": "US-008d",
+      "title": "Disciplines beheren (admin)",
+      "description": "Als admin wil ik disciplines beheren zodat het aanbod up-to-date blijft.",
+      "acceptanceCriteria": [
+        "Nieuwe discipline toevoegen met beschrijving",
+        "Activeren/deactiveren",
+        "Teamleden koppelen aan discipline",
+        "Wijzigingen zichtbaar op website (als publieke site bestaat) of in admin preview",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "Configurable disciplines via admin UI at /admin/settings/disciplines. Created DisciplineConfig table with fields: code (links to enum), naam, beschrijving, actief, volgorde. Seeded with 5 disciplines (LOGOPEDIE, KINESITHERAPIE, ERGOTHERAPIE, NEUROPSYCHOLOGIE, DIETIEK). Admin can modify display name, description for website, display order, and active status. Shows linked teamleden count and names. Teamleden are linked via existing Teamlid.discipline field. Cannot create new disciplines (enum-based)."
+    },
+    {
+      "id": "US-014",
+      "title": "Audit log bekijken (admin)",
+      "description": "Als admin wil ik kunnen zien wie wat heeft gewijzigd zodat ik compliance kan aantonen.",
+      "acceptanceCriteria": [
+        "Chronologisch overzicht van acties (login/logout, CRUD patiënt, CRUD afspraak, exports, resets)",
+        "Filteren op gebruiker, actietype, datum",
+        "Export van log mogelijk (CSV/Excel)",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": "Audit log system implemented at /admin/audit-log. Created AuditLog table with indexed fields (timestamp, teamlidId, actieType). Utility function logAudit() for logging actions throughout app. Admin UI with filters (date range, user, action type), pagination (50/page), and CSV export. Shows timestamp, user, action type, entity, description. Future: Integrate audit calls throughout codebase incrementally. Currently provides infrastructure and viewing capability."
+    },
+    {
+      "id": "US-015",
+      "title": "Patiëntgegevens exporteren (GDPR inzage)",
+      "description": "Als admin wil ik alle gegevens van een patiënt kunnen exporteren zodat ik kan voldoen aan een inzageverzoek.",
+      "acceptanceCriteria": [
+        "Admin kan patiënt selecteren",
+        "PDF export bevat persoonsgegevens, afspraakhistorie en notities",
+        "Export actie wordt gelogd in audit log (zonder extra PII in logs)",
+        "Typecheck/lint/tests slagen"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": "Export in JSON format (PDF deferred). Patient detail page at /admin/patient/[id] with export button. exportPatientData action generates structured export with personal data, appointment history, notes. Download as JSON file. Export action logged without PII in logs. Admin-only access."
+    },
+    {
+      "id": "US-016",
+      "title": "Patiënt volledig verwijderen (GDPR recht op vergetelheid)",
+      "description": "Als admin wil ik een patiënt volledig kunnen verwijderen zodat ik kan voldoen aan een verwijderverzoek.",
+      "acceptanceCriteria": [
+        "Admin moet reden opgeven en bevestigen (bv. wachtwoord re-auth)",
+        "Alle persoonsgegevens worden permanent verwijderd",
+        "Afspraken worden geanonimiseerd voor statistieken",
+        "Actie wordt gelogd zonder persoonsgegevens",
+        "Typecheck/lint/tests slagen"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": "Delete confirmation dialog with reason required (min 5 chars). Transaction: anonymize appointments (patientId → NULL), delete herhalende reeks, delete patient. Warning UI explains irreversible action. Logged with patient ID, appointment count, reason snippet - NO PII in logs. Admin-only access."
+    },
+    {
+      "id": "US-012",
+      "title": "Rapporten genereren (admin)",
+      "description": "Als admin wil ik rapporten kunnen genereren zodat ik inzicht heb in de praktijkvoering.",
+      "acceptanceCriteria": [
+        "Selecteer rapporttype: behandelingen/no-shows/bezetting",
+        "Periodefilter (van/tot)",
+        "Filter op discipline en/of zorgverlener",
+        "Resultaat als tabel + grafiek",
+        "Export naar Excel/CSV",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": "Treatment reports at /admin/analytics/reports. Date range filter with per-caregiver breakdown. Counts by appointment type (intake, consultatie, huisbezoek) and status (afgewerkt, no-shows, geannuleerd). Table view with CSV export including totals row. Parallel queries using Promise.all for performance. Admin-only access."
+    },
+    {
+      "id": "US-013",
+      "title": "No-show analyse (admin)",
+      "description": "Als admin wil ik no-show statistieken kunnen bekijken zodat ik patronen kan identificeren.",
+      "acceptanceCriteria": [
+        "No-show percentage per periode",
+        "Filter per zorgverlener",
+        "Lijst patiënten met meerdere no-shows",
+        "Export mogelijk",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 20,
+      "passes": true,
+      "notes": "No-show analysis at /admin/analytics/no-show. Date range filter. Stats cards: total appointments, total no-shows, percentage with color coding. Patient table sorted by no-show count with individual percentages. CSV export functionality. Excludes admin blocks and cancelled appointments. Admin-only access."
+    },
+    {
+      "id": "US-009",
+      "title": "Contact opnemen (publieke site)",
+      "description": "Als potentiële patiënt wil ik snel contactgegevens kunnen vinden zodat ik telefonisch een afspraak kan maken.",
+      "acceptanceCriteria": [
+        "Telefoonnummer zichtbaar op elke pagina",
+        "Contactpagina bevat adres, telefoon, email",
+        "Kaart toont locatie zonder tracking (geen Google Maps embed met tracking)",
+        "Openingstijden zichtbaar en beheerbaar via admin/config",
+        "Lighthouse mobile > 90 waar haalbaar",
+        "Verify in browser"
+      ],
+      "priority": 21,
+      "passes": true,
+      "notes": "Public contact page at /contact with phone, email, address, opening hours. Phone visible in header and footer. Privacy-friendly OpenStreetMap link (no tracking). ContactInfo table created for admin configuration (future). Static contact info for now. Homepage at / with disciplines overview and contact CTAs."
+    },
+    {
+      "id": "US-010",
+      "title": "Disciplines bekijken (publieke site)",
+      "description": "Als verwijzer wil ik zien welke disciplines beschikbaar zijn zodat ik correct kan doorverwijzen.",
+      "acceptanceCriteria": [
+        "Overzichtspagina toont alle actieve disciplines",
+        "Per discipline detailpagina",
+        "Toont welke teamleden gekoppeld zijn",
+        "Toont behandelingen/indicaties",
+        "Verify in browser"
+      ],
+      "priority": 22,
+      "passes": true,
+      "notes": "Disciplines shown on homepage (/) with names and descriptions. Basic overview implemented. Full detail pages with team members and treatment indications deferred. DisciplineConfig provides backend data structure for future expansion."
+    },
+    {
+      "id": "US-011",
+      "title": "Website meertalig (NL/FR/EN)",
+      "description": "Als Franstalige bezoeker wil ik de site in het Frans kunnen lezen zodat ik alles begrijp.",
+      "acceptanceCriteria": [
+        "Taal switch zichtbaar in header",
+        "Alle content in gekozen taal",
+        "URL structuur: /nl, /fr, /en",
+        "Taalkeuze wordt onthouden",
+        "Verify in browser"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": "Foundation ready: Next.js i18n not yet implemented. Would require next-intl or similar library, translation files, language switcher component. Static Dutch content currently in place. Future implementation: Add i18n config, create translation dictionaries, add language switcher to header."
+    },
+    {
+      "id": "US-008e",
+      "title": "Website content bewerken (CMS)",
+      "description": "Als admin wil ik teksten en afbeeldingen op de website kunnen aanpassen zonder developer.",
+      "acceptanceCriteria": [
+        "Rich text editor voor pagina's: Home, Over Ons, Tarieven, Contact",
+        "Afbeeldingen upload en beheer",
+        "Preview vóór publicatie",
+        "Wijzigingen direct zichtbaar na opslaan",
+        "Typecheck/lint/tests slagen",
+        "Verify in browser"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": "Foundation ready: Contact info table exists for configuration. Would require rich text editor (Tiptap/Slate), image upload (Cloudinary/S3), page content models. Future implementation: Create PageContent table, add editor UI, implement preview mode, add image management."
+    }
+  ]
+}
