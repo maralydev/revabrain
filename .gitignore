@@ -134,3 +134,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Supabase CLI (using Prisma for migrations)
+supabase/
+
+# Local database
+prisma/*.db
+prisma/*.db-journal
