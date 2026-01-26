@@ -294,3 +294,32 @@ model AuditLog {
   @@index([teamlidId])
   @@index([actieType])
 }
+
+// ============================================
+// CONTACT INFO
+// Singleton voor website contactgegevens
+// ============================================
+model ContactInfo {
+  id              Int       @id @default(1)
+
+  // Contact
+  telefoon        String
+  email           String
+
+  // Adres
+  adresStraat     String
+  adresNummer     String
+  adresPostcode   String
+  adresGemeente   String
+
+  // Kaart
+  latitude        Float?
+  longitude       Float?
+
+  // Openingstijden (JSON string)
+  openingstijden  String
+
+  // Metadata
+  aangemaakt      DateTime  @default(now())
+  laatstGewijzigd DateTime  @updatedAt
+}
