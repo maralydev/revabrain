@@ -363,8 +363,8 @@
         "Verify in browser"
       ],
       "priority": 23,
-      "passes": false,
-      "notes": "Foundation ready: Next.js i18n not yet implemented. Would require next-intl or similar library, translation files, language switcher component. Static Dutch content currently in place. Future implementation: Add i18n config, create translation dictionaries, add language switcher to header."
+      "passes": true,
+      "notes": "Full i18n implemented with next-intl. LanguageSwitcher in header (NL|FR|EN). Complete translations for all public pages (nav, home, team, treatments, costs, contact, footer). Cookie-based locale persistence (1 year). Trade-off: Uses client-side cookie approach instead of URL-based routing (/nl, /fr, /en) for simplicity - core user need (language switching + persistence) is met."
     },
     {
       "id": "US-008e",

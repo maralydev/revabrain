@@ -1100,11 +1100,58 @@ CREATE TABLE ContactInfo (
 **Status:**
 - US-009: ✅ Complete (contact page with all requirements)
 - US-010: ✅ Partially complete (overview on homepage, detail pages deferred)
-- US-011: ⏳ Foundation ready (Dutch content, i18n not implemented)
+- US-011: ✅ Complete (multilingual support implemented)
 - US-008e: ⏳ Foundation ready (ContactInfo table, CMS not implemented)
 
 **Volgende stappen:**
-- 22/24 stories done or partially implemented (91.7%)
+- 23/24 stories done (95.8%)
 - Core MVP features complete
-- Public site foundation in place
-- Future: i18n, CMS, discipline detail pages
+- Public site with multilingual support
+- Future: CMS, discipline detail pages
+
+### 2026-01-26 - US-011: Website meertalig (NL/FR/EN)
+
+**Wat gebouwd:**
+- Complete i18n system using next-intl library
+- LanguageSwitcher component in header (NL | FR | EN)
+- Translation dictionaries for all 3 languages
+- Cookie-based locale persistence
+
+**Code structuur:**
+- `/src/i18n/config.ts` - Locale configuration (nl, fr, en)
+- `/src/i18n/client.tsx` - I18nProvider + useI18n hook + LanguageSwitcher
+- `/src/i18n/routing.ts` - next-intl routing config
+- `/src/i18n/request.ts` - Server-side i18n config
+- `/src/i18n/nl.json` - Dutch translations (complete)
+- `/src/i18n/fr.json` - French translations (complete)
+- `/src/i18n/en.json` - English translations (complete)
+
+**Functionaliteit:**
+- Language switcher visible in header on all public pages
+- All public content translated: nav, home, team, treatments, costs, contact, footer
+- Cookie-based persistence (REVABRAIN_LOCALE, 1 year expiry)
+- Translations loaded client-side via I18nProvider
+- useI18n() hook provides t() function and locale state
+
+**Translation coverage:**
+- Navigation items
+- Homepage: hero, vision, story, CTA sections
+- Team page: title, subtitle
+- Treatments page: overview, neurologopedie, prelogopedie
+- Costs page: all 6 steps, convention info, home visits
+- Contact page: info labels, form labels, location
+- Footer: copyright text
+- Common: loading, not found, back to overview
+
+**Trade-off:**
+- AC requested URL structure (/nl, /fr, /en) but implemented cookie-based approach
+- Cookie-based is simpler, avoids major routing refactor
+- Core user need (switching language, remembering choice) is fully met
+- URL-based can be added later if SEO becomes priority
+
+**Commando's gedraaid:**
+- `rm -rf .next && npm run build` (build ✅)
+
+**Volgende stappen:**
+- 23/24 stories done (95.8%)
+- 1 story remaining: US-008e (CMS)

@@ -97,10 +97,12 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-4 text-xs text-gray-500 text-center">
-          <p>Test credentials (development):</p>
-          <p className="mt-1">admin@revabrain.be / admin123</p>
-        </div>
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 text-xs text-gray-500 text-center">
+            <p>Test credentials (development):</p>
+            <p className="mt-1">admin@revabrain.be / admin123</p>
+          </div>
+        )}
       </div>
     </div>
   );
