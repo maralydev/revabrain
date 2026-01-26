@@ -1,57 +1,53 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import PublicLayout from '@/components/public/PublicLayout';
+import { useI18n } from '@/i18n/client';
+import { getActieveDisciplineConfigs, type DisciplineConfigData } from '@/modules/discipline-config/queries';
 
-export default function HomePage() {
+function HomeContent() {
+  const { t } = useI18n();
+  const [disciplines, setDisciplines] = useState<DisciplineConfigData[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getActieveDisciplineConfigs();
+      setDisciplines(data);
+    }
+    load();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-            RevaBrain
-          </Link>
-          <nav className="flex gap-6">
-            <Link href="/" className="text-gray-900 font-medium" style={{ color: '#2879D8' }}>
-              Home
-            </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-gray-900">
-              Contact
-            </Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              Inloggen
-            </Link>
-          </nav>
-        </div>
-      </header>
-
+    <>
       {/* Hero Section */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold mb-6" style={{ color: '#2879D8' }}>
             RevaBrain
           </h1>
-          <p className="text-2xl text-gray-600 mb-8">
-            Neurologische Revalidatiepraktijk
+          <p className="text-2xl text-gray-600 mb-4">
+            {t('home.hero.title')}
           </p>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
-            Gespecialiseerde zorg voor volwassenen met NAH (Niet-aangeboren hersenletsel)
-            en kinderen met taal- en leerproblemen
+            {t('home.hero.subtitle')}
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/contact"
               className="px-8 py-3 text-white rounded-md hover:opacity-90 text-lg"
               style={{ backgroundColor: '#2879D8' }}
             >
-              Neem Contact Op
+              {t('home.hero.cta')}
             </Link>
             <a
               href="tel:+3221234567"
               className="px-8 py-3 border-2 rounded-md hover:bg-gray-50 text-lg"
               style={{ borderColor: '#2879D8', color: '#2879D8' }}
             >
-              Bel Direct: +32 2 123 45 67
+              +32 2 123 45 67
             </a>
           </div>
         </div>
@@ -60,115 +56,65 @@ export default function HomePage() {
       {/* Disciplines Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12" style={{ color: '#2879D8' }}>
-            Onze Disciplines
+          <h2 className="text-3xl font-bold text-center mb-4" style={{ color: '#2879D8' }}>
+            {t('home.disciplines.title')}
           </h2>
+          <p className="text-center text-gray-600 mb-12">
+            {t('home.disciplines.subtitle')}
+          </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
-                Logopedie
-              </h3>
-              <p className="text-gray-600">
-                Behandeling van spraak-, taal- en slikstoornissen bij volwassenen en kinderen
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
-                Kinesitherapie
-              </h3>
-              <p className="text-gray-600">
-                Bewegingstherapie gericht op herstel van fysieke functies
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
-                Ergotherapie
-              </h3>
-              <p className="text-gray-600">
-                Ondersteuning bij dagelijkse activiteiten en zelfstandigheid
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
-                Neuropsychologie
-              </h3>
-              <p className="text-gray-600">
-                Onderzoek en behandeling van cognitieve functies
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
-                Diëtiek
-              </h3>
-              <p className="text-gray-600">
-                Voedingsadvies en begeleiding
-              </p>
-            </div>
+            {disciplines.map((disc) => (
+              <Link
+                key={disc.code}
+                href={`/disciplines/${disc.code.toLowerCase()}`}
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-xl font-semibold mb-3" style={{ color: '#2879D8' }}>
+                  {disc.naam}
+                </h3>
+                {disc.beschrijving && (
+                  <p className="text-gray-600">{disc.beschrijving}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              href="/disciplines"
+              className="text-[#2879D8] hover:underline font-medium"
+            >
+              {t('nav.disciplines')} →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Info Section */}
+      {/* CTA Section */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6" style={{ color: '#2879D8' }}>
-            Over RevaBrain
+            {t('home.cta.title')}
           </h2>
-          <p className="text-lg text-gray-600 mb-6">
-            RevaBrain is een multidisciplinaire neurologische revalidatiepraktijk
-            gespecialiseerd in de behandeling van volwassenen met niet-aangeboren
-            hersenletsel (NAH) en kinderen met taal- en leerproblemen.
+          <p className="text-lg text-gray-600 mb-8">
+            {t('home.cta.subtitle')}
           </p>
-          <p className="text-lg text-gray-600">
-            Ons team van gespecialiseerde zorgverleners biedt persoonlijke begeleiding
-            en evidence-based behandelingen in een professionele en warme omgeving.
-          </p>
+          <Link
+            href="/contact"
+            className="inline-block px-8 py-3 text-white rounded-md hover:opacity-90 text-lg"
+            style={{ backgroundColor: '#2879D8' }}
+          >
+            {t('home.cta.button')}
+          </Link>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">RevaBrain</h3>
-              <p className="text-gray-400">
-                Neurologische revalidatiepraktijk voor volwassenen en kinderen
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <p className="text-gray-400">
-                Tel: +32 2 123 45 67<br />
-                Email: info@revabrain.be
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Navigatie</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-gray-400 hover:text-white">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-gray-400 hover:text-white">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="text-gray-400 hover:text-white">
-                    Inloggen (Team)
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="text-center text-gray-400 border-t border-gray-800 pt-8">
-            &copy; {new Date().getFullYear()} RevaBrain. Alle rechten voorbehouden.
-          </div>
-        </div>
-      </footer>
-    </div>
+export default function HomePage() {
+  return (
+    <PublicLayout>
+      <HomeContent />
+    </PublicLayout>
   );
 }

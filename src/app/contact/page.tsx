@@ -1,72 +1,87 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import PublicLayout from '@/components/public/PublicLayout';
+import { useI18n } from '@/i18n/client';
+import { getContactInfo, type ContactInfoData } from '@/modules/contact-config/actions';
 
-interface ContactInfo {
-  telefoon: string;
-  email: string;
-  adresStraat: string;
-  adresNummer: string;
-  adresPostcode: string;
-  adresGemeente: string;
-  latitude: number;
-  longitude: number;
-  openingstijden: Record<string, string>;
-}
-
-// For now, use hardcoded data (in future, fetch from API)
-const contactInfo: ContactInfo = {
-  telefoon: '+32 2 123 45 67',
-  email: 'info@revabrain.be',
-  adresStraat: 'Voorbeeldstraat',
-  adresNummer: '1',
-  adresPostcode: '1000',
-  adresGemeente: 'Brussel',
-  latitude: 50.8503,
-  longitude: 4.3517,
-  openingstijden: {
-    Maandag: '09:00 - 17:00',
-    Dinsdag: '09:00 - 17:00',
-    Woensdag: '09:00 - 17:00',
-    Donderdag: '09:00 - 17:00',
-    Vrijdag: '09:00 - 16:00',
-    Zaterdag: 'Gesloten',
-    Zondag: 'Gesloten',
-  },
+const DAG_LABELS: Record<string, Record<string, string>> = {
+  nl: { ma: 'Maandag', di: 'Dinsdag', wo: 'Woensdag', do: 'Donderdag', vr: 'Vrijdag', za: 'Zaterdag', zo: 'Zondag' },
+  fr: { ma: 'Lundi', di: 'Mardi', wo: 'Mercredi', do: 'Jeudi', vr: 'Vendredi', za: 'Samedi', zo: 'Dimanche' },
+  en: { ma: 'Monday', di: 'Tuesday', wo: 'Wednesday', do: 'Thursday', vr: 'Friday', za: 'Saturday', zo: 'Sunday' },
 };
 
-export default function ContactPage() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-            RevaBrain
-          </Link>
-          <nav className="flex gap-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="/contact" className="text-gray-900 font-medium" style={{ color: '#2879D8' }}>
-              Contact
-            </Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              Inloggen
-            </Link>
-          </nav>
-        </div>
-      </header>
+const GESLOTEN: Record<string, string> = {
+  nl: 'Gesloten',
+  fr: 'Fermé',
+  en: 'Closed',
+};
 
+function ContactContent() {
+  const { t, locale } = useI18n();
+  const [contactInfo, setContactInfo] = useState<ContactInfoData | null>(null);
+  const [openingstijden, setOpeningstijden] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const info = await getContactInfo();
+      if (info) {
+        setContactInfo(info);
+        try {
+          const parsed = JSON.parse(info.openingstijden);
+          setOpeningstijden(parsed);
+        } catch (e) {
+          // Default opening hours
+          setOpeningstijden({
+            ma: '09:00-17:00',
+            di: '09:00-17:00',
+            wo: '09:00-17:00',
+            do: '09:00-17:00',
+            vr: '09:00-16:00',
+            za: 'Gesloten',
+            zo: 'Gesloten',
+          });
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const dagLabels = DAG_LABELS[locale] || DAG_LABELS.nl;
+  const gesloten = GESLOTEN[locale] || GESLOTEN.nl;
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <p className="text-gray-600">{t('common.loading')}</p>
+      </div>
+    );
+  }
+
+  // Fallback values
+  const telefoon = contactInfo?.telefoon || '+32 2 123 45 67';
+  const email = contactInfo?.email || 'info@revabrain.be';
+  const straat = contactInfo?.adresStraat || 'Voorbeeldstraat';
+  const nummer = contactInfo?.adresNummer || '1';
+  const postcode = contactInfo?.adresPostcode || '1000';
+  const gemeente = contactInfo?.adresGemeente || 'Brussel';
+  const latitude = contactInfo?.latitude || 50.8503;
+  const longitude = contactInfo?.longitude || 4.3517;
+
+  return (
+    <>
       {/* Hero Section */}
       <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4" style={{ color: '#2879D8' }}>
-            Contact
+            {t('contact.title')}
           </h1>
           <p className="text-lg text-gray-600">
-            Neem contact met ons op voor een afspraak of meer informatie
+            {t('contact.subtitle')}
           </p>
         </div>
       </section>
@@ -77,55 +92,55 @@ export default function ContactPage() {
           {/* Contact Info Card */}
           <div className="bg-white p-8 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-6" style={{ color: '#2879D8' }}>
-              Contactgegevens
+              {t('contact.info.title')}
             </h2>
 
             <div className="space-y-6">
               {/* Phone */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                  Telefoon
+                  {t('contact.info.phone')}
                 </h3>
                 <a
-                  href={`tel:${contactInfo.telefoon}`}
+                  href={`tel:${telefoon}`}
                   className="text-lg hover:underline"
                   style={{ color: '#2879D8' }}
                 >
-                  {contactInfo.telefoon}
+                  {telefoon}
                 </a>
               </div>
 
               {/* Email */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                  Email
+                  {t('contact.info.email')}
                 </h3>
                 <a
-                  href={`mailto:${contactInfo.email}`}
+                  href={`mailto:${email}`}
                   className="text-lg hover:underline"
                   style={{ color: '#2879D8' }}
                 >
-                  {contactInfo.email}
+                  {email}
                 </a>
               </div>
 
               {/* Address */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                  Adres
+                  {t('contact.info.address')}
                 </h3>
                 <address className="text-lg text-gray-900 not-italic">
-                  {contactInfo.adresStraat} {contactInfo.adresNummer}<br />
-                  {contactInfo.adresPostcode} {contactInfo.adresGemeente}
+                  {straat} {nummer}<br />
+                  {postcode} {gemeente}
                 </address>
                 <a
-                  href={`https://www.openstreetmap.org/?mlat=${contactInfo.latitude}&mlon=${contactInfo.longitude}#map=15/${contactInfo.latitude}/${contactInfo.longitude}`}
+                  href={`https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=15/${latitude}/${longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-2 text-sm hover:underline"
                   style={{ color: '#2879D8' }}
                 >
-                  Open in kaart →
+                  Open in OpenStreetMap →
                 </a>
               </div>
             </div>
@@ -134,60 +149,51 @@ export default function ContactPage() {
           {/* Opening Hours Card */}
           <div className="bg-white p-8 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-6" style={{ color: '#2879D8' }}>
-              Openingstijden
+              {t('contact.info.hours')}
             </h2>
 
             <div className="space-y-3">
-              {Object.entries(contactInfo.openingstijden).map(([dag, uren]) => (
-                <div key={dag} className="flex justify-between items-center">
-                  <span className="text-gray-900 font-medium">{dag}</span>
-                  <span className="text-gray-600">{uren}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800">
-                <strong>Tip:</strong> Bel vooraf voor een afspraak. Consultaties gebeuren enkel op afspraak.
-              </p>
+              {['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map((dag) => {
+                const uren = openingstijden[dag] || '-';
+                const displayUren = uren.toLowerCase() === 'gesloten' ? gesloten : uren;
+                return (
+                  <div key={dag} className="flex justify-between items-center">
+                    <span className="text-gray-900 font-medium">{dagLabels[dag]}</span>
+                    <span className="text-gray-600">{displayUren}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Map Section - Static link to OpenStreetMap (privacy-friendly) */}
+        {/* Map Section */}
         <div className="mt-8 bg-white p-8 rounded-lg shadow">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#2879D8' }}>
-            Locatie
+            {t('contact.location.title')}
           </h2>
-          <p className="text-gray-600 mb-4">
-            Onze praktijk bevindt zich in {contactInfo.adresGemeente}.
-          </p>
           <a
-            href={`https://www.openstreetmap.org/?mlat=${contactInfo.latitude}&mlon=${contactInfo.longitude}#map=15/${contactInfo.latitude}/${contactInfo.longitude}`}
+            href={`https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=15/${latitude}/${longitude}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-6 py-3 text-white rounded-md hover:opacity-90"
             style={{ backgroundColor: '#2879D8' }}
           >
-            Bekijk op OpenStreetMap
+            OpenStreetMap
           </a>
           <p className="text-sm text-gray-500 mt-4">
-            We gebruiken geen tracking-diensten zoals Google Maps om uw privacy te respecteren.
+            {t('contact.form.privacyNote')}
           </p>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} RevaBrain. Alle rechten voorbehouden.
-          </p>
-          <p className="text-gray-400 mt-2 text-sm">
-            Neurologische revalidatiepraktijk
-          </p>
-        </div>
-      </footer>
-    </div>
+export default function ContactPage() {
+  return (
+    <PublicLayout>
+      <ContactContent />
+    </PublicLayout>
   );
 }

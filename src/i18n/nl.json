@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Home",
+    "disciplines": "Disciplines",
+    "contact": "Contact",
+    "login": "Inloggen"
+  },
+  "home": {
+    "hero": {
+      "title": "Gespecialiseerde Neurologische Revalidatie",
+      "subtitle": "Professionele zorg voor volwassenen met niet-aangeboren hersenletsel en kinderen met taal- en leerproblemen",
+      "cta": "Maak een Afspraak"
+    },
+    "disciplines": {
+      "title": "Onze Disciplines",
+      "subtitle": "Multidisciplinaire aanpak voor optimale revalidatie"
+    },
+    "cta": {
+      "title": "Klaar om te Beginnen?",
+      "subtitle": "Neem contact op voor een vrijblijvend gesprek over uw situatie.",
+      "button": "Neem Contact Op"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Neem contact met ons op voor vragen of om een afspraak te maken",
+    "form": {
+      "name": "Naam",
+      "namePlaceholder": "Uw naam",
+      "email": "Email",
+      "emailPlaceholder": "uw.email@voorbeeld.be",
+      "phone": "Telefoon",
+      "phonePlaceholder": "+32 ...",
+      "message": "Bericht",
+      "messagePlaceholder": "Uw vraag of bericht...",
+      "submit": "Verstuur Bericht",
+      "sending": "Versturen...",
+      "success": "Bedankt voor uw bericht! We nemen zo snel mogelijk contact met u op.",
+      "privacyNote": "Uw gegevens worden alleen gebruikt om contact met u op te nemen en worden niet gedeeld met derden."
+    },
+    "info": {
+      "title": "Contactgegevens",
+      "address": "Adres",
+      "phone": "Telefoon",
+      "email": "Email",
+      "hours": "Openingstijden"
+    },
+    "location": {
+      "title": "Locatie"
+    }
+  },
+  "disciplines": {
+    "title": "Onze Disciplines",
+    "subtitle": "Multidisciplinaire expertise voor neurologische revalidatie",
+    "detail": {
+      "treatments": "Behandelingen en Indicaties",
+      "team": "Ons Team",
+      "appointment": "Afspraak Maken?",
+      "appointmentText": "Neem contact op voor meer informatie of om een afspraak te plannen.",
+      "contactUs": "Contacteer Ons",
+      "otherDisciplines": "Andere Disciplines"
+    }
+  },
+  "footer": {
+    "rights": "Alle rechten voorbehouden."
+  },
+  "common": {
+    "loading": "Laden...",
+    "notFound": "Niet gevonden",
+    "backToOverview": "Terug naar overzicht"
+  }
+}

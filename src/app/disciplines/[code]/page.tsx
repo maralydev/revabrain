@@ -1,8 +1,12 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import PublicLayout from '@/components/public/PublicLayout';
+import { useI18n } from '@/i18n/client';
 import { getDisciplineDetail, type PublicDisciplineData, type PublicTeamlidData } from '@/modules/discipline-config/public-queries';
 
 // Treatment indications by discipline
@@ -47,9 +51,10 @@ const indicaties: Record<string, string[]> = {
   ],
 };
 
-export default function DisciplineDetailPage() {
+function DisciplineDetailContent() {
   const params = useParams();
   const code = params.code as string;
+  const { t } = useI18n();
 
   const [discipline, setDiscipline] = useState<PublicDisciplineData | null>(null);
   const [teamleden, setTeamleden] = useState<PublicTeamlidData[]>([]);
@@ -72,28 +77,19 @@ export default function DisciplineDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">Laden...</p>
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <p className="text-gray-600">{t('common.loading')}</p>
       </div>
     );
   }
 
   if (!discipline) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <Link href="/" className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-              RevaBrain
-            </Link>
-          </div>
-        </header>
-        <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Discipline niet gevonden</h1>
-          <Link href="/disciplines" className="text-blue-600 hover:underline">
-            Terug naar overzicht
-          </Link>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('common.notFound')}</h1>
+        <Link href="/disciplines" className="text-blue-600 hover:underline">
+          {t('common.backToOverview')}
+        </Link>
       </div>
     );
   }
@@ -101,37 +97,14 @@ export default function DisciplineDetailPage() {
   const disciplineIndicaties = indicaties[discipline.code.toUpperCase()] || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-            RevaBrain
-          </Link>
-          <nav className="flex gap-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="/disciplines" className="text-gray-900 font-medium" style={{ color: '#2879D8' }}>
-              Disciplines
-            </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-gray-900">
-              Contact
-            </Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              Inloggen
-            </Link>
-          </nav>
-        </div>
-      </header>
-
+    <>
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <nav className="text-sm text-gray-500">
-            <Link href="/" className="hover:text-gray-700">Home</Link>
+            <Link href="/" className="hover:text-gray-700">{t('nav.home')}</Link>
             <span className="mx-2">/</span>
-            <Link href="/disciplines" className="hover:text-gray-700">Disciplines</Link>
+            <Link href="/disciplines" className="hover:text-gray-700">{t('nav.disciplines')}</Link>
             <span className="mx-2">/</span>
             <span className="text-gray-900">{discipline.naam}</span>
           </nav>
@@ -161,7 +134,7 @@ export default function DisciplineDetailPage() {
             {disciplineIndicaties.length > 0 && (
               <div className="bg-white p-6 rounded-lg shadow">
                 <h2 className="text-2xl font-bold mb-4" style={{ color: '#2879D8' }}>
-                  Behandelingen en Indicaties
+                  {t('disciplines.detail.treatments')}
                 </h2>
                 <ul className="space-y-2">
                   {disciplineIndicaties.map((indicatie, index) => (
@@ -178,7 +151,7 @@ export default function DisciplineDetailPage() {
             {teamleden.length > 0 && (
               <div className="bg-white p-6 rounded-lg shadow">
                 <h2 className="text-2xl font-bold mb-6" style={{ color: '#2879D8' }}>
-                  Ons Team
+                  {t('disciplines.detail.team')}
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-6">
                   {teamleden.map((teamlid) => (
@@ -214,17 +187,17 @@ export default function DisciplineDetailPage() {
             {/* Contact CTA */}
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold mb-4" style={{ color: '#2879D8' }}>
-                Afspraak Maken?
+                {t('disciplines.detail.appointment')}
               </h3>
               <p className="text-gray-600 mb-4">
-                Neem contact op voor meer informatie of om een afspraak te plannen.
+                {t('disciplines.detail.appointmentText')}
               </p>
               <Link
                 href="/contact"
                 className="block w-full py-3 text-center text-white rounded-md hover:opacity-90"
                 style={{ backgroundColor: '#2879D8' }}
               >
-                Contacteer Ons
+                {t('disciplines.detail.contactUs')}
               </Link>
               <a
                 href="tel:+3221234567"
@@ -238,7 +211,7 @@ export default function DisciplineDetailPage() {
             {/* Other Disciplines */}
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold mb-4" style={{ color: '#2879D8' }}>
-                Andere Disciplines
+                {t('disciplines.detail.otherDisciplines')}
               </h3>
               <ul className="space-y-2">
                 {['Logopedie', 'Kinesitherapie', 'Ergotherapie', 'Neuropsychologie', 'Diëtiek']
@@ -258,15 +231,14 @@ export default function DisciplineDetailPage() {
           </div>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} RevaBrain. Alle rechten voorbehouden.
-          </p>
-        </div>
-      </footer>
-    </div>
+export default function DisciplineDetailPage() {
+  return (
+    <PublicLayout>
+      <DisciplineDetailContent />
+    </PublicLayout>
   );
 }
