@@ -258,7 +258,7 @@ function HomeContent() {
             {/* Content */}
             <div>
               <SectionHeading
-                overline={getContent('vision', 'subtitle', undefined) || 'Over ons'}
+                overline={getContent('vision', 'subtitle', undefined) ?? 'Over ons'}
                 title={getContent('vision', 'title', 'home.vision.title') || 'Onze Visie'}
                 centered={false}
               />
@@ -295,7 +295,7 @@ function HomeContent() {
       <section className="section-padding bg-[var(--gray-50)] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            overline={getContent('disciplines', 'subtitle', undefined) || 'Wat we doen'}
+            overline={getContent('disciplines', 'subtitle', undefined) ?? 'Wat we doen'}
             title={getContent('disciplines', 'title', undefined) || 'Onze Behandelingen'}
             description={getContent('disciplines', 'content', undefined) || 'Multidisciplinaire zorg voor volwassenen met hersenletsel en kinderen met ontwikkelingsproblemen.'}
           />
@@ -351,7 +351,7 @@ function HomeContent() {
             {/* Content */}
             <div className="order-2 lg:order-1">
               <SectionHeading
-                overline={getContent('story', 'title', 'home.story.title')}
+                overline={getContent('story', 'title', 'home.story.title') ?? undefined}
                 title={getContent('story', 'subtitle', undefined) || 'Ontstaan uit passie voor neurologische zorg'}
                 centered={false}
               />
