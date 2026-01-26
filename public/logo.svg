@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <!-- Brain icon -->
+  <g transform="translate(0, 5)">
+    <!-- Left hemisphere -->
+    <path d="M12 20C12 14 16 10 22 10C26 10 29 12 30 15C32 12 36 10 40 12C44 14 45 19 44 23C46 24 47 27 46 30C45 33 42 35 39 35C38 37 35 40 30 40C25 40 22 37 21 35C18 35 15 33 14 30C13 27 14 24 16 23C15 19 14 16 12 20Z"
+          fill="#59ECB7" stroke="#2879D8" stroke-width="1.5"/>
+    <!-- Brain folds -->
+    <path d="M22 15C24 17 26 17 28 15M32 15C34 17 36 17 38 15M25 22C27 24 30 24 33 22M20 28C23 30 27 30 30 28M32 28C35 30 39 30 42 28"
+          stroke="#2879D8" stroke-width="1" stroke-linecap="round" fill="none"/>
+  </g>
+  <!-- Text: RevaBrain -->
+  <text x="55" y="33" font-family="Arial, sans-serif" font-size="22" font-weight="600">
+    <tspan fill="#2879D8">Reva</tspan><tspan fill="#2879D8">Brain</tspan>
+  </text>
+</svg>

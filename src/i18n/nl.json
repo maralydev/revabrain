@@ -1,19 +1,26 @@
 {
   "nav": {
     "home": "Home",
-    "disciplines": "Disciplines",
+    "team": "Ons Team",
+    "treatments": "Behandelingen",
+    "costs": "Tarieven",
     "contact": "Contact",
     "login": "Inloggen"
   },
   "home": {
     "hero": {
-      "title": "Gespecialiseerde Neurologische Revalidatie",
-      "subtitle": "Professionele zorg voor volwassenen met niet-aangeboren hersenletsel en kinderen met taal- en leerproblemen",
-      "cta": "Maak een Afspraak"
+      "title": "Welkom bij RevaBrain - Centrum voor (neurologische) revalidatie",
+      "subtitle": "Welkom bij RevaBrain, een multidisciplinaire groepspraktijk in volle ontwikkeling voor neuro- en kinderrevalidatie. Momenteel kunt u bij ons terecht voor logopedische revalidatie van neurogene spraak-taal en cognitieve problemen, slikproblemen en preverbale logopedie.",
+      "cta": "Maak een afspraak"
     },
-    "disciplines": {
-      "title": "Onze Disciplines",
-      "subtitle": "Multidisciplinaire aanpak voor optimale revalidatie"
+    "vision": {
+      "title": "Onze Visie",
+      "text1": "RevaBrain is een jonge praktijk in volle ontwikkeling tot een gespecialiseerde groepspraktijk waar u gericht volgens de wetenschappelijke evidentie wordt verder geholpen.",
+      "text2": "Wij streven ernaar op één locatie gerichte zorg te bieden, dit zowel voor personen met neurogene aandoeningen als kinderen met taal/ leer en ontwikkelingsproblemen. Momenteel bieden wij specialistische neurologopedische en prelogopedisch onderzoek en therapie aan. Voor ons is het belangrijk dat u geholpen wordt door een therapeut met de juiste kennis en ervaring. Zo zal iedereen in het team binnen zijn discipline ook zijn eigen specialisaties en kwalificaties hebben."
+    },
+    "story": {
+      "title": "Ons verhaal",
+      "text": "Nadat ik 5 mooie jaren ervaring mocht opdoen in een groepspraktijk en diverse ziekenhuizen en revalidatiecentra, besloot ik mijn eigen praktijk op te starten. Verschillende disciplines onder een dak, waarbij zorg voor u gecentraliseerd kan worden is het ultieme doel. Door multidisciplinair samen te werken en overleggen staan wij voor kwalitatieve individuele behandelingen en zorg op maat. Daarnaast zijn regelmatige bijscholingen en intervisies essentieel om up to date te blijven met de nieuwe evidence based literatuur en u zo ook een wetenschappelijk ondersteunde therapie te kunnen bieden."
     },
     "cta": {
       "title": "Klaar om te Beginnen?",
@@ -21,10 +28,43 @@
       "button": "Neem Contact Op"
     }
   },
+  "team": {
+    "title": "Ons Team",
+    "subtitle": "Momenteel bieden wij logopedie aan voor volwassenen met een niet aangeboren hersenletsel of baby's en jonge kinderen met eet-en drinkproblemen. Ons team zal snel uitbreiden zodat wij u de optimale zorg kunnen bieden.",
+    "moreAbout": "Meer over"
+  },
+  "treatments": {
+    "title": "Waarvoor u bij ons terecht kan",
+    "subtitle": "Behandeling mogelijk in het Nederlands, Frans en Engels",
+    "intro": "U kan bij ons terecht voor gespecialiseerde logopedische diagnostiek en therapie voor zowel neurogene stoornissen als prelogopedie.",
+    "neurologopedie": {
+      "title": "Neurologopedie",
+      "description": "Wanneer de communicatie verstoord wordt door een niet aangeboren hersenletsel kan dit zeer ingrijpend zijn voor de patiënt en zijn omgeving. Wij streven ernaar personen met neurologische communicatiestoornissen te begeleiden doorheen het herstelproces. Als logopedist houden wij ons bezig met het opsporen, onderzoeken en behandelen van spraak-, taal en slikstoornissen ten gevolge van een hersenletsel of hersenaandoening."
+    },
+    "prelogopedie": {
+      "title": "Prelogopedie",
+      "description": "Behandeling van eet- en drinkproblemen bij baby's en jonge kinderen."
+    }
+  },
+  "costs": {
+    "title": "Tarieven en terugbetaling",
+    "howItWorks": "Hoe gaat het in zijn werk",
+    "step1": "Na aanmelding volgt eerst een anamnesegesprek waarbij wij informatie verlenen over het logopedisch onderzoek en de eventuele opstart van logopedische therapie. Ga kort hiervoor naar uw huisarts en vraag een voorschrift voor logopedisch onderzoek.",
+    "step2": "Neem dat voorschrift, 2 mutualiteitsklevers en uw identiteitskaart mee naar onze eerste afspraak of leg het thuis klaar wanneer het om een huisbezoek gaat.",
+    "step3": "Na het anamnesegesprek volgt het logopedisch onderzoek en wordt er een logopedisch bilan opgesteld voor uw behandelende specialist. Hij zal een voorschrift logopedische therapie moeten voorzien. Dit alles wordt voorgelegd aan de mutualiteit, indien er een goedkeuring volgt worden sessies logopedie terugbetaald volgens onderstaande tabel.",
+    "step4": "Het anamnesegesprek, het logopedisch onderzoek en het opmaken van het bilan wordt per 30 minuten gefactureerd en dit met een maximum van 5 x 30 minuten.",
+    "step5": "Indien nodig zal na enige tijd een evolutiebilan opgemaakt worden waarbij u mogelijks hertest wordt. Zo kunnen we progressie in kaart brengen en verdere terugbetaling garanderen.",
+    "step6": "Overleg met andere betrokken disciplines is altijd mogelijk, dit wordt per 30' aangerekend.",
+    "convention": "Wij zijn een geconventioneerde praktijk en volgen de tarieven opgelegd door het RIZIV. Zo geniet u van de maximale wettelijke terugbetaling.",
+    "travel": "Voor therapie aan huis rekenen we een verplaatsingsvergoeding van 3 euro per sessie aan. Dit dekt een deeltje van de transportkosten en tijd die wij spenderen aan verplaatsing.",
+    "viewTariffs": "Bekijk tarieven"
+  },
   "contact": {
-    "title": "Contact",
+    "title": "Contactgegevens",
     "subtitle": "Neem contact met ons op voor vragen of om een afspraak te maken",
+    "homeVisitsNote": "Momenteel zijn enkel huisbezoeken mogelijk in Tubeke, Halle, Sint-Pieters-Leeuw, Beersel, en omliggende gemeenten. Wij streven ernaar u ook zo snel mogelijk in de praktijk te verwelkomen.",
     "form": {
+      "title": "Neem contact op",
       "name": "Naam",
       "namePlaceholder": "Uw naam",
       "email": "Email",
@@ -47,18 +87,6 @@
     },
     "location": {
       "title": "Locatie"
-    }
-  },
-  "disciplines": {
-    "title": "Onze Disciplines",
-    "subtitle": "Multidisciplinaire expertise voor neurologische revalidatie",
-    "detail": {
-      "treatments": "Behandelingen en Indicaties",
-      "team": "Ons Team",
-      "appointment": "Afspraak Maken?",
-      "appointmentText": "Neem contact op voor meer informatie of om een afspraak te plannen.",
-      "contactUs": "Contacteer Ons",
-      "otherDisciplines": "Andere Disciplines"
     }
   },
   "footer": {

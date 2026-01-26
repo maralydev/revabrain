@@ -167,6 +167,13 @@ function ContactContent() {
           </div>
         </div>
 
+        {/* Home Visits Note */}
+        <div className="mt-8 bg-[#E7F6FC] p-6 rounded-lg border border-[#2879D8]/20">
+          <p className="text-gray-700">
+            {t('contact.homeVisitsNote')}
+          </p>
+        </div>
+
         {/* Map Section */}
         <div className="mt-8 bg-white p-8 rounded-lg shadow">
           <h2 className="text-2xl font-bold mb-6" style={{ color: '#2879D8' }}>
@@ -179,11 +186,8 @@ function ContactContent() {
             className="inline-block px-6 py-3 text-white rounded-md hover:opacity-90"
             style={{ backgroundColor: '#2879D8' }}
           >
-            OpenStreetMap
+            Bekijk op kaart
           </a>
-          <p className="text-sm text-gray-500 mt-4">
-            {t('contact.form.privacyNote')}
-          </p>
         </div>
       </section>
     </>

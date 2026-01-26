@@ -1,19 +1,26 @@
 {
   "nav": {
     "home": "Home",
-    "disciplines": "Disciplines",
+    "team": "Our Team",
+    "treatments": "Treatments",
+    "costs": "Costs",
     "contact": "Contact",
     "login": "Login"
   },
   "home": {
     "hero": {
-      "title": "Specialized Neurological Rehabilitation",
-      "subtitle": "Professional care for adults with acquired brain injury and children with language and learning difficulties",
+      "title": "Welcome to RevaBrain - Center for (neurological) rehabilitation",
+      "subtitle": "Welcome to RevaBrain, a multidisciplinary group practice in full development for neuro- and pediatric rehabilitation. Currently you can visit us for speech therapy rehabilitation of neurogenic speech-language and cognitive problems, swallowing problems and pre-verbal speech therapy.",
       "cta": "Make an Appointment"
     },
-    "disciplines": {
-      "title": "Our Disciplines",
-      "subtitle": "Multidisciplinary approach for optimal rehabilitation"
+    "vision": {
+      "title": "Our Vision",
+      "text1": "RevaBrain is a young practice in full development towards a specialized group practice where you will be helped according to scientific evidence.",
+      "text2": "We strive to offer targeted care in one location, both for people with neurogenic conditions and children with language, learning and developmental problems. Currently we offer specialist neurological speech therapy and pre-speech therapy examination and therapy."
+    },
+    "story": {
+      "title": "Our Story",
+      "text": "After 5 wonderful years of experience in a group practice and various hospitals and rehabilitation centers, I decided to start my own practice. Different disciplines under one roof, where care can be centralized for you, is the ultimate goal."
     },
     "cta": {
       "title": "Ready to Get Started?",
@@ -21,10 +28,43 @@
       "button": "Contact Us"
     }
   },
+  "team": {
+    "title": "Our Team",
+    "subtitle": "Currently we offer speech therapy for adults with acquired brain injury or babies and young children with eating and drinking problems. Our team will soon expand so that we can offer you optimal care.",
+    "moreAbout": "More about"
+  },
+  "treatments": {
+    "title": "What we treat",
+    "subtitle": "Treatment possible in Dutch, French and English",
+    "intro": "You can visit us for specialized speech therapy diagnostics and therapy for both neurogenic disorders and pre-speech therapy.",
+    "neurologopedie": {
+      "title": "Neuro Speech Therapy",
+      "description": "When communication is disrupted by acquired brain injury, this can be very impactful for the patient and their environment. We strive to guide people with neurological communication disorders through the recovery process."
+    },
+    "prelogopedie": {
+      "title": "Pre-Speech Therapy",
+      "description": "Treatment of eating and drinking problems in babies and young children."
+    }
+  },
+  "costs": {
+    "title": "Rates and reimbursement",
+    "howItWorks": "How it works",
+    "step1": "After registration, an anamnesis interview follows during which we provide information about the speech therapy examination and the possible start of speech therapy. Go to your GP and ask for a prescription for a speech therapy examination.",
+    "step2": "Bring that prescription, 2 health insurance stickers and your identity card to our first appointment or have them ready at home if it concerns a home visit.",
+    "step3": "After the anamnesis interview, the speech therapy examination follows and a speech therapy report is drawn up for your treating specialist.",
+    "step4": "The anamnesis interview, the speech therapy examination and drawing up the report are charged per 30 minutes with a maximum of 5 x 30 minutes.",
+    "step5": "If necessary, an evolution report will be drawn up after some time where you may be retested.",
+    "step6": "Consultation with other involved disciplines is always possible, this is charged per 30 minutes.",
+    "convention": "We are a conventioned practice and follow the rates imposed by RIZIV. This way you enjoy the maximum legal reimbursement.",
+    "travel": "For home therapy we charge a travel allowance of 3 euros per session.",
+    "viewTariffs": "View rates"
+  },
   "contact": {
-    "title": "Contact",
+    "title": "Contact Information",
     "subtitle": "Contact us for questions or to make an appointment",
+    "homeVisitsNote": "Currently only home visits are possible in Tubize, Halle, Sint-Pieters-Leeuw, Beersel, and surrounding municipalities. We strive to welcome you in our practice as soon as possible.",
     "form": {
+      "title": "Contact us",
       "name": "Name",
       "namePlaceholder": "Your name",
       "email": "Email",
@@ -47,18 +87,6 @@
     },
     "location": {
       "title": "Location"
-    }
-  },
-  "disciplines": {
-    "title": "Our Disciplines",
-    "subtitle": "Multidisciplinary expertise for neurological rehabilitation",
-    "detail": {
-      "treatments": "Treatments and Indications",
-      "team": "Our Team",
-      "appointment": "Make an Appointment?",
-      "appointmentText": "Contact us for more information or to schedule an appointment.",
-      "contactUs": "Contact Us",
-      "otherDisciplines": "Other Disciplines"
     }
   },
   "footer": {

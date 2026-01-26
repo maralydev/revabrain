@@ -1,19 +1,26 @@
 {
   "nav": {
     "home": "Accueil",
-    "disciplines": "Disciplines",
+    "team": "Notre Équipe",
+    "treatments": "Traitements",
+    "costs": "Tarifs",
     "contact": "Contact",
     "login": "Connexion"
   },
   "home": {
     "hero": {
-      "title": "Réhabilitation Neurologique Spécialisée",
-      "subtitle": "Soins professionnels pour adultes avec lésions cérébrales acquises et enfants avec troubles du langage et de l'apprentissage",
+      "title": "Bienvenue chez RevaBrain - Centre de réhabilitation (neurologique)",
+      "subtitle": "Bienvenue chez RevaBrain, un cabinet multidisciplinaire en plein développement pour la neuro- et rééducation pédiatrique. Actuellement, vous pouvez nous consulter pour la rééducation logopédique des troubles neurogènes de la parole, du langage et des troubles cognitifs, des troubles de la déglutition et de la logopédie préverbale.",
       "cta": "Prendre Rendez-vous"
     },
-    "disciplines": {
-      "title": "Nos Disciplines",
-      "subtitle": "Approche multidisciplinaire pour une réhabilitation optimale"
+    "vision": {
+      "title": "Notre Vision",
+      "text1": "RevaBrain est un jeune cabinet en plein développement vers un cabinet de groupe spécialisé où vous serez aidé selon les preuves scientifiques.",
+      "text2": "Nous nous efforçons d'offrir des soins ciblés en un seul endroit, tant pour les personnes atteintes de troubles neurogènes que pour les enfants présentant des troubles du langage, de l'apprentissage et du développement. Actuellement, nous proposons des examens et thérapies spécialisés en neurologopédie et prélogopédie."
+    },
+    "story": {
+      "title": "Notre Histoire",
+      "text": "Après 5 belles années d'expérience dans un cabinet de groupe et divers hôpitaux et centres de réhabilitation, j'ai décidé de créer mon propre cabinet. Différentes disciplines sous un même toit, où les soins peuvent être centralisés pour vous, est l'objectif ultime."
     },
     "cta": {
       "title": "Prêt à Commencer?",
@@ -21,10 +28,43 @@
       "button": "Nous Contacter"
     }
   },
+  "team": {
+    "title": "Notre Équipe",
+    "subtitle": "Actuellement, nous proposons de la logopédie pour les adultes ayant subi une lésion cérébrale acquise ou pour les bébés et jeunes enfants présentant des problèmes d'alimentation. Notre équipe s'agrandira bientôt pour vous offrir des soins optimaux.",
+    "moreAbout": "En savoir plus sur"
+  },
+  "treatments": {
+    "title": "Ce que nous traitons",
+    "subtitle": "Traitement possible en néerlandais, français et anglais",
+    "intro": "Vous pouvez nous consulter pour un diagnostic et une thérapie logopédique spécialisés pour les troubles neurogènes ainsi que la prélogopédie.",
+    "neurologopedie": {
+      "title": "Neurologopédie",
+      "description": "Lorsque la communication est perturbée par une lésion cérébrale acquise, cela peut être très impactant pour le patient et son entourage. Nous nous efforçons d'accompagner les personnes atteintes de troubles de la communication neurologiques tout au long du processus de récupération."
+    },
+    "prelogopedie": {
+      "title": "Prélogopédie",
+      "description": "Traitement des problèmes d'alimentation chez les bébés et jeunes enfants."
+    }
+  },
+  "costs": {
+    "title": "Tarifs et remboursement",
+    "howItWorks": "Comment ça fonctionne",
+    "step1": "Après inscription, un entretien d'anamnèse suit au cours duquel nous fournissons des informations sur l'examen logopédique et le démarrage éventuel de la thérapie logopédique. Allez chez votre médecin traitant et demandez une prescription pour un examen logopédique.",
+    "step2": "Apportez cette prescription, 2 vignettes de mutuelle et votre carte d'identité à notre premier rendez-vous ou préparez-les chez vous s'il s'agit d'une visite à domicile.",
+    "step3": "Après l'entretien d'anamnèse suit l'examen logopédique et un bilan logopédique est établi pour votre spécialiste traitant.",
+    "step4": "L'entretien d'anamnèse, l'examen logopédique et l'établissement du bilan sont facturés par 30 minutes avec un maximum de 5 x 30 minutes.",
+    "step5": "Si nécessaire, un bilan d'évolution sera établi après un certain temps où vous pourrez être retesté.",
+    "step6": "Une consultation avec d'autres disciplines concernées est toujours possible, elle est facturée par 30 minutes.",
+    "convention": "Nous sommes un cabinet conventionné et suivons les tarifs imposés par l'INAMI. Vous bénéficiez ainsi du remboursement légal maximal.",
+    "travel": "Pour les thérapies à domicile, nous facturons une indemnité de déplacement de 3 euros par séance.",
+    "viewTariffs": "Voir les tarifs"
+  },
   "contact": {
-    "title": "Contact",
+    "title": "Coordonnées",
     "subtitle": "Contactez-nous pour des questions ou pour prendre rendez-vous",
+    "homeVisitsNote": "Actuellement, seules les visites à domicile sont possibles à Tubize, Hal, Sint-Pieters-Leeuw, Beersel et les communes environnantes. Nous nous efforçons de vous accueillir également dans notre cabinet dès que possible.",
     "form": {
+      "title": "Nous contacter",
       "name": "Nom",
       "namePlaceholder": "Votre nom",
       "email": "Email",
@@ -47,18 +87,6 @@
     },
     "location": {
       "title": "Localisation"
-    }
-  },
-  "disciplines": {
-    "title": "Nos Disciplines",
-    "subtitle": "Expertise multidisciplinaire pour la réhabilitation neurologique",
-    "detail": {
-      "treatments": "Traitements et Indications",
-      "team": "Notre Équipe",
-      "appointment": "Prendre Rendez-vous?",
-      "appointmentText": "Contactez-nous pour plus d'informations ou pour planifier un rendez-vous.",
-      "contactUs": "Nous Contacter",
-      "otherDisciplines": "Autres Disciplines"
     }
   },
   "footer": {
