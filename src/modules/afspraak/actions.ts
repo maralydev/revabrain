@@ -2,6 +2,7 @@
 
 import { requireZorgverlener, getSession } from '@/shared/lib/auth';
 import { prisma } from '@/shared/lib/prisma';
+import { logAudit } from '@/shared/lib/audit';
 
 export interface CreateAfspraakInput {
   patientId: number;
@@ -157,6 +158,14 @@ export async function createAfspraak(
       } as any, // Type assertion needed until Prisma client is regenerated
     });
 
+    // Audit log
+    await logAudit({
+      actieType: 'AFSPRAAK_CREATE',
+      entiteitType: 'Afspraak',
+      entiteitId: afspraak.id,
+      omschrijving: `Afspraak aangemaakt: ${input.type} op ${input.datum.toLocaleDateString('nl-BE')}`,
+    });
+
     return {
       success: true,
       afspraakId: afspraak.id,
@@ -232,6 +241,14 @@ export async function updateAfspraak(
       } as any, // Type assertion needed until Prisma client is regenerated
     });
 
+    // Audit log
+    await logAudit({
+      actieType: 'AFSPRAAK_UPDATE',
+      entiteitType: 'Afspraak',
+      entiteitId: input.afspraakId,
+      omschrijving: `Afspraak gewijzigd`,
+    });
+
     return {
       success: true,
     };
@@ -276,7 +293,13 @@ export async function cancelAfspraak(
       data: { status: 'GEANNULEERD' },
     });
 
-    console.log('Afspraak geannuleerd', { id: afspraakId, userId: session.userId });
+    // Audit log
+    await logAudit({
+      actieType: 'AFSPRAAK_CANCEL',
+      entiteitType: 'Afspraak',
+      entiteitId: afspraakId,
+      omschrijving: `Afspraak geannuleerd`,
+    });
 
     return { success: true };
   } catch (error) {
@@ -317,12 +340,12 @@ export async function deleteAfspraak(
       return { success: false, error: 'Geen toegang tot deze afspraak' };
     }
 
-    // Audit log (GEEN PII in logs)
-    console.log('Afspraak verwijderd', {
-      id: afspraakId,
-      datum: bestaandeAfspraak.datum,
-      type: bestaandeAfspraak.type,
-      deletedBy: session.userId,
+    // Audit log (GEEN PII)
+    await logAudit({
+      actieType: 'AFSPRAAK_DELETE',
+      entiteitType: 'Afspraak',
+      entiteitId: afspraakId,
+      omschrijving: `Afspraak verwijderd: ${bestaandeAfspraak.type} op ${bestaandeAfspraak.datum.toLocaleDateString('nl-BE')}`,
     });
 
     // Permanent delete
@@ -379,6 +402,14 @@ export async function updateAfspraakStatus(
     await prisma.afspraak.update({
       where: { id: afspraakId },
       data: { status },
+    });
+
+    // Audit log
+    await logAudit({
+      actieType: 'AFSPRAAK_STATUS',
+      entiteitType: 'Afspraak',
+      entiteitId: afspraakId,
+      omschrijving: `Status gewijzigd naar ${status}`,
     });
 
     return { success: true };

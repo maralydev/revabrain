@@ -7,7 +7,9 @@ import {
   createSession,
   setSessionCookie,
   deleteSessionCookie,
+  getSession,
 } from '@/shared/lib/auth';
+import { logAuditDirect } from '@/shared/lib/audit';
 
 export interface LoginResult {
   success: boolean;
@@ -60,6 +62,14 @@ export async function login(email: string, password: string): Promise<LoginResul
     // Check if user must change password
     const mustChangePassword = (user as any).mustChangePassword || false;
 
+    // Audit log (direct because we just created the session)
+    await logAuditDirect({
+      teamlidId: user.id,
+      teamlidNaam: `${user.voornaam} ${user.achternaam}`,
+      actieType: 'LOGIN',
+      omschrijving: `Ingelogd`,
+    });
+
     return {
       success: true,
       mustChangePassword,
@@ -74,6 +84,23 @@ export async function login(email: string, password: string): Promise<LoginResul
  * Logout server action
  */
 export async function logout(): Promise<void> {
+  // Get session before deleting for audit
+  const session = await getSession();
+  if (session) {
+    const user = await prisma.teamlid.findUnique({
+      where: { id: session.userId },
+      select: { voornaam: true, achternaam: true },
+    });
+
+    // Audit log
+    await logAuditDirect({
+      teamlidId: session.userId,
+      teamlidNaam: user ? `${user.voornaam} ${user.achternaam}` : 'Onbekend',
+      actieType: 'LOGOUT',
+      omschrijving: `Uitgelogd`,
+    });
+  }
+
   await deleteSessionCookie();
   redirect('/login');
 }

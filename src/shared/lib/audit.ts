@@ -13,10 +13,14 @@ export type ActieType =
   | 'AFSPRAAK_CREATE'
   | 'AFSPRAAK_UPDATE'
   | 'AFSPRAAK_DELETE'
+  | 'AFSPRAAK_CANCEL'
+  | 'AFSPRAAK_STATUS'
   | 'AFSPRAAK_STATUS_CHANGE'
   | 'TEAMLID_CREATE'
   | 'TEAMLID_UPDATE'
   | 'TEAMLID_PASSWORD_RESET'
+  | 'PASSWORD_RESET'
+  | 'PASSWORD_CHANGE'
   | 'AFWEZIGHEID_CREATE'
   | 'AFWEZIGHEID_DELETE'
   | 'CONFIG_UPDATE'
@@ -78,4 +82,38 @@ export async function logEntityAction(
     omschrijving,
     metadata,
   });
+}
+
+export interface AuditLogDirectEntry {
+  teamlidId: number;
+  teamlidNaam: string;
+  actieType: ActieType;
+  entiteitType?: string;
+  entiteitId?: number;
+  omschrijving: string;
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Log een actie direct met opgegeven teamlid (voor login/logout)
+ * Gebruik wanneer sessie nog niet beschikbaar is (login) of net verwijderd wordt (logout)
+ */
+export async function logAuditDirect(entry: AuditLogDirectEntry): Promise<void> {
+  try {
+    await (prisma as any).auditLog.create({
+      data: {
+        timestamp: new Date(),
+        teamlidId: entry.teamlidId,
+        teamlidNaam: entry.teamlidNaam,
+        actieType: entry.actieType,
+        entiteitType: entry.entiteitType || null,
+        entiteitId: entry.entiteitId || null,
+        omschrijving: entry.omschrijving,
+        metadata: entry.metadata ? JSON.stringify(entry.metadata) : null,
+      },
+    });
+  } catch (error) {
+    // Don't throw - audit logging should not break application flow
+    console.error('Audit log error:', error);
+  }
 }

@@ -2,6 +2,7 @@
 
 import { requireZorgverlener } from '@/shared/lib/auth';
 import { prisma } from '@/shared/lib/prisma';
+import { logAudit } from '@/shared/lib/audit';
 import {
   valideerRijksregisternummer,
   geboortedatumUitRR,
@@ -89,11 +90,12 @@ export async function registerPatient(
       },
     });
 
-    // PRIVACY: Log NOOIT het RR in plaintext
-    console.log('Patient registered', {
-      id: patient.id,
-      naam: `${patient.voornaam} ${patient.achternaam}`,
-      // RR NIET loggen!
+    // Audit log (GEEN PII - geen RR loggen)
+    await logAudit({
+      actieType: 'PATIENT_CREATE',
+      entiteitType: 'Patient',
+      entiteitId: patient.id,
+      omschrijving: `Patiënt aangemaakt: ${patient.voornaam} ${patient.achternaam}`,
     });
 
     return {

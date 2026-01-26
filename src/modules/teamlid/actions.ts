@@ -2,6 +2,7 @@
 
 import { requireZorgverlener } from '@/shared/lib/auth';
 import { prisma } from '@/shared/lib/prisma';
+import { logAudit } from '@/shared/lib/audit';
 import bcrypt from 'bcryptjs';
 
 export type Rol = 'ZORGVERLENER' | 'SECRETARIAAT';
@@ -97,7 +98,13 @@ export async function createTeamlid(
       },
     });
 
-    console.log('Teamlid aangemaakt', { id: teamlid.id, email: input.email, door: session.userId });
+    // Audit log
+    await logAudit({
+      actieType: 'TEAMLID_CREATE',
+      entiteitType: 'Teamlid',
+      entiteitId: teamlid.id,
+      omschrijving: `Teamlid aangemaakt: ${input.voornaam} ${input.achternaam} (${input.rol})`,
+    });
 
     return {
       success: true,
@@ -164,7 +171,13 @@ export async function updateTeamlid(
       },
     });
 
-    console.log('Teamlid gewijzigd', { id: input.teamlidId, door: session.userId });
+    // Audit log
+    await logAudit({
+      actieType: 'TEAMLID_UPDATE',
+      entiteitType: 'Teamlid',
+      entiteitId: input.teamlidId,
+      omschrijving: `Teamlid gewijzigd: ${bestaandTeamlid.voornaam} ${bestaandTeamlid.achternaam}`,
+    });
 
     return { success: true };
   } catch (error) {
@@ -200,7 +213,13 @@ export async function resetPassword(
       },
     });
 
-    console.log('Wachtwoord gereset', { teamlidId, door: session.userId });
+    // Audit log
+    await logAudit({
+      actieType: 'PASSWORD_RESET',
+      entiteitType: 'Teamlid',
+      entiteitId: teamlidId,
+      omschrijving: `Wachtwoord gereset door admin`,
+    });
 
     return {
       success: true,
@@ -286,7 +305,13 @@ export async function changePassword(
       },
     });
 
-    console.log('Wachtwoord gewijzigd', { teamlidId: session.userId });
+    // Audit log
+    await logAudit({
+      actieType: 'PASSWORD_CHANGE',
+      entiteitType: 'Teamlid',
+      entiteitId: session.userId,
+      omschrijving: `Wachtwoord gewijzigd door gebruiker`,
+    });
 
     return { success: true };
   } catch (error) {
