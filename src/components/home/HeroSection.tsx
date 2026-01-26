@@ -1,11 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  FadeIn,
-  Counter,
-  BrainVisualization,
-} from '@/components/public/AnimatedComponents';
+import Image from 'next/image';
+import { FadeIn, Counter } from '@/components/public/AnimatedComponents';
 
 interface HeroSectionProps {
   title: React.ReactNode;
@@ -21,18 +18,9 @@ export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t 
       {/* Background */}
       <div className="absolute inset-0 gradient-mesh" />
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 rounded-full decorative-gradient-1 blur-3xl opacity-30 animate-float-slow" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full decorative-gradient-2 blur-3xl opacity-20 animate-float" style={{ animationDelay: '-3s' }} />
-
-      {/* Grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-      />
+      {/* Subtle decorative elements */}
+      <div className="absolute top-1/4 left-0 w-96 h-96 rounded-full bg-[var(--rb-primary)]/10 blur-3xl" />
+      <div className="absolute bottom-1/4 right-0 w-80 h-80 rounded-full bg-[var(--rb-accent)]/10 blur-3xl" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
@@ -41,7 +29,7 @@ export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t 
           <div className="text-center lg:text-left">
             <FadeIn delay={0.1}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 mb-8">
-                <span className="w-2 h-2 rounded-full bg-[var(--rb-accent)] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[var(--rb-accent)]" />
                 <span className="text-sm text-white/80 font-medium">Neurologische Revalidatie</span>
               </div>
             </FadeIn>
@@ -94,17 +82,31 @@ export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t 
             </FadeIn>
           </div>
 
-          {/* Right: Brain Visualization */}
+          {/* Right: Professional Image */}
           <FadeIn delay={0.3} direction="left">
             <div className="hidden lg:block relative">
-              <BrainVisualization className="w-[500px] h-[500px] mx-auto" />
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/onze-visie.jpg"
+                  alt="Neurologische zorg bij RevaBrain"
+                  width={600}
+                  height={500}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+                {/* Subtle overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--rb-dark)]/40 to-transparent" />
+              </div>
+              {/* Decorative accent */}
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 rounded-xl bg-[var(--rb-accent)]/20 -z-10" />
+              <div className="absolute -top-4 -left-4 w-24 h-24 rounded-xl border-2 border-[var(--rb-primary)]/30 -z-10" />
             </div>
           </FadeIn>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '1s' }}>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <div className="flex flex-col items-center gap-2 text-white/40">
           <span className="text-xs uppercase tracking-widest">Scroll</span>
           <div className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-2">
