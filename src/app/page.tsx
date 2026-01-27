@@ -1,12 +1,8 @@
-'use client';
-
-export const dynamic = 'force-dynamic';
-
-import { useEffect, useState } from 'react';
+import { Metadata } from 'next';
 import PublicLayout from '@/components/public/PublicLayout';
-import { useI18n } from '@/i18n/client';
-import { getPageContent, type PageContentData } from '@/modules/page-content/queries';
-import { getAllBehandelingen, type BehandelingData } from '@/modules/behandeling/queries';
+import { getPageContent } from '@/modules/page-content/queries';
+import { getAllBehandelingen } from '@/modules/behandeling/queries';
+import { getFooterData } from '@/modules/footer/queries';
 import {
   HeroSection,
   VisionSection,
@@ -14,6 +10,17 @@ import {
   StorySection,
   CTASection,
 } from '@/components/home';
+
+export const metadata: Metadata = {
+  title: 'RevaBrain | Centrum voor Neurologische Revalidatie',
+  description: 'RevaBrain is een multidisciplinaire groepspraktijk voor neurologische revalidatie en kinderrevalidatie. Gespecialiseerd in neurologopedie, prelogopedie, kinesitherapie en neuropsychologie.',
+  keywords: ['neurologische revalidatie', 'logopedie', 'neurologopedie', 'prelogopedie', 'kinesitherapie', 'neuropsychologie', 'hersenletsel', 'Tubeke', 'België'],
+  openGraph: {
+    title: 'RevaBrain | Centrum voor Neurologische Revalidatie',
+    description: 'Multidisciplinaire groepspraktijk voor neurologische revalidatie en kinderrevalidatie.',
+    type: 'website',
+  },
+};
 
 // Fallback disciplines if database is empty
 const FALLBACK_DISCIPLINES = [
@@ -43,36 +50,27 @@ const FALLBACK_DISCIPLINES = [
   },
 ];
 
-function HomeContent() {
-  const { t, locale } = useI18n();
-  const [content, setContent] = useState<Record<string, PageContentData>>({});
-  const [behandelingen, setBehandelingen] = useState<BehandelingData[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function HomePage() {
+  // Server-side data fetching voor SEO
+  const [content, behandelingen, footerData] = await Promise.all([
+    getPageContent('home', 'nl'),
+    getAllBehandelingen('nl'),
+    getFooterData(),
+  ]);
 
-  useEffect(() => {
-    async function loadContent() {
-      const [pageContent, behandelingenData] = await Promise.all([
-        getPageContent('home', locale),
-        getAllBehandelingen(locale),
-      ]);
-      setContent(pageContent);
-      setBehandelingen(behandelingenData);
-      setLoading(false);
-    }
-    loadContent();
-  }, [locale]);
-
-  const getContent = (section: string, field: 'title' | 'subtitle' | 'content' | 'content2' | 'buttonText' | 'buttonUrl' | 'imageUrl', fallbackKey?: string) => {
+  // Helper to get content with defaults
+  const getContent = (
+    section: string,
+    field: 'title' | 'subtitle' | 'content' | 'content2' | 'buttonText' | 'buttonUrl' | 'imageUrl'
+  ): string | null => {
     const sectionData = content[section];
     if (sectionData && sectionData[field]) {
-      return sectionData[field];
-    }
-    if (fallbackKey) {
-      return t(fallbackKey);
+      return sectionData[field] as string;
     }
     return null;
   };
 
+  // Build disciplines from behandelingen or use fallback
   const disciplines = behandelingen.length > 0
     ? behandelingen.map((b, i) => ({
         id: b.slug,
@@ -82,74 +80,69 @@ function HomeContent() {
       }))
     : FALLBACK_DISCIPLINES;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center gradient-mesh">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[var(--rb-accent)] border-t-transparent animate-spin" />
-          <p className="text-white/60">{t('common.loading')}</p>
-        </div>
-      </div>
-    );
-  }
+  // Prepare content for sections - all editable via CMS
+  const heroTitle = getContent('hero', 'title') || 'Herstel begint met deskundige zorg';
+  const heroSubtitle = getContent('hero', 'content');
+  const heroButtonText = getContent('hero', 'buttonText');
+  const heroButtonUrl = getContent('hero', 'buttonUrl');
 
-  // Prepare hero title
-  const heroTitle = getContent('hero', 'title', undefined) || (
-    <>
-      Herstel begint met{' '}
-      <span className="gradient-text-light">deskundige zorg</span>
-    </>
-  );
+  const visionOverline = getContent('vision', 'subtitle') ?? 'Over ons';
+  const visionTitle = getContent('vision', 'title') || 'Onze Visie';
+  const visionContent = getContent('vision', 'content');
+  const visionContent2 = getContent('vision', 'content2');
+  const visionImageUrl = getContent('vision', 'imageUrl');
+
+  const disciplinesOverline = getContent('disciplines', 'subtitle') ?? 'Wat we doen';
+  const disciplinesTitle = getContent('disciplines', 'title') || 'Onze Behandelingen';
+  const disciplinesDescription = getContent('disciplines', 'content') || 'Multidisciplinaire zorg voor volwassenen met hersenletsel en kinderen met ontwikkelingsproblemen.';
+
+  const storyOverline = getContent('story', 'title') ?? undefined;
+  const storyTitle = getContent('story', 'subtitle') || 'Ontstaan uit passie voor neurologische zorg';
+  const storyContent = getContent('story', 'content');
+  const storyImageUrl = getContent('story', 'imageUrl');
+
+  const ctaTitle = getContent('cta', 'title');
+  const ctaContent = getContent('cta', 'content');
+  const ctaButtonText = getContent('cta', 'buttonText');
+  const ctaButtonUrl = getContent('cta', 'buttonUrl');
 
   return (
-    <>
+    <PublicLayout footerData={footerData}>
       <HeroSection
         title={heroTitle}
-        subtitle={getContent('hero', 'content', 'home.hero.subtitle')}
-        buttonText={getContent('hero', 'buttonText', 'home.hero.cta')}
-        buttonUrl={getContent('hero', 'buttonUrl', undefined)}
-        t={t}
+        subtitle={heroSubtitle}
+        buttonText={heroButtonText}
+        buttonUrl={heroButtonUrl}
       />
 
       <VisionSection
-        overline={getContent('vision', 'subtitle', undefined) ?? 'Over ons'}
-        title={getContent('vision', 'title', 'home.vision.title') || 'Onze Visie'}
-        content={getContent('vision', 'content', 'home.vision.text1')}
-        content2={getContent('vision', 'content2', 'home.vision.text2')}
-        imageUrl={getContent('vision', 'imageUrl', undefined)}
-        t={t}
+        overline={visionOverline}
+        title={visionTitle}
+        content={visionContent}
+        content2={visionContent2}
+        imageUrl={visionImageUrl}
       />
 
       <TreatmentsSection
-        overline={getContent('disciplines', 'subtitle', undefined) ?? 'Wat we doen'}
-        title={getContent('disciplines', 'title', undefined) || 'Onze Behandelingen'}
-        description={getContent('disciplines', 'content', undefined) || 'Multidisciplinaire zorg voor volwassenen met hersenletsel en kinderen met ontwikkelingsproblemen.'}
+        overline={disciplinesOverline}
+        title={disciplinesTitle}
+        description={disciplinesDescription}
         disciplines={disciplines}
       />
 
       <StorySection
-        overline={getContent('story', 'title', 'home.story.title') ?? undefined}
-        title={getContent('story', 'subtitle', undefined) || 'Ontstaan uit passie voor neurologische zorg'}
-        content={getContent('story', 'content', 'home.story.text')}
-        imageUrl={getContent('story', 'imageUrl', undefined)}
-        t={t}
+        overline={storyOverline}
+        title={storyTitle}
+        content={storyContent}
+        imageUrl={storyImageUrl}
       />
 
       <CTASection
-        title={getContent('cta', 'title', 'home.cta.title')}
-        content={getContent('cta', 'content', 'home.cta.subtitle')}
-        buttonText={getContent('cta', 'buttonText', 'home.cta.button')}
-        buttonUrl={getContent('cta', 'buttonUrl', undefined)}
-        t={t}
+        title={ctaTitle}
+        content={ctaContent}
+        buttonText={ctaButtonText}
+        buttonUrl={ctaButtonUrl}
       />
-    </>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <PublicLayout>
-      <HomeContent />
     </PublicLayout>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getAllTeamleden } from '@/modules/teamlid/queries';
 import { createTeamlid, updateTeamlid, resetPassword, type Rol, type Discipline } from '@/modules/teamlid/actions';
 import type { Teamlid } from '@prisma/client';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function TeamManagementPage() {
   const router = useRouter();
@@ -317,18 +318,14 @@ export default function TeamManagementPage() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Foto URL
-            </label>
-            <input
-              type="url"
-              value={foto}
-              onChange={(e) => setFoto(e.target.value)}
-              placeholder="https://..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
+          <ImageUpload
+            value={foto}
+            onChange={setFoto}
+            folder="team"
+            label="Profielfoto"
+            helpText="Upload een profielfoto of voer een URL in"
+            aspectRatio="square"
+          />
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">

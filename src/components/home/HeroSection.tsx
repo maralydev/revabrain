@@ -9,10 +9,17 @@ interface HeroSectionProps {
   subtitle: string | null;
   buttonText: string | null;
   buttonUrl: string | null;
-  t: (key: string) => string;
+  t?: (key: string) => string;
 }
 
+// Default translations for server-side rendering
+const DEFAULT_TEXT = {
+  'home.hero.subtitle': 'Welkom bij RevaBrain, een multidisciplinaire groepspraktijk voor neuro- en kinderrevalidatie.',
+  'home.hero.cta': 'Maak een afspraak',
+};
+
 export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t }: HeroSectionProps) {
+  const getText = (key: string) => t ? t(key) : DEFAULT_TEXT[key as keyof typeof DEFAULT_TEXT] || key;
   return (
     <section className="relative bg-white overflow-hidden">
       {/* Hero image with overlay - Mayo Clinic / Cleveland Clinic style */}
@@ -39,7 +46,7 @@ export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t 
 
               <FadeIn delay={0.2}>
                 <p className="text-lg lg:text-xl text-white/85 mb-8 leading-relaxed max-w-xl">
-                  {subtitle || t('home.hero.subtitle')}
+                  {subtitle || getText('home.hero.subtitle')}
                 </p>
               </FadeIn>
 
@@ -49,7 +56,7 @@ export default function HeroSection({ title, subtitle, buttonText, buttonUrl, t 
                     href={buttonUrl || '/contact'}
                     className="inline-flex items-center justify-center px-8 py-4 bg-white text-[var(--rb-primary)] font-semibold rounded hover:bg-gray-100 transition-colors"
                   >
-                    {buttonText || t('home.hero.cta')}
+                    {buttonText || getText('home.hero.cta')}
                   </Link>
                   <Link
                     href="/treatments"

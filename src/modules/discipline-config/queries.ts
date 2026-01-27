@@ -39,3 +39,17 @@ export async function getActieveDisciplineConfigs(): Promise<DisciplineConfigDat
     orderBy: { volgorde: 'asc' },
   });
 }
+
+/**
+ * Haal een specifieke discipline op via code (voor publieke pagina's)
+ */
+export async function getDisciplineByCode(code: string): Promise<DisciplineConfigData | null> {
+  try {
+    return await (prisma as any).disciplineConfig.findUnique({
+      where: { code },
+    });
+  } catch (error) {
+    console.error('Error fetching discipline:', error);
+    return null;
+  }
+}

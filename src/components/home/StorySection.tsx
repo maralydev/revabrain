@@ -8,10 +8,16 @@ interface StorySectionProps {
   title: string;
   content: string | null;
   imageUrl: string | null;
-  t: (key: string) => string;
+  t?: (key: string) => string;
 }
 
+// Default translations for server-side rendering
+const DEFAULT_TEXT = {
+  'home.story.text': 'Nadat ik 5 mooie jaren ervaring mocht opdoen in een groepspraktijk en diverse ziekenhuizen en revalidatiecentra, besloot ik mijn eigen praktijk op te starten. Verschillende disciplines onder een dak, waarbij zorg voor u gecentraliseerd kan worden is het ultieme doel.',
+};
+
 export default function StorySection({ overline, title, content, imageUrl, t }: StorySectionProps) {
+  const getText = (key: string) => t ? t(key) : DEFAULT_TEXT[key as keyof typeof DEFAULT_TEXT] || key;
   return (
     <section className="section-padding bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,7 +32,7 @@ export default function StorySection({ overline, title, content, imageUrl, t }: 
 
             <FadeIn delay={0.2}>
               <p className="text-lg text-gray-600 leading-relaxed mt-8 mb-8">
-                {content || t('home.story.text')}
+                {content || getText('home.story.text')}
               </p>
             </FadeIn>
 

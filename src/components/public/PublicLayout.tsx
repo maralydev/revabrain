@@ -6,9 +6,11 @@ import { usePathname } from 'next/navigation';
 import { ReactNode, useState, useEffect } from 'react';
 import { I18nProvider, LanguageSwitcher, useI18n } from '@/i18n/client';
 import ScrollToTop from './ScrollToTop';
+import Footer, { type FooterData } from './Footer';
 
 interface PublicLayoutProps {
   children: ReactNode;
+  footerData?: FooterData | null;
 }
 
 // Utility bar - Cleveland Clinic / Mayo Clinic style
@@ -120,6 +122,7 @@ function PublicHeader() {
             {[
               { href: '/', label: t('nav.home') },
               { href: '/team', label: t('nav.team') },
+              { href: '/verwijzers', label: 'Voor verwijzers' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -283,6 +286,7 @@ function PublicHeader() {
             {[
               { href: '/', label: t('nav.home') },
               { href: '/team', label: t('nav.team') },
+              { href: '/verwijzers', label: 'Voor verwijzers' },
               { href: '/treatments', label: t('nav.treatments') },
               { href: '/costs', label: t('nav.costs') },
             ].map((link, i) => (
@@ -331,141 +335,24 @@ function PublicHeader() {
   );
 }
 
-function PublicFooter() {
-  const { t } = useI18n();
+// PublicFooter is now a separate component in Footer.tsx
 
-  return (
-    <footer className="bg-[var(--gray-50)] border-t border-gray-200">
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-6 group">
-              <Image
-                src="/images/logo.png"
-                alt="RevaBrain logo"
-                width={48}
-                height={48}
-                className="rounded-xl transition-transform duration-300 group-hover:scale-105"
-              />
-              <div>
-                <span className="font-bold text-xl text-[var(--rb-dark)]">Reva</span>
-                <span className="font-bold text-xl text-[var(--rb-primary)]">Brain</span>
-              </div>
-            </Link>
-            <p className="text-gray-600 leading-relaxed">
-              Multidisciplinaire groepspraktijk voor neurologische revalidatie.
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-gray-900 font-semibold mb-6 text-lg">Navigatie</h4>
-            <nav className="flex flex-col gap-3">
-              {[
-                { href: '/team', label: t('nav.team') },
-                { href: '/treatments', label: t('nav.treatments') },
-                { href: '/costs', label: t('nav.costs') },
-                { href: '/contact', label: t('nav.contact') },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-gray-600 hover:text-[var(--rb-primary)] transition-colors duration-200"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Treatments */}
-          <div>
-            <h4 className="text-gray-900 font-semibold mb-6 text-lg">Behandelingen</h4>
-            <nav className="flex flex-col gap-3">
-              {[
-                { href: '/treatments/neurologopedie', label: 'Neurologopedie' },
-                { href: '/treatments/prelogopedie', label: 'Prelogopedie' },
-                { href: '/treatments', label: 'Alle behandelingen' },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-gray-600 hover:text-[var(--rb-primary)] transition-colors duration-200"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="text-gray-900 font-semibold mb-6 text-lg">Contact</h4>
-            <div className="space-y-4">
-              <a
-                href="tel:+32498686842"
-                className="flex items-center gap-3 text-gray-600 hover:text-[var(--rb-primary)] transition-colors group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[var(--rb-light)] flex items-center justify-center text-[var(--rb-primary)]">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                </div>
-                <span>+32 498 68 68 42</span>
-              </a>
-              <a
-                href="mailto:info@revabrain.be"
-                className="flex items-center gap-3 text-gray-600 hover:text-[var(--rb-primary)] transition-colors group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[var(--rb-light)] flex items-center justify-center text-[var(--rb-primary)]">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <span>info@revabrain.be</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="bg-[var(--rb-dark)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">
-              {new Date().getFullYear()} RevaBrain. {t('footer.rights')}
-            </p>
-            <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-gray-400 text-sm hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-function PublicLayoutContent({ children }: PublicLayoutProps) {
+function PublicLayoutContent({ children, footerData }: PublicLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <UtilityBar />
       <PublicHeader />
       <main className="flex-1">{children}</main>
-      <PublicFooter />
+      <Footer data={footerData} />
       <ScrollToTop />
     </div>
   );
 }
 
-export default function PublicLayout({ children }: PublicLayoutProps) {
+export default function PublicLayout({ children, footerData }: PublicLayoutProps) {
   return (
     <I18nProvider>
-      <PublicLayoutContent>{children}</PublicLayoutContent>
+      <PublicLayoutContent footerData={footerData}>{children}</PublicLayoutContent>
     </I18nProvider>
   );
 }

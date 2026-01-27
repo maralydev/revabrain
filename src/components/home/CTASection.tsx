@@ -8,22 +8,30 @@ interface CTASectionProps {
   content: string | null;
   buttonText: string | null;
   buttonUrl: string | null;
-  t: (key: string) => string;
+  t?: (key: string) => string;
 }
 
+// Default translations for server-side rendering
+const DEFAULT_TEXT = {
+  'home.cta.title': 'Klaar om te Beginnen?',
+  'home.cta.subtitle': 'Neem contact op voor een vrijblijvend gesprek over uw situatie.',
+  'home.cta.button': 'Neem Contact Op',
+};
+
 export default function CTASection({ title, content, buttonText, buttonUrl, t }: CTASectionProps) {
+  const getText = (key: string) => t ? t(key) : DEFAULT_TEXT[key as keyof typeof DEFAULT_TEXT] || key;
   return (
     <section className="bg-[var(--rb-primary)] py-20 lg:py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <FadeIn>
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
-            {title || t('home.cta.title')}
+            {title || getText('home.cta.title')}
           </h2>
         </FadeIn>
 
         <FadeIn delay={0.1}>
           <p className="text-lg text-white/85 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {content || t('home.cta.subtitle')}
+            {content || getText('home.cta.subtitle')}
           </p>
         </FadeIn>
 
@@ -33,7 +41,7 @@ export default function CTASection({ title, content, buttonText, buttonUrl, t }:
               href={buttonUrl || '/contact'}
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-[var(--rb-primary)] font-semibold rounded hover:bg-gray-100 transition-colors"
             >
-              {buttonText || t('home.cta.button')}
+              {buttonText || getText('home.cta.button')}
             </Link>
             <a
               href="tel:+32498686842"

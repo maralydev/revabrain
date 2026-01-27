@@ -9,10 +9,17 @@ interface VisionSectionProps {
   content: string | null;
   content2: string | null;
   imageUrl: string | null;
-  t: (key: string) => string;
+  t?: (key: string) => string;
 }
 
+// Default translations for server-side rendering
+const DEFAULT_TEXT = {
+  'home.vision.text1': 'RevaBrain is een jonge praktijk in volle ontwikkeling tot een gespecialiseerde groepspraktijk waar u gericht volgens de wetenschappelijke evidentie wordt verder geholpen.',
+  'home.vision.text2': 'Wij streven ernaar op één locatie gerichte zorg te bieden, dit zowel voor personen met neurogene aandoeningen als kinderen met taal/ leer en ontwikkelingsproblemen.',
+};
+
 export default function VisionSection({ overline, title, content, content2, imageUrl, t }: VisionSectionProps) {
+  const getText = (key: string) => t ? t(key) : DEFAULT_TEXT[key as keyof typeof DEFAULT_TEXT] || key;
   return (
     <section className="section-padding bg-white relative overflow-hidden">
       {/* Decorative */}
@@ -51,10 +58,10 @@ export default function VisionSection({ overline, title, content, content2, imag
             <FadeIn delay={0.2}>
               <div className="space-y-6 mt-8">
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  {content || t('home.vision.text1')}
+                  {content || getText('home.vision.text1')}
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  {content2 || t('home.vision.text2')}
+                  {content2 || getText('home.vision.text2')}
                 </p>
               </div>
             </FadeIn>
