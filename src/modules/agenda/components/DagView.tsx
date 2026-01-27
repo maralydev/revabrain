@@ -290,7 +290,7 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     timeLabels.push(
       <div
         key={hour}
-        className="h-[80px] text-xs text-gray-500 text-right pr-2 border-b border-gray-100 flex items-start pt-1"
+        className="h-[80px] text-xs font-medium text-slate-400 text-right pr-3 flex items-start pt-2"
       >
         {hour}:00
       </div>
@@ -299,130 +299,137 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
 
   return (
     <>
-      <div className="flex-1 overflow-auto bg-gray-50" ref={containerRef}>
-        <div className="min-w-[800px]">
-          {/* Header with zorgverleners */}
-          <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
-            <div className="w-16 flex-shrink-0 p-3 border-r border-gray-200" />
-            {zorgverleners.map(zv => (
-              <div
-                key={zv.id}
-                className="flex-1 p-3 border-r border-gray-200 min-w-[200px]"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: zv.kleur }}
-                  />
-                  <span className="font-medium text-gray-900 truncate">
-                    {zv.voornaam} {zv.achternaam}
-                  </span>
-                </div>
-                <span className="text-xs text-gray-500">{zv.discipline}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Time grid */}
-          <div className="flex">
-            {/* Time column */}
-            <div className="w-16 flex-shrink-0 border-r border-gray-200 bg-white">
-              {timeLabels}
-            </div>
-
-            {/* Zorgverlener columns */}
-            {zorgverleners.map(zv => {
-              const zvAfspraken = getAfsprakenVoorZorgverlener(zv.id)
-
-              return (
+      <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 to-white" ref={containerRef}>
+        <div className="min-w-[800px] p-6">
+          {/* Modern card container */}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+            {/* Header with zorgverleners */}
+            <div className="flex border-b border-slate-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
+              <div className="w-20 flex-shrink-0 p-4 border-r border-slate-100" />
+              {zorgverleners.map(zv => (
                 <div
                   key={zv.id}
-                  data-zorgverlener-id={zv.id}
-                  className="flex-1 min-w-[200px] border-r border-gray-100 relative bg-white cursor-pointer"
-                  style={{ height: TOTAL_SLOTS * PIXELS_PER_SLOT }}
-                  onClick={(e) => handleSlotClick(e, zv)}
-                  onMouseMove={(e) => handleGridMouseMove(e, zv.id)}
-                  onMouseLeave={() => setHoverSlot(null)}
+                  className="flex-1 p-4 border-r border-slate-100 min-w-[220px] last:border-r-0"
                 >
-                  {/* Hour lines */}
-                  {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
+                  <div className="flex items-center gap-3">
                     <div
-                      key={i}
-                      className="absolute left-0 right-0 border-b border-gray-200"
-                      style={{ top: i * 4 * PIXELS_PER_SLOT }}
-                    />
-                  ))}
-
-                  {/* Half hour lines */}
-                  {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
-                    <div
-                      key={`half-${i}`}
-                      className="absolute left-0 right-0 border-b border-dashed border-gray-100"
-                      style={{ top: (i * 4 + 2) * PIXELS_PER_SLOT }}
-                    />
-                  ))}
-
-                  {/* Hover indicator */}
-                  {hoverSlot && hoverSlot.zorgverlenerId === zv.id && !dragState && (
-                    <div
-                      className="absolute left-1 right-1 h-[38px] bg-[var(--rb-light)]/50 border-2 border-dashed border-[var(--rb-primary)]/30 rounded-lg pointer-events-none flex items-center justify-center"
-                      style={{ top: hoverSlot.slot * PIXELS_PER_SLOT }}
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-sm"
+                      style={{ backgroundColor: zv.kleur }}
                     >
-                      <span className="text-xs text-[var(--rb-primary)] font-medium">
-                        + {slotToTimeString(hoverSlot.slot)}
-                      </span>
+                      {zv.voornaam.charAt(0)}{zv.achternaam.charAt(0)}
                     </div>
-                  )}
-
-                  {/* Drop preview */}
-                  {dropPreview && dropPreview.zorgverlenerId === zv.id && dragState && (
-                    <div
-                      className="absolute left-1 right-1 bg-[var(--rb-primary)]/20 border-2 border-dashed border-[var(--rb-primary)] rounded-lg z-30 pointer-events-none flex flex-col items-center justify-center"
-                      style={{
-                        top: dropPreview.slot * PIXELS_PER_SLOT,
-                        height: dropPreview.duurSlots * PIXELS_PER_SLOT - 2,
-                      }}
-                    >
-                      <span className="text-xs font-medium text-[var(--rb-primary)]">
-                        {slotToTimeString(dropPreview.slot)} - {slotToTimeString(dropPreview.slot + dropPreview.duurSlots)}
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-slate-800 block truncate">
+                        {zv.voornaam} {zv.achternaam}
                       </span>
-                      <span className="text-xs text-[var(--rb-primary)]/70">
-                        {dropPreview.duurSlots * SLOT_MINUTES} min
-                      </span>
+                      <span className="text-xs text-slate-500">{zv.discipline}</span>
                     </div>
-                  )}
-
-                  {/* Afspraken */}
-                  {zvAfspraken.map(afspraak => {
-                    const style = getAfspraakStyle(afspraak)
-                    const isDragging = dragState?.afspraak.id === afspraak.id
-
-                    return (
-                      <DagViewAfspraak
-                        key={afspraak.id}
-                        afspraak={afspraak}
-                        style={style}
-                        isDragging={isDragging}
-                        onDragStart={(e) => handleDragStart(e, afspraak)}
-                        onResizeStart={(e) => handleResizeStart(e, afspraak)}
-                        onClick={() => onAfspraakClick?.(afspraak)}
-                        onStatusChange={() => onRefresh?.()}
-                      />
-                    )
-                  })}
+                  </div>
                 </div>
-              )
-            })}
+              ))}
+            </div>
+
+            {/* Time grid */}
+            <div className="flex">
+              {/* Time column */}
+              <div className="w-20 flex-shrink-0 border-r border-slate-100 bg-slate-50/50">
+                {timeLabels}
+              </div>
+
+              {/* Zorgverlener columns */}
+              {zorgverleners.map(zv => {
+                const zvAfspraken = getAfsprakenVoorZorgverlener(zv.id)
+
+                return (
+                  <div
+                    key={zv.id}
+                    data-zorgverlener-id={zv.id}
+                    className="flex-1 min-w-[220px] border-r border-slate-100 last:border-r-0 relative bg-white cursor-pointer"
+                    style={{ height: TOTAL_SLOTS * PIXELS_PER_SLOT }}
+                    onClick={(e) => handleSlotClick(e, zv)}
+                    onMouseMove={(e) => handleGridMouseMove(e, zv.id)}
+                    onMouseLeave={() => setHoverSlot(null)}
+                  >
+                    {/* Hour lines */}
+                    {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute left-0 right-0 border-b border-slate-100"
+                        style={{ top: i * 4 * PIXELS_PER_SLOT }}
+                      />
+                    ))}
+
+                    {/* Half hour lines */}
+                    {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
+                      <div
+                        key={`half-${i}`}
+                        className="absolute left-0 right-0 border-b border-dashed border-slate-50"
+                        style={{ top: (i * 4 + 2) * PIXELS_PER_SLOT }}
+                      />
+                    ))}
+
+                    {/* Hover indicator - modern styling */}
+                    {hoverSlot && hoverSlot.zorgverlenerId === zv.id && !dragState && (
+                      <div
+                        className="absolute left-2 right-2 h-[38px] bg-gradient-to-r from-[var(--rb-primary)]/10 to-[var(--rb-accent)]/10 border-2 border-dashed border-[var(--rb-primary)]/40 rounded-xl pointer-events-none flex items-center justify-center backdrop-blur-sm"
+                        style={{ top: hoverSlot.slot * PIXELS_PER_SLOT }}
+                      >
+                        <span className="text-xs font-semibold text-[var(--rb-primary)]">
+                          + {slotToTimeString(hoverSlot.slot)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Drop preview - enhanced visual */}
+                    {dropPreview && dropPreview.zorgverlenerId === zv.id && dragState && (
+                      <div
+                        className="absolute left-2 right-2 bg-gradient-to-br from-[var(--rb-primary)]/20 to-[var(--rb-accent)]/20 border-2 border-dashed border-[var(--rb-primary)] rounded-xl z-30 pointer-events-none flex flex-col items-center justify-center backdrop-blur-sm shadow-lg"
+                        style={{
+                          top: dropPreview.slot * PIXELS_PER_SLOT,
+                          height: dropPreview.duurSlots * PIXELS_PER_SLOT - 2,
+                        }}
+                      >
+                        <span className="text-xs font-bold text-[var(--rb-primary)]">
+                          {slotToTimeString(dropPreview.slot)} - {slotToTimeString(dropPreview.slot + dropPreview.duurSlots)}
+                        </span>
+                        <span className="text-xs text-[var(--rb-primary)]/80 font-medium">
+                          {dropPreview.duurSlots * SLOT_MINUTES} min
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Afspraken */}
+                    {zvAfspraken.map(afspraak => {
+                      const style = getAfspraakStyle(afspraak)
+                      const isDragging = dragState?.afspraak.id === afspraak.id
+
+                      return (
+                        <DagViewAfspraak
+                          key={afspraak.id}
+                          afspraak={afspraak}
+                          style={style}
+                          isDragging={isDragging}
+                          onDragStart={(e) => handleDragStart(e, afspraak)}
+                          onResizeStart={(e) => handleResizeStart(e, afspraak)}
+                          onClick={() => onAfspraakClick?.(afspraak)}
+                          onStatusChange={() => onRefresh?.()}
+                        />
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Loading overlay */}
+      {/* Loading overlay - enhanced */}
       {isUpdating && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-4 shadow-lg flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
-            <span className="text-gray-700">
+        <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl px-6 py-4 shadow-2xl border border-white/50 flex items-center gap-4">
+            <div className="w-6 h-6 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
+            <span className="text-slate-700 font-medium">
               {dragState?.mode === 'resize' ? 'Duur aanpassen...' : 'Afspraak verplaatsen...'}
             </span>
           </div>

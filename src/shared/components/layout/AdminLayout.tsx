@@ -8,9 +8,9 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
-      <main className="ml-[240px]">
+      <main className="ml-[200px] min-h-screen">
         {children}
       </main>
     </div>

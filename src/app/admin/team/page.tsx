@@ -180,241 +180,374 @@ export default function TeamManagementPage() {
     DIETIEK: 'Diëtiek',
   };
 
+  const disciplineColors: Record<Discipline, string> = {
+    LOGOPEDIE: '#2879D8',
+    KINESITHERAPIE: '#59ECB7',
+    ERGOTHERAPIE: '#9C27B0',
+    NEUROPSYCHOLOGIE: '#FFC107',
+    DIETIEK: '#4CAF50',
+  };
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-          Team Beheren
-        </h1>
-        <div className="flex gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">
+              Team Beheren
+            </h1>
+            <p className="text-slate-500 mt-1">
+              {teamleden.length} teamleden
+            </p>
+          </div>
           <button
             onClick={() => {
               resetForm();
               setShowForm(!showForm);
             }}
-            className="px-4 py-2 bg-[#2879D8] text-white rounded-md hover:bg-[#1e60b0]"
+            className="
+              flex items-center gap-2 px-6 py-3
+              bg-gradient-to-r from-[var(--rb-primary)] to-[var(--rb-primary-dark)]
+              text-white font-semibold rounded-xl
+              shadow-lg shadow-[var(--rb-primary)]/25
+              hover:shadow-xl hover:shadow-[var(--rb-primary)]/30 hover:scale-[1.02]
+              active:scale-[0.98]
+              transition-all duration-200
+            "
           >
-            {showForm ? 'Annuleren' : '+ Nieuw Teamlid'}
-          </button>
-          <button
-            onClick={() => router.back()}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Terug
+            {showForm ? (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Annuleren
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Nieuw Teamlid
+              </>
+            )}
           </button>
         </div>
-      </div>
 
-      {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
-        </div>
-      )}
-
-      {/* Form */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {editingId ? 'Teamlid Wijzigen' : 'Nieuw Teamlid'}
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Voornaam *
-              </label>
-              <input
-                type="text"
-                value={voornaam}
-                onChange={(e) => setVoornaam(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
+        {/* Success Message */}
+        {success && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Achternaam *
-              </label>
-              <input
-                type="text"
-                value={achternaam}
-                onChange={(e) => setAchternaam(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
+            <span className="font-medium">{success}</span>
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {!editingId && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Wachtwoord *
-              </label>
-              <input
-                type="password"
-                value={wachtwoord}
-                onChange={(e) => setWachtwoord(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
+        {/* Form - Modern Card */}
+        {showForm && (
+          <form onSubmit={handleSubmit} className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="bg-gradient-to-r from-[var(--rb-primary)] to-[var(--rb-accent)] p-6">
+              <h2 className="text-xl font-bold text-white">
+                {editingId ? 'Teamlid Wijzigen' : 'Nieuw Teamlid Toevoegen'}
+              </h2>
             </div>
-          )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rol *
-              </label>
-              <select
-                value={rol}
-                onChange={(e) => setRol(e.target.value as Rol)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            <div className="p-6 space-y-6">
+              {/* Name Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Voornaam <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={voornaam}
+                    onChange={(e) => setVoornaam(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                    placeholder="Jan"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Achternaam <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={achternaam}
+                    onChange={(e) => setAchternaam(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                    placeholder="Jansen"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                  placeholder="jan.jansen@revabrain.be"
+                />
+              </div>
+
+              {/* Password (only for new) */}
+              {!editingId && (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Wachtwoord <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={wachtwoord}
+                    onChange={(e) => setWachtwoord(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                    placeholder="••••••••"
+                  />
+                </div>
+              )}
+
+              {/* Role & Discipline */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Rol <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    value={rol}
+                    onChange={(e) => setRol(e.target.value as Rol)}
+                    className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                  >
+                    <option value="ZORGVERLENER">Zorgverlener</option>
+                    <option value="SECRETARIAAT">Secretariaat</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Discipline
+                  </label>
+                  <select
+                    value={discipline}
+                    onChange={(e) => setDiscipline(e.target.value as Discipline | '')}
+                    className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                  >
+                    <option value="">Geen</option>
+                    <option value="LOGOPEDIE">Logopedie</option>
+                    <option value="KINESITHERAPIE">Kinesitherapie</option>
+                    <option value="ERGOTHERAPIE">Ergotherapie</option>
+                    <option value="NEUROPSYCHOLOGIE">Neuropsychologie</option>
+                    <option value="DIETIEK">Diëtiek</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Bio
+                </label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 resize-none"
+                  placeholder="Korte omschrijving..."
+                />
+              </div>
+
+              {/* Photo Upload */}
+              <ImageUpload
+                value={foto}
+                onChange={setFoto}
+                folder="team"
+                label="Profielfoto"
+                helpText="Upload een profielfoto of voer een URL in"
+                aspectRatio="square"
+              />
+
+              {/* Checkboxes - Modern Toggle Style */}
+              <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-xl">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isAdmin}
+                      onChange={(e) => setIsAdmin(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-purple-500 transition-colors" />
+                    <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm peer-checked:translate-x-5 transition-transform" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Admin rechten</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={actief}
+                      onChange={(e) => setActief(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-colors" />
+                    <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm peer-checked:translate-x-5 transition-transform" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Actief</span>
+                </label>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="p-4 bg-red-50 text-red-700 rounded-xl flex items-center gap-3 border border-red-100">
+                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium">{error}</span>
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={saving}
+                className="
+                  w-full py-4 px-6
+                  bg-gradient-to-r from-[var(--rb-primary)] to-[var(--rb-primary-dark)]
+                  text-white font-semibold rounded-xl
+                  shadow-lg shadow-[var(--rb-primary)]/25
+                  hover:shadow-xl hover:shadow-[var(--rb-primary)]/30
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-all duration-200
+                  flex items-center justify-center gap-2
+                "
               >
-                <option value="ZORGVERLENER">Zorgverlener</option>
-                <option value="SECRETARIAAT">Secretariaat</option>
-              </select>
+                {saving ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Opslaan...
+                  </>
+                ) : editingId ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Wijzigingen Opslaan
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Teamlid Aanmaken
+                  </>
+                )}
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Discipline
-              </label>
-              <select
-                value={discipline}
-                onChange={(e) => setDiscipline(e.target.value as Discipline | '')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="">Geen</option>
-                <option value="LOGOPEDIE">Logopedie</option>
-                <option value="KINESITHERAPIE">Kinesitherapie</option>
-                <option value="ERGOTHERAPIE">Ergotherapie</option>
-                <option value="NEUROPSYCHOLOGIE">Neuropsychologie</option>
-                <option value="DIETIEK">Diëtiek</option>
-              </select>
-            </div>
-          </div>
+          </form>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Bio
-            </label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <ImageUpload
-            value={foto}
-            onChange={setFoto}
-            folder="team"
-            label="Profielfoto"
-            helpText="Upload een profielfoto of voer een URL in"
-            aspectRatio="square"
-          />
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isAdmin"
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-                className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
-              />
-              <label htmlFor="isAdmin" className="text-sm text-gray-700">
-                Admin rechten
-              </label>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="actief"
-                checked={actief}
-                onChange={(e) => setActief(e.target.checked)}
-                className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
-              />
-              <label htmlFor="actief" className="text-sm text-gray-700">
-                Actief
-              </label>
-            </div>
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full py-2 px-4 bg-[#2879D8] text-white rounded-md hover:bg-[#1e60b0] disabled:opacity-50"
-          >
-            {saving ? 'Opslaan...' : editingId ? 'Wijzigingen Opslaan' : 'Teamlid Aanmaken'}
-          </button>
-        </form>
-      )}
-
-      {/* List */}
-      <div className="bg-white rounded-lg shadow">
+        {/* Team Grid - Modern Cards */}
         {loading ? (
-          <div className="p-6 text-gray-600">Laden...</div>
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
+          </div>
         ) : teamleden.length === 0 ? (
-          <div className="p-6 text-gray-500">Geen teamleden gevonden</div>
+          <div className="text-center py-20">
+            <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <p className="text-slate-500 font-medium">Geen teamleden gevonden</p>
+          </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {teamleden.map((teamlid) => (
-              <div key={teamlid.id} className="p-4 hover:bg-gray-50">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-gray-900">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {teamleden.map((teamlid, index) => (
+              <div
+                key={teamlid.id}
+                className="
+                  bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100
+                  hover:shadow-xl hover:shadow-slate-200/50 hover:border-slate-200
+                  transition-all duration-300 overflow-hidden group
+                "
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {/* Card Header with Color */}
+                <div
+                  className="h-2"
+                  style={{ backgroundColor: teamlid.discipline ? disciplineColors[teamlid.discipline as Discipline] : '#94a3b8' }}
+                />
+
+                <div className="p-5">
+                  {/* Avatar & Name */}
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0"
+                      style={{ backgroundColor: teamlid.discipline ? disciplineColors[teamlid.discipline as Discipline] : '#64748b' }}
+                    >
+                      {teamlid.voornaam.charAt(0)}{teamlid.achternaam.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-slate-800 truncate">
                         {teamlid.voornaam} {teamlid.achternaam}
+                      </h3>
+                      <p className="text-sm text-slate-500 truncate">
+                        {rolLabels[teamlid.rol as Rol]}
+                        {teamlid.discipline && ` • ${disciplineLabels[teamlid.discipline as Discipline]}`}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <p className="text-sm text-slate-500 mt-3 truncate">{teamlid.email}</p>
+
+                  {/* Bio */}
+                  {teamlid.bio && (
+                    <p className="text-sm text-slate-400 mt-2 line-clamp-2">{teamlid.bio}</p>
+                  )}
+
+                  {/* Tags */}
+                  <div className="flex items-center gap-2 mt-4">
+                    {teamlid.isAdmin && (
+                      <span className="text-xs px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
+                        Admin
                       </span>
-                      {teamlid.isAdmin && (
-                        <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded">
-                          Admin
-                        </span>
-                      )}
-                      {!teamlid.actief && (
-                        <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
-                          Inactief
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {teamlid.email} • {rolLabels[teamlid.rol as Rol]}
-                      {teamlid.discipline && ` • ${disciplineLabels[teamlid.discipline as Discipline]}`}
-                    </div>
-                    {teamlid.bio && (
-                      <div className="text-sm text-gray-500 mt-2">{teamlid.bio}</div>
+                    )}
+                    {!teamlid.actief && (
+                      <span className="text-xs px-2.5 py-1 bg-red-100 text-red-700 rounded-full font-medium">
+                        Inactief
+                      </span>
+                    )}
+                    {teamlid.actief && !teamlid.isAdmin && (
+                      <span className="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium">
+                        Actief
+                      </span>
                     )}
                   </div>
-                  <div className="flex gap-2">
+
+                  {/* Actions */}
+                  <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
                     <button
                       onClick={() => handleEdit(teamlid)}
-                      className="text-blue-600 hover:text-blue-800 px-3 py-1"
+                      className="flex-1 px-4 py-2.5 text-sm font-medium text-[var(--rb-primary)] bg-[var(--rb-primary)]/10 rounded-xl hover:bg-[var(--rb-primary)]/20 transition-all duration-200"
                     >
                       Bewerken
                     </button>
                     <button
                       onClick={() => handleResetPassword(teamlid.id, `${teamlid.voornaam} ${teamlid.achternaam}`)}
-                      className="text-orange-600 hover:text-orange-800 px-3 py-1"
+                      className="px-4 py-2.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-xl hover:bg-amber-100 transition-all duration-200"
                     >
                       Reset PW
                     </button>
