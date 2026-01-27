@@ -24,7 +24,7 @@ export interface UpdateAfspraakInput {
   afspraakId: number;
   patientId?: number;
   datum?: Date;
-  duur?: 30 | 45 | 60 | 90;
+  duur?: number; // Any duration in minutes (15-minute increments)
   type?: 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN';
   notities?: string;
   isAlert?: boolean;
