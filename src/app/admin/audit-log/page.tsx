@@ -117,200 +117,262 @@ export default function AuditLogPage() {
   const totalPages = Math.ceil(totaal / limit);
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: '#2879D8' }}>
-          Audit Log
-        </h1>
-        <button
-          onClick={() => router.back()}
-          className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-        >
-          Terug
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-        <div className="grid grid-cols-4 gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Startdatum
-            </label>
-            <input
-              type="date"
-              value={startDatum}
-              onChange={(e) => {
-                setStartDatum(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
+            <h1 className="text-3xl font-bold text-slate-800">
+              Audit Log
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Bekijk alle systeemactiviteiten en wijzigingen
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Einddatum
-            </label>
-            <input
-              type="date"
-              value={eindDatum}
-              onChange={(e) => {
-                setEindDatum(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Gebruiker
-            </label>
-            <select
-              value={selectedTeamlid}
-              onChange={(e) => {
-                setSelectedTeamlid(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Alle gebruikers</option>
-              {teamleden.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.voornaam} {t.achternaam}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Actie Type
-            </label>
-            <select
-              value={selectedActieType}
-              onChange={(e) => {
-                setSelectedActieType(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Alle acties</option>
-              {actieTypes.map(type => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="mt-4 flex gap-2">
           <button
-            onClick={clearFilters}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            onClick={() => router.back()}
+            className="px-5 py-2.5 bg-slate-100 text-slate-600 font-semibold rounded-xl hover:bg-slate-200 transition-all duration-200 flex items-center gap-2"
           >
-            Filters Wissen
-          </button>
-          <button
-            onClick={handleExport}
-            disabled={logs.length === 0}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-          >
-            Exporteer CSV
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Terug
           </button>
         </div>
-      </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        {/* Filters */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-6">
+          <div className="p-6 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--rb-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filters
+            </h2>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Startdatum
+                </label>
+                <input
+                  type="date"
+                  value={startDatum}
+                  onChange={(e) => {
+                    setStartDatum(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Einddatum
+                </label>
+                <input
+                  type="date"
+                  value={eindDatum}
+                  onChange={(e) => {
+                    setEindDatum(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Gebruiker
+                </label>
+                <select
+                  value={selectedTeamlid}
+                  onChange={(e) => {
+                    setSelectedTeamlid(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 cursor-pointer"
+                >
+                  <option value="">Alle gebruikers</option>
+                  {teamleden.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.voornaam} {t.achternaam}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Actie Type
+                </label>
+                <select
+                  value={selectedActieType}
+                  onChange={(e) => {
+                    setSelectedActieType(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 cursor-pointer"
+                >
+                  <option value="">Alle acties</option>
+                  {actieTypes.map(type => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={clearFilters}
+                className="px-5 py-2.5 bg-slate-100 text-slate-600 font-semibold rounded-xl hover:bg-slate-200 transition-all duration-200 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Filters Wissen
+              </button>
+              <button
+                onClick={handleExport}
+                disabled={logs.length === 0}
+                className="
+                  px-5 py-2.5
+                  bg-gradient-to-r from-emerald-500 to-emerald-600
+                  text-white font-semibold rounded-xl
+                  shadow-lg shadow-emerald-500/25
+                  hover:shadow-xl hover:shadow-emerald-500/30
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-all duration-200
+                  flex items-center gap-2
+                "
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Exporteer CSV
+              </button>
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Results Info */}
-      <div className="bg-gray-50 px-4 py-3 rounded mb-4 flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          {totaal} log {totaal === 1 ? 'entry' : 'entries'} gevonden
-          {totalPages > 1 && ` (Pagina ${page} van ${totalPages})`}
-        </div>
-        {totalPages > 1 && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-1 border border-gray-300 rounded-md hover:bg-white disabled:opacity-50"
-            >
-              Vorige
-            </button>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-md hover:bg-white disabled:opacity-50"
-            >
-              Volgende
-            </button>
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-700 rounded-xl flex items-center gap-3">
+            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span className="font-medium">{error}</span>
           </div>
         )}
-      </div>
 
-      {/* Log Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        {loading ? (
-          <div className="p-6 text-gray-600">Laden...</div>
-        ) : logs.length === 0 ? (
-          <div className="p-6 text-gray-500">Geen logs gevonden</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Timestamp
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Gebruiker
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Actie
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Entiteit
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Omschrijving
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
-                      {new Date(log.timestamp).toLocaleString('nl-BE')}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
-                      {log.teamlidNaam}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                        {log.actieType}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {log.entiteitType && (
-                        <span>
-                          {log.entiteitType}
-                          {log.entiteitId && ` #${log.entiteitId}`}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {log.omschrijving}
-                    </td>
+        {/* Results Info */}
+        <div className="bg-slate-100/50 px-5 py-3 rounded-xl mb-4 flex items-center justify-between">
+          <div className="text-sm text-slate-600 font-medium flex items-center gap-2">
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            {totaal} log {totaal === 1 ? 'entry' : 'entries'} gevonden
+            {totalPages > 1 && <span className="text-slate-400">(Pagina {page} van {totalPages})</span>}
+          </div>
+          {totalPages > 1 && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Vorige
+              </button>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
+              >
+                Volgende
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Log Table */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          {loading ? (
+            <div className="p-12 flex flex-col items-center justify-center">
+              <div className="w-10 h-10 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
+              <p className="text-slate-500 font-medium mt-4">Laden...</p>
+            </div>
+          ) : logs.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="text-slate-500 font-medium">Geen logs gevonden</p>
+              <p className="text-slate-400 text-sm mt-1">Pas de filters aan om andere resultaten te zien</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gradient-to-r from-slate-50 to-slate-100/50">
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Timestamp
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Gebruiker
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Actie
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Entiteit
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Omschrijving
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50/50 transition-colors duration-150">
+                      <td className="px-5 py-4 text-sm text-slate-600 whitespace-nowrap">
+                        {new Date(log.timestamp).toLocaleString('nl-BE')}
+                      </td>
+                      <td className="px-5 py-4 text-sm font-medium text-slate-800">
+                        {log.teamlidNaam}
+                      </td>
+                      <td className="px-5 py-4 text-sm">
+                        <span className="px-2.5 py-1 bg-[var(--rb-primary)]/10 text-[var(--rb-primary)] rounded-lg text-xs font-semibold">
+                          {log.actieType}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-600">
+                        {log.entiteitType && (
+                          <span className="flex items-center gap-1">
+                            <span className="text-slate-500">{log.entiteitType}</span>
+                            {log.entiteitId && (
+                              <span className="text-slate-400 font-mono text-xs">#{log.entiteitId}</span>
+                            )}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-600">
+                        {log.omschrijving}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
