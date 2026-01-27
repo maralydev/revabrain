@@ -9,7 +9,7 @@ const navItems = [
   { href: '/admin/agenda', label: 'Agenda', icon: CalendarIcon },
   { href: '/admin/patienten', label: 'Patiënten', icon: UsersIcon },
   { href: '/admin/team', label: 'Team', icon: TeamIcon },
-  { href: '/admin/settings/content', label: 'Website CMS', icon: DocumentIcon },
+  { href: '/cms', label: 'Website CMS', icon: DocumentIcon },
   { href: '/admin/instellingen', label: 'Instellingen', icon: SettingsIcon },
 ]
 
