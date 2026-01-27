@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Afspraak, Zorgverlener, STATUS_CONFIG } from '../types'
+import { Afspraak, Zorgverlener } from '../types'
 import { QuickAfspraakModal } from './QuickAfspraakModal'
+import { DagViewAfspraak } from './DagViewAfspraak'
 import { updateAfspraak } from '@/modules/afspraak/actions'
 
 interface DagViewProps {
@@ -395,79 +396,18 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                   {zvAfspraken.map(afspraak => {
                     const style = getAfspraakStyle(afspraak)
                     const isDragging = dragState?.afspraak.id === afspraak.id
-                    const statusConfig = STATUS_CONFIG[afspraak.status]
-                    const isCancelled = afspraak.status === 'GEANNULEERD'
 
                     return (
-                      <div
+                      <DagViewAfspraak
                         key={afspraak.id}
-                        data-afspraak
-                        className={`
-                          absolute left-1 right-1 rounded-lg overflow-hidden group
-                          transition-all duration-200
-                          ${isDragging ? 'opacity-30 z-0' : 'z-10'}
-                          ${isCancelled ? 'opacity-50' : 'hover:shadow-lg hover:z-20'}
-                        `}
-                        style={{
-                          top: style.top,
-                          height: style.height,
-                          backgroundColor: statusConfig.bgColor,
-                          borderLeft: `4px solid ${statusConfig.color}`,
-                        }}
-                      >
-                        {/* Main content area - drag to move */}
-                        <div
-                          className={`
-                            p-2 h-full flex flex-col cursor-grab active:cursor-grabbing
-                            ${isCancelled ? 'pointer-events-none' : ''}
-                          `}
-                          onMouseDown={(e) => !isCancelled && handleDragStart(e, afspraak)}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (!dragState && !isCancelled) onAfspraakClick?.(afspraak)
-                          }}
-                        >
-                          <div className="flex items-start justify-between gap-1">
-                            <span className={`font-medium text-sm text-gray-900 truncate ${isCancelled ? 'line-through' : ''}`}>
-                              {afspraak.patientNaam}
-                            </span>
-                            <span
-                              className="w-2 h-2 rounded-full flex-shrink-0 mt-1"
-                              style={{ backgroundColor: statusConfig.color }}
-                              title={statusConfig.label}
-                            />
-                          </div>
-                          <div className={`text-xs text-gray-500 mt-0.5 ${isCancelled ? 'line-through' : ''}`}>
-                            {formatTime(afspraak.datum)} - {formatTime(new Date(afspraak.datum.getTime() + afspraak.duur * 60000))}
-                          </div>
-                          {style.height > 60 && (
-                            <div className={`text-xs text-gray-400 mt-1 ${isCancelled ? 'line-through' : ''}`}>
-                              {afspraak.type} • {afspraak.duur} min
-                            </div>
-                          )}
-
-                          {/* Drag hint */}
-                          {style.height > 40 && !isCancelled && (
-                            <div className="mt-auto flex justify-center opacity-0 group-hover:opacity-100 transition-opacity pt-1">
-                              <div className="flex gap-0.5">
-                                <div className="w-1 h-1 rounded-full bg-gray-400" />
-                                <div className="w-1 h-1 rounded-full bg-gray-400" />
-                                <div className="w-1 h-1 rounded-full bg-gray-400" />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Resize handle (bottom) */}
-                        {!isCancelled && (
-                          <div
-                            className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                            onMouseDown={(e) => handleResizeStart(e, afspraak)}
-                          >
-                            <div className="w-8 h-1 bg-gray-400/50 rounded-full" />
-                          </div>
-                        )}
-                      </div>
+                        afspraak={afspraak}
+                        style={style}
+                        isDragging={isDragging}
+                        onDragStart={(e) => handleDragStart(e, afspraak)}
+                        onResizeStart={(e) => handleResizeStart(e, afspraak)}
+                        onClick={() => onAfspraakClick?.(afspraak)}
+                        onStatusChange={() => onRefresh?.()}
+                      />
                     )
                   })}
                 </div>
