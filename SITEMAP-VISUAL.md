@@ -51,16 +51,11 @@
 │  HEADER                                                                          │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                  │
-│  [Logo /] [Team] [Verwijzers] [Behandelingen ▼] [Tarieven] [Contact btn]        │
-│                                      │                                           │
-│                                      ▼                                           │
-│                          ┌─────────────────────┐                                │
-│                          │ • Overzicht         │                                │
-│                          │ • Neurologopedie ❌ │ ← BROKEN (pagina verwijderd)   │
-│                          │ • Prelogopedie  ❌  │ ← BROKEN (pagina verwijderd)   │
-│                          └─────────────────────┘                                │
+│  [Logo /] [Home] [Team] [Verwijzers] [Behandelingen] [Disciplines] [Tarieven]   │
 │                                                                                  │
-│  ❌ MIST: /disciplines                                                          │
+│                                                          [Contact btn] ─────>    │
+│                                                                                  │
+│  ✅ Alle links werken correct                                                    │
 │                                                                                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -80,21 +75,6 @@
 │  ✅ /costs       │                  │                  │                        │
 │  ✅ /contact     │                  │                  │                        │
 └──────────────────┴──────────────────┴──────────────────┴────────────────────────┘
-```
-
----
-
-## ❌ BROKEN LINKS
-
-```
-HEADER DROPDOWN
-───────────────
-    /treatments/neurologopedie  ──────✖──────>  404 (pagina verwijderd)
-    /treatments/prelogopedie    ──────✖──────>  404 (pagina verwijderd)
-
-MOET WORDEN:
-    /treatments/neurologopedie  ────────────>  /treatments/[slug] (dynamisch)
-    /treatments/prelogopedie    ────────────>  /treatments/[slug] (dynamisch)
 ```
 
 ---
@@ -134,30 +114,32 @@ MOET WORDEN:
 | `/` | ✅ | ✅ | ✅ |
 | `/team` | ✅ | ✅ | ✅ |
 | `/treatments` | ✅ | ✅ | ✅ |
-| `/treatments/[slug]` | ⚠️ hardcoded | ✅ dynamisch | ✅ |
-| `/disciplines` | ❌ MIST | ✅ | ✅ |
-| `/disciplines/[code]` | ❌ | - | ✅ |
+| `/treatments/[slug]` | - | ✅ dynamisch | ✅ |
+| `/disciplines` | ✅ | ✅ | ✅ |
+| `/disciplines/[code]` | - | - | ✅ |
 | `/costs` | ✅ | ✅ | ✅ |
-| `/contact` | ✅ | ✅ | ✅ |
+| `/contact` | ✅ CTA | ✅ | ✅ |
 | `/verwijzers` | ✅ | ✅ | ✅ |
-| `/privacy` | ❌ | ✅ | ✅ |
+| `/privacy` | - | ✅ | ✅ |
 
 ---
 
-## 🛠️ FIXES NODIG
+## ✅ ALLE PROBLEMEN OPGELOST
 
 ```
-1. HEADER: Verwijder hardcoded behandeling links
-   ────────────────────────────────────────────
-   VOOR:  /treatments/neurologopedie (broken)
-          /treatments/prelogopedie (broken)
+✅ Header navigatie volledig werkend
+   ─────────────────────────────────
+   • Broken links verwijderd (neurologopedie/prelogopedie)
+   • /disciplines toegevoegd
+   • Navigatie vereenvoudigd (directe links)
 
-   NA:    Dynamisch uit database laden
+✅ Footer navigatie volledig werkend
+   ─────────────────────────────────
+   • Behandelingen dynamisch uit database
+   • Alle links correct
 
-
-2. HEADER: Voeg /disciplines toe
-   ────────────────────────────────────────────
-   VOOR:  [Team] [Verwijzers] [Behandelingen ▼] [Tarieven]
-
-   NA:    [Team] [Verwijzers] [Behandelingen ▼] [Disciplines] [Tarieven]
+✅ CMS bewerkbaar
+   ─────────────────────────────────
+   • Alle pagina's via /admin/settings/content
+   • Footer content bewerkbaar
 ```

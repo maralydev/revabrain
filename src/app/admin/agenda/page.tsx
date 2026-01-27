@@ -19,6 +19,7 @@ export default function AgendaPage() {
   const [view, setView] = useState<AgendaView>('DAG')
   const [weekAfspraken, setWeekAfspraken] = useState<Afspraak[]>([])
   const [weekLoading, setWeekLoading] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const {
     currentDate,
@@ -27,8 +28,16 @@ export default function AgendaPage() {
     gaNaarVandaag,
   } = useAgendaDatum()
 
-  const { afspraken: dagAfspraken } = useAfspraken(currentDate)
+  const { afspraken: dagAfspraken, isLoading: dagLoading, refetch: refetchDag } = useAfspraken(currentDate)
   const { zorgverleners } = useZorgverleners()
+
+  // Refresh function
+  const handleRefresh = useCallback(() => {
+    setRefreshKey(k => k + 1)
+    if (view === 'DAG') {
+      refetchDag?.()
+    }
+  }, [view, refetchDag])
 
   // Load week data when in week view
   useEffect(() => {
@@ -68,7 +77,7 @@ export default function AgendaPage() {
     }
 
     loadWeekAfspraken()
-  }, [view, currentDate])
+  }, [view, currentDate, refreshKey])
 
   const handleNavigation = useCallback((direction: 'prev' | 'next' | 'today') => {
     if (direction === 'today') {
@@ -119,6 +128,7 @@ export default function AgendaPage() {
           zorgverleners={zorgverleners}
           afspraken={dagAfspraken}
           onAfspraakClick={handleAfspraakClick}
+          onRefresh={handleRefresh}
         />
       ) : (
         <WeekView

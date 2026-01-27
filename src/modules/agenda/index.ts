@@ -10,6 +10,7 @@ export { AfspraakCard } from './components/AfspraakCard'
 export { AgendaHeader, type AgendaView } from './components/AgendaHeader'
 export { DagView } from './components/DagView'
 export { WeekView } from './components/WeekView'
+export { QuickAfspraakModal } from './components/QuickAfspraakModal'
 
 // === Hooks ===
 export {
