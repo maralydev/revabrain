@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CalendarIcon, UsersIcon, TeamIcon, SettingsIcon } from '../ui/Icons'
+import { CalendarIcon, UsersIcon, TeamIcon, SettingsIcon, DocumentIcon } from '../ui/Icons'
 
 const navItems = [
   { href: '/admin/agenda', label: 'Agenda', icon: CalendarIcon },
-  { href: '/admin/patienten', label: 'Patienten', icon: UsersIcon },
+  { href: '/admin/patienten', label: 'Patiënten', icon: UsersIcon },
   { href: '/admin/team', label: 'Team', icon: TeamIcon },
+  { href: '/admin/settings/content', label: 'Website CMS', icon: DocumentIcon },
   { href: '/admin/instellingen', label: 'Instellingen', icon: SettingsIcon },
 ]
 

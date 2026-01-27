@@ -1,0 +1,95 @@
+flowchart TB
+    subgraph PUBLIC["🌐 PUBLIEKE WEBSITE"]
+        direction TB
+
+        HOME["/\n Homepage"]
+
+        subgraph NAV["📍 Header Navigatie"]
+            TEAM["/team\n Team"]
+            VERWIJZERS["/verwijzers\n Voor Verwijzers"]
+            TREATMENTS["/treatments\n Behandelingen"]
+            COSTS["/costs\n Tarieven"]
+            CONTACT["/contact\n Contact"]
+        end
+
+        subgraph TREATMENTS_SUB["Behandelingen Detail"]
+            TREAT_SLUG["/treatments/[slug]\n bv. neurologopedie"]
+        end
+
+        subgraph DISCIPLINES_SUB["Disciplines"]
+            DISCIPLINES["/disciplines\n Overzicht"]
+            DISC_CODE["/disciplines/[code]\n bv. kinesitherapie"]
+        end
+
+        PRIVACY["/privacy\n Privacy Policy"]
+        NOT_FOUND["/404\n Not Found"]
+    end
+
+    subgraph ADMIN["🔐 ADMIN PANEL"]
+        direction TB
+        LOGIN["/login"]
+
+        subgraph SIDEBAR["📍 Admin Sidebar"]
+            AGENDA["/admin/agenda\n Agenda"]
+            PATIENTEN["/admin/patienten\n Patiënten"]
+            ADMIN_TEAM["/admin/team\n Team Beheer"]
+            CMS["/admin/settings/content\n Website CMS"]
+            SETTINGS["/admin/instellingen\n Instellingen"]
+        end
+
+        subgraph SETTINGS_SUB["⚙️ Settings Subpagina's"]
+            CONTACT_SETTINGS["/admin/settings/contact\n Contact Info"]
+            BEHANDELINGEN_SETTINGS["/admin/settings/behandelingen\n Behandelingen"]
+            DISCIPLINES_SETTINGS["/admin/settings/disciplines\n Disciplines"]
+            AFSPRAAK_TYPES["/admin/settings/afspraak-types\n Afspraak Types"]
+        end
+
+        AUDIT["/admin/audit-log\n Audit Log"]
+        PATIENT_DETAIL["/admin/patient/[id]\n Patient Detail"]
+        AFSPRAAK_NIEUW["/admin/afspraak/nieuw\n Nieuwe Afspraak"]
+    end
+
+    subgraph FOOTER["📍 Footer Links"]
+        F_TEAM["/team"]
+        F_VERWIJZERS["/verwijzers"]
+        F_TREATMENTS["/treatments"]
+        F_DISCIPLINES["/disciplines"]
+        F_COSTS["/costs"]
+        F_CONTACT["/contact"]
+        F_PRIVACY["/privacy"]
+    end
+
+    %% Navigatie verbindingen
+    HOME --> NAV
+    HOME --> DISCIPLINES
+
+    TREATMENTS --> TREAT_SLUG
+    DISCIPLINES --> DISC_CODE
+
+    %% Footer verbindingen
+    HOME --> FOOTER
+
+    %% Admin flow
+    LOGIN --> SIDEBAR
+    SETTINGS --> SETTINGS_SUB
+
+    %% Cross-links
+    TREAT_SLUG -.->|"Terug"| TREATMENTS
+    DISC_CODE -.->|"Terug"| DISCIPLINES
+    DISC_CODE -.->|"Team link"| TEAM
+    TEAM -.->|"Discipline filter"| DISCIPLINES
+
+    %% CTA links
+    TREATMENTS -.->|"CTA"| CONTACT
+    DISCIPLINES -.->|"CTA"| CONTACT
+    COSTS -.->|"CTA"| CONTACT
+    VERWIJZERS -.->|"CTA"| CONTACT
+
+    %% Styling
+    classDef public fill:#e3f2fd,stroke:#1976d2
+    classDef admin fill:#fff3e0,stroke:#f57c00
+    classDef missing fill:#ffebee,stroke:#c62828,stroke-dasharray: 5 5
+    classDef nav fill:#c8e6c9,stroke:#388e3c
+
+    class HOME,TEAM,VERWIJZERS,TREATMENTS,COSTS,CONTACT,PRIVACY,NOT_FOUND,TREAT_SLUG,DISCIPLINES,DISC_CODE public
+    class LOGIN,AGENDA,PATIENTEN,ADMIN_TEAM,CMS,SETTINGS,CONTACT_SETTINGS,BEHANDELINGEN_SETTINGS,DISCIPLINES_SETTINGS,AFSPRAAK_TYPES,AUDIT,PATIENT_DETAIL,AFSPRAAK_NIEUW admin

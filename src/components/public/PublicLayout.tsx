@@ -46,7 +46,6 @@ function UtilityBar() {
 function PublicHeader() {
   const { t } = useI18n();
   const pathname = usePathname();
-  const [treatmentsOpen, setTreatmentsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -62,18 +61,6 @@ function PublicHeader() {
     window.addEventListener('scroll', handleScroll);
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.treatments-dropdown')) {
-        setTreatmentsOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -123,6 +110,9 @@ function PublicHeader() {
               { href: '/', label: t('nav.home') },
               { href: '/team', label: t('nav.team') },
               { href: '/verwijzers', label: 'Voor verwijzers' },
+              { href: '/treatments', label: t('nav.treatments') },
+              { href: '/disciplines', label: 'Disciplines' },
+              { href: '/costs', label: t('nav.costs') },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -138,74 +128,6 @@ function PublicHeader() {
                 {link.label}
               </Link>
             ))}
-
-            {/* Treatments Dropdown */}
-            <div className="relative treatments-dropdown">
-              <button
-                onClick={() => setTreatmentsOpen(!treatmentsOpen)}
-                className={`
-                  px-4 py-2 rounded-full font-medium flex items-center gap-2 transition-all duration-300
-                  ${showDarkMode
-                    ? 'text-white/90 hover:text-white hover:bg-white/10'
-                    : 'text-gray-700 hover:text-[var(--rb-primary)] hover:bg-[var(--rb-light)]'
-                  }
-                `}
-              >
-                {t('nav.treatments')}
-                <svg
-                  className={`w-4 h-4 transition-transform duration-300 ${treatmentsOpen ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Dropdown Menu */}
-              <div
-                className={`
-                  absolute top-full left-0 mt-2 min-w-[240px]
-                  glass rounded-2xl overflow-hidden
-                  transition-all duration-300 origin-top
-                  ${treatmentsOpen
-                    ? 'opacity-100 scale-100 translate-y-0'
-                    : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
-                  }
-                `}
-              >
-                <div className="p-2">
-                  {[
-                    { href: '/treatments', label: 'Overzicht', desc: 'Alle behandelingen' },
-                    { href: '/treatments/neurologopedie', label: 'Neurologopedie', desc: 'Spraak & taal' },
-                    { href: '/treatments/prelogopedie', label: 'Prelogopedie', desc: 'Vroege interventie' },
-                  ].map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setTreatmentsOpen(false)}
-                      className="block px-4 py-3 rounded-xl text-gray-700 hover:bg-[var(--rb-light)] hover:text-[var(--rb-primary)] transition-all duration-200 group"
-                    >
-                      <span className="font-medium block">{item.label}</span>
-                      <span className="text-sm text-gray-500 group-hover:text-[var(--rb-primary)]/70">{item.desc}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <Link
-              href="/costs"
-              className={`
-                px-4 py-2 rounded-full font-medium transition-all duration-300
-                ${showDarkMode
-                  ? 'text-white/90 hover:text-white hover:bg-white/10'
-                  : 'text-gray-700 hover:text-[var(--rb-primary)] hover:bg-[var(--rb-light)]'
-                }
-              `}
-            >
-              {t('nav.costs')}
-            </Link>
 
             {/* CTA Button */}
             <Link
@@ -288,6 +210,7 @@ function PublicHeader() {
               { href: '/team', label: t('nav.team') },
               { href: '/verwijzers', label: 'Voor verwijzers' },
               { href: '/treatments', label: t('nav.treatments') },
+              { href: '/disciplines', label: 'Disciplines' },
               { href: '/costs', label: t('nav.costs') },
             ].map((link, i) => (
               <Link
@@ -302,23 +225,6 @@ function PublicHeader() {
                 {link.label}
               </Link>
             ))}
-
-            {/* Sub-links for treatments */}
-            <div className="ml-4 flex flex-col gap-1 border-l-2 border-[var(--rb-light)] pl-4">
-              {[
-                { href: '/treatments/neurologopedie', label: 'Neurologopedie' },
-                { href: '/treatments/prelogopedie', label: 'Prelogopedie' },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-gray-600 py-2 px-3 rounded-lg hover:bg-[var(--rb-light)] hover:text-[var(--rb-primary)] transition-all duration-200"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
 
             {/* CTA Button */}
             <Link

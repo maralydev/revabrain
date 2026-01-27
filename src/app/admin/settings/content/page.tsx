@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getAllPageContent, type PageContentData } from '@/modules/page-content/queries';
 import { savePageContent, deletePageContent, togglePublished, seedPageContentStructure } from '@/modules/page-content/actions';
 
-const PAGES = ['home', 'team', 'treatments', 'costs', 'contact', 'verwijzers'];
+const PAGES = ['home', 'team', 'treatments', 'disciplines', 'costs', 'contact', 'verwijzers', 'privacy', 'footer'];
 const LOCALES = [
   { code: 'nl', name: 'Nederlands' },
   { code: 'fr', name: 'Français' },
@@ -16,9 +16,12 @@ const PAGE_LABELS: Record<string, string> = {
   home: 'Homepage',
   team: 'Team',
   treatments: 'Behandelingen',
+  disciplines: 'Disciplines',
   costs: 'Tarieven',
   contact: 'Contact',
   verwijzers: 'Voor Verwijzers',
+  privacy: 'Privacy Policy',
+  footer: 'Footer',
 };
 
 export default function ContentManagementPage() {
