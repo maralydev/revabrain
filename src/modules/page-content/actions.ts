@@ -160,12 +160,17 @@ export async function seedPageContentStructure(): Promise<{ success: boolean; cr
   try {
     await requireAdmin();
 
-    // Define the page structure
+    // Define the complete page structure
     const pages = [
-      { page: 'home', sections: ['hero', 'vision', 'story', 'cta'] },
-      { page: 'team', sections: ['intro'] },
-      { page: 'costs', sections: ['intro', 'convention', 'homeVisits'] },
-      { page: 'contact', sections: ['intro', 'homeVisitsNote'] },
+      { page: 'home', sections: ['hero', 'vision', 'disciplines', 'story', 'cta'] },
+      { page: 'team', sections: ['hero', 'intro', 'members', 'cta'] },
+      { page: 'treatments', sections: ['hero', 'intro', 'list', 'cta'] },
+      { page: 'disciplines', sections: ['hero', 'intro', 'list'] },
+      { page: 'costs', sections: ['hero', 'intro', 'pricing', 'insurance', 'convention', 'homeVisits', 'cta'] },
+      { page: 'contact', sections: ['hero', 'info', 'form', 'map', 'homeVisitsNote'] },
+      { page: 'verwijzers', sections: ['hero', 'intro', 'process', 'faq', 'cta'] },
+      { page: 'privacy', sections: ['hero', 'content'] },
+      { page: 'footer', sections: ['contact', 'hours', 'social', 'legal'] },
     ];
 
     const locales = ['nl', 'fr', 'en'];
@@ -201,5 +206,94 @@ export async function seedPageContentStructure(): Promise<{ success: boolean; cr
   } catch (error) {
     console.error('Error seeding page content:', error);
     return { success: false, created: 0 };
+  }
+}
+
+/**
+ * Quickly add a new section to a page
+ */
+export async function addSection(
+  page: string,
+  section: string,
+  locale: string = 'nl'
+): Promise<{ success: boolean; error?: string; data?: PageContentData }> {
+  try {
+    await requireAdmin();
+
+    // Check if exists
+    const existing = await (prisma as any).pageContent.findUnique({
+      where: { page_section_locale: { page, section, locale } },
+    });
+
+    if (existing) {
+      return { success: false, error: 'Sectie bestaat al' };
+    }
+
+    const result = await (prisma as any).pageContent.create({
+      data: {
+        page,
+        section,
+        locale,
+        title: null,
+        content: null,
+        imageUrl: null,
+        published: false,
+      },
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error adding section:', error);
+    return { success: false, error: 'Failed to add section' };
+  }
+}
+
+/**
+ * Duplicate content to another locale
+ */
+export async function duplicateToLocale(
+  id: number,
+  targetLocale: string
+): Promise<{ success: boolean; error?: string; data?: PageContentData }> {
+  try {
+    await requireAdmin();
+
+    const source = await (prisma as any).pageContent.findUnique({
+      where: { id },
+    });
+
+    if (!source) {
+      return { success: false, error: 'Source content not found' };
+    }
+
+    // Check if target already exists
+    const existing = await (prisma as any).pageContent.findUnique({
+      where: { page_section_locale: { page: source.page, section: source.section, locale: targetLocale } },
+    });
+
+    if (existing) {
+      return { success: false, error: 'Content already exists for this locale' };
+    }
+
+    const result = await (prisma as any).pageContent.create({
+      data: {
+        page: source.page,
+        section: source.section,
+        locale: targetLocale,
+        title: source.title,
+        subtitle: source.subtitle,
+        content: source.content,
+        content2: source.content2,
+        imageUrl: source.imageUrl,
+        buttonText: source.buttonText,
+        buttonUrl: source.buttonUrl,
+        published: false, // Always start as draft when duplicating
+      },
+    });
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('Error duplicating content:', error);
+    return { success: false, error: 'Failed to duplicate content' };
   }
 }
