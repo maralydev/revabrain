@@ -44,38 +44,50 @@ export function AgendaHeader({
     }
   };
 
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="bg-white border-b border-gray-100 px-6 py-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Left: Title and Date */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Agenda</h1>
-          <p className="text-gray-600 capitalize">{formatDate(currentDate)}</p>
+          <h1 className="text-xl font-bold text-gray-900 tracking-tight">Agenda</h1>
+          <div className="flex items-center gap-2 mt-0.5">
+            <p className="text-gray-500 text-sm capitalize">{formatDate(currentDate)}</p>
+            {isToday(currentDate) && view === "DAG" && (
+              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-xs font-semibold rounded-full border border-emerald-100">
+                Vandaag
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Center: Navigation */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onPrevDay}>
+          <Button variant="outline" size="sm" onClick={onPrevDay} className="px-3">
             <ChevronLeftIcon className="w-4 h-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={onToday}>
             Vandaag
           </Button>
-          <Button variant="outline" size="sm" onClick={onNextDay}>
+          <Button variant="outline" size="sm" onClick={onNextDay} className="px-3">
             <ChevronRightIcon className="w-4 h-4" />
           </Button>
         </div>
 
         {/* Right: View Toggle + New Appointment */}
         <div className="flex items-center gap-3">
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-gray-100 rounded-xl p-1">
             <button
               onClick={() => onViewChange("DAG")}
               className={cn(
-                "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                 view === "DAG"
                   ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-500 hover:text-gray-700"
               )}
             >
               Dag
@@ -83,10 +95,10 @@ export function AgendaHeader({
             <button
               onClick={() => onViewChange("WEEK")}
               className={cn(
-                "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                 view === "WEEK"
                   ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-500 hover:text-gray-700"
               )}
             >
               Week

@@ -33,9 +33,9 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ) => {
     const variants = {
       default: "bg-gray-100 text-gray-700 border-gray-200",
-      primary: "bg-blue-50 text-blue-700 border-blue-200",
-      secondary: "bg-teal-50 text-teal-700 border-teal-200",
-      success: "bg-green-50 text-green-700 border-green-200",
+      primary: "bg-[var(--rb-light)] text-[var(--rb-primary)] border-[var(--rb-primary)]/20",
+      secondary: "bg-[var(--rb-accent)]/20 text-[var(--rb-accent-dark)] border-[var(--rb-accent)]/30",
+      success: "bg-emerald-50 text-emerald-700 border-emerald-200",
       warning: "bg-amber-50 text-amber-700 border-amber-200",
       danger: "bg-red-50 text-red-700 border-red-200",
       info: "bg-purple-50 text-purple-700 border-purple-200",
@@ -43,15 +43,15 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     };
 
     const sizes = {
-      sm: "px-2 py-0.5 text-xs",
-      md: "px-2.5 py-1 text-sm",
+      sm: "px-2 py-0.5 text-[11px]",
+      md: "px-2.5 py-1 text-xs",
     };
 
     const dotColors = {
       default: "bg-gray-500",
-      primary: "bg-blue-500",
-      secondary: "bg-teal-500",
-      success: "bg-green-500",
+      primary: "bg-[var(--rb-primary)]",
+      secondary: "bg-[var(--rb-accent-dark)]",
+      success: "bg-emerald-500",
       warning: "bg-amber-500",
       danger: "bg-red-500",
       info: "bg-purple-500",
@@ -61,7 +61,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={cn(
-          "inline-flex items-center gap-1.5 font-medium rounded-full border",
+          "inline-flex items-center gap-1.5 font-semibold rounded-lg border",
           variants[variant],
           sizes[size],
           className
@@ -71,7 +71,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         {dot && (
           <span
             className={cn(
-              "w-1.5 h-1.5 rounded-full",
+              "w-1.5 h-1.5 rounded-full flex-shrink-0",
               dotColor || dotColors[variant === "outline" ? "default" : variant]
             )}
           />
@@ -90,9 +90,11 @@ export { Badge };
 export function AppointmentStatusBadge({
   status,
   className,
+  showDot = true,
 }: {
   status: string;
   className?: string;
+  showDot?: boolean;
 }) {
   const statusConfig: Record<
     string,
@@ -106,17 +108,17 @@ export function AppointmentStatusBadge({
     BEVESTIGD: {
       label: "Bevestigd",
       variant: "primary",
-      dotColor: "bg-blue-500",
+      dotColor: "bg-[var(--rb-primary)]",
     },
     IN_WACHTZAAL: {
-      label: "In wachtzaal",
+      label: "Wachtzaal",
       variant: "info",
       dotColor: "bg-purple-500",
     },
     BINNEN: {
       label: "Binnen",
       variant: "success",
-      dotColor: "bg-green-500",
+      dotColor: "bg-emerald-500",
     },
     AFGEWERKT: {
       label: "Afgewerkt",
@@ -145,7 +147,7 @@ export function AppointmentStatusBadge({
     <Badge
       variant={config.variant}
       size="sm"
-      dot
+      dot={showDot}
       dotColor={config.dotColor}
       className={cn("font-medium", className)}
     >
@@ -153,3 +155,29 @@ export function AppointmentStatusBadge({
     </Badge>
   );
 }
+
+// Status Dot - Simple colored dot with label
+interface StatusDotProps {
+  status: "success" | "warning" | "danger" | "info" | "default";
+  label: string;
+  className?: string;
+}
+
+function StatusDot({ status, label, className }: StatusDotProps) {
+  const colors = {
+    success: "bg-emerald-500",
+    warning: "bg-amber-500",
+    danger: "bg-red-500",
+    info: "bg-[var(--rb-primary)]",
+    default: "bg-gray-400",
+  };
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <span className={cn("w-2 h-2 rounded-full", colors[status])} />
+      <span className="text-sm text-gray-600">{label}</span>
+    </div>
+  );
+}
+
+export { StatusDot };

@@ -142,3 +142,5 @@ supabase/
 prisma/*.db
 prisma/*.db-journal
 prisma/dev.db
+.vercel
+.env*.local

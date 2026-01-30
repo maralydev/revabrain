@@ -272,12 +272,12 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
 
   return (
     <>
-      <div className="flex-1 overflow-auto bg-gray-50" ref={containerRef}>
+      <div className="flex-1 overflow-auto bg-gray-50/50" ref={containerRef}>
         <div className="min-w-[800px] p-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-[var(--shadow-card)] border border-gray-100 overflow-hidden">
             {/* Header */}
-            <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
-              <div className="w-20 flex-shrink-0 p-4 border-r border-gray-100" />
+            <div className="flex border-b border-gray-100 bg-white sticky top-0 z-20">
+              <div className="w-20 flex-shrink-0 p-4 border-r border-gray-100 bg-gray-50/50" />
               {zorgverleners.map(zv => (
                 <div
                   key={zv.id}
@@ -285,13 +285,13 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-sm"
-                      style={{ backgroundColor: zv.kleur || '#3b82f6' }}
+                      className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-md"
+                      style={{ backgroundColor: zv.kleur || '#2879D8' }}
                     >
                       {zv.voornaam.charAt(0)}{zv.achternaam.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-gray-800 block truncate">
+                      <span className="font-semibold text-gray-900 block truncate">
                         {zv.voornaam} {zv.achternaam}
                       </span>
                       <span className="text-xs text-gray-500">{zv.discipline}</span>
@@ -304,7 +304,7 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
             {/* Time grid */}
             <div className="flex">
               {/* Time column */}
-              <div className="w-20 flex-shrink-0 border-r border-gray-100 bg-gray-50">
+              <div className="w-20 flex-shrink-0 border-r border-gray-100 bg-gray-50/30">
                 {timeLabels}
               </div>
 
@@ -343,10 +343,10 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                     {/* Hover indicator */}
                     {hoverSlot && hoverSlot.zorgverlenerId === zv.id && !dragState && (
                       <div
-                        className="absolute left-2 right-2 h-[38px] bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg pointer-events-none flex items-center justify-center"
+                        className="absolute left-2 right-2 h-[38px] bg-[var(--rb-light)] border-2 border-dashed border-[var(--rb-primary)]/30 rounded-xl pointer-events-none flex items-center justify-center"
                         style={{ top: hoverSlot.slot * PIXELS_PER_SLOT }}
                       >
-                        <span className="text-xs font-medium text-blue-600">
+                        <span className="text-xs font-semibold text-[var(--rb-primary)]">
                           + {slotToTimeString(hoverSlot.slot)}
                         </span>
                       </div>
@@ -355,13 +355,13 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                     {/* Drop preview */}
                     {dropPreview && dropPreview.zorgverlenerId === zv.id && dragState && (
                       <div
-                        className="absolute left-2 right-2 bg-blue-100 border-2 border-dashed border-blue-400 rounded-lg z-30 pointer-events-none flex items-center justify-center"
+                        className="absolute left-2 right-2 bg-[var(--rb-primary)]/10 border-2 border-dashed border-[var(--rb-primary)]/40 rounded-xl z-30 pointer-events-none flex items-center justify-center"
                         style={{
                           top: dropPreview.slot * PIXELS_PER_SLOT,
                           height: dropPreview.duurSlots * PIXELS_PER_SLOT - 2,
                         }}
                       >
-                        <span className="text-xs font-medium text-blue-700">
+                        <span className="text-xs font-semibold text-[var(--rb-primary)]">
                           {slotToTimeString(dropPreview.slot)} - {slotToTimeString(dropPreview.slot + dropPreview.duurSlots)}
                         </span>
                       </div>
@@ -395,9 +395,9 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
 
       {/* Loading overlay */}
       {isUpdating && (
-        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl px-6 py-4 shadow-xl flex items-center gap-4">
-            <div className="w-6 h-6 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="fixed inset-0 bg-gray-900/10 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl px-8 py-5 shadow-2xl flex items-center gap-4 border border-gray-100">
+            <div className="w-6 h-6 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
             <span className="text-gray-700 font-medium">
               {dragState?.mode === 'resize' ? 'Duur aanpassen...' : 'Afspraak verplaatsen...'}
             </span>
