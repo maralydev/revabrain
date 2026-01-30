@@ -47,7 +47,7 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
       return;
     }
 
-    await (prisma as any).auditLog.create({
+    await prisma.auditLog.create({
       data: {
         timestamp: new Date(),
         teamlidId: session.userId,
@@ -100,7 +100,7 @@ export interface AuditLogDirectEntry {
  */
 export async function logAuditDirect(entry: AuditLogDirectEntry): Promise<void> {
   try {
-    await (prisma as any).auditLog.create({
+    await prisma.auditLog.create({
       data: {
         timestamp: new Date(),
         teamlidId: entry.teamlidId,

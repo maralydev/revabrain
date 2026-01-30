@@ -209,22 +209,22 @@ export default function BehandelingenAdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8">
-        <p className="text-gray-600">Laden...</p>
+      <div className="min-h-screen bg-slate-100 p-8">
+        <p className="text-slate-600">Laden...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-100">
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/admin/agenda" className="text-gray-500 hover:text-gray-700">
+            <Link href="/admin/agenda" className="text-slate-500 hover:text-slate-700">
               &larr; Terug
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Behandelingen Beheer</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Behandelingen Beheer</h1>
           </div>
         </div>
       </header>
@@ -247,7 +247,7 @@ export default function BehandelingenAdminPage() {
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex flex-wrap gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Taal</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Taal</label>
               <select
                 value={selectedLocale}
                 onChange={(e) => setSelectedLocale(e.target.value)}
@@ -281,14 +281,14 @@ export default function BehandelingenAdminPage() {
             </div>
             <div className="divide-y">
               {filteredBehandelingen.length === 0 ? (
-                <p className="p-4 text-gray-500 text-center">
+                <p className="p-4 text-slate-500 text-center">
                   Geen behandelingen gevonden. Voeg een nieuwe toe.
                 </p>
               ) : (
                 filteredBehandelingen.map((item) => (
                   <div
                     key={item.id}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer ${
+                    className={`p-4 hover:bg-slate-50 cursor-pointer ${
                       editItem?.id === item.id ? 'bg-blue-50' : ''
                     }`}
                     onClick={() => startEdit(item)}
@@ -301,11 +301,11 @@ export default function BehandelingenAdminPage() {
                         />
                         <div>
                           <span className="font-medium">{item.title}</span>
-                          <span className="ml-2 text-sm text-gray-500">({item.slug})</span>
+                          <span className="ml-2 text-sm text-slate-500">({item.slug})</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-slate-500">
                           {item.aandoeningen?.length || 0} indicaties
                         </span>
                         <button
@@ -316,14 +316,14 @@ export default function BehandelingenAdminPage() {
                           className={`px-2 py-1 text-xs rounded ${
                             item.actief
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-600'
+                              : 'bg-slate-100 text-slate-600'
                           }`}
                         >
                           {item.actief ? 'Actief' : 'Inactief'}
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-2 line-clamp-2">{item.description}</p>
+                    <p className="text-sm text-slate-500 mt-2 line-clamp-2">{item.description}</p>
                   </div>
                 ))
               )}
@@ -339,7 +339,7 @@ export default function BehandelingenAdminPage() {
                   <h2 className="text-lg font-semibold">
                     {isCreating ? 'Nieuwe Behandeling' : 'Bewerken'}
                   </h2>
-                  <button onClick={resetForm} className="text-gray-500 hover:text-gray-700">
+                  <button onClick={resetForm} className="text-slate-500 hover:text-slate-700">
                     Annuleren
                   </button>
                 </div>
@@ -347,7 +347,7 @@ export default function BehandelingenAdminPage() {
                 <form onSubmit={handleSave} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
                         Slug *
                       </label>
                       <input
@@ -361,7 +361,7 @@ export default function BehandelingenAdminPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
                         Titel *
                       </label>
                       <input
@@ -376,7 +376,7 @@ export default function BehandelingenAdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                       Korte beschrijving *
                     </label>
                     <textarea
@@ -389,7 +389,7 @@ export default function BehandelingenAdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                       Uitgebreide beschrijving
                     </label>
                     <textarea
@@ -401,7 +401,7 @@ export default function BehandelingenAdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                       Extra info
                     </label>
                     <textarea
@@ -414,7 +414,7 @@ export default function BehandelingenAdminPage() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Kleur</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Kleur</label>
                       <input
                         type="color"
                         value={formColor}
@@ -423,7 +423,7 @@ export default function BehandelingenAdminPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Volgorde</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Volgorde</label>
                       <input
                         type="number"
                         value={formVolgorde}
@@ -440,7 +440,7 @@ export default function BehandelingenAdminPage() {
                           onChange={(e) => setFormActief(e.target.checked)}
                           className="rounded"
                         />
-                        <span className="text-sm text-gray-700">Actief</span>
+                        <span className="text-sm text-slate-700">Actief</span>
                       </label>
                     </div>
                   </div>
@@ -482,7 +482,7 @@ export default function BehandelingenAdminPage() {
 
                   {/* Aandoening form */}
                   {showAandoeningForm && (
-                    <form onSubmit={handleSaveAandoening} className="mb-4 p-4 bg-gray-50 rounded">
+                    <form onSubmit={handleSaveAandoening} className="mb-4 p-4 bg-slate-50 rounded">
                       <div className="grid gap-3">
                         <input
                           type="text"
@@ -511,7 +511,7 @@ export default function BehandelingenAdminPage() {
                               setShowAandoeningForm(false);
                               setEditAandoening(null);
                             }}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
+                            className="px-4 py-2 bg-slate-200 text-slate-700 rounded text-sm hover:bg-slate-300"
                           >
                             Annuleren
                           </button>
@@ -523,7 +523,7 @@ export default function BehandelingenAdminPage() {
                   {/* List */}
                   <div className="divide-y">
                     {editItem.aandoeningen?.length === 0 ? (
-                      <p className="text-gray-500 text-sm py-4 text-center">
+                      <p className="text-slate-500 text-sm py-4 text-center">
                         Nog geen indicaties toegevoegd.
                       </p>
                     ) : (
@@ -532,7 +532,7 @@ export default function BehandelingenAdminPage() {
                           <div>
                             <span className="font-medium">{a.naam}</span>
                             {a.beschrijving && (
-                              <p className="text-sm text-gray-500">{a.beschrijving}</p>
+                              <p className="text-sm text-slate-500">{a.beschrijving}</p>
                             )}
                           </div>
                           <div className="flex gap-2">
@@ -562,7 +562,7 @@ export default function BehandelingenAdminPage() {
           {!editItem && !isCreating && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold mb-4">Instructies</h2>
-              <div className="text-sm text-gray-600 space-y-3">
+              <div className="text-sm text-slate-600 space-y-3">
                 <p>
                   Beheer hier de behandelingen die op de website getoond worden.
                 </p>

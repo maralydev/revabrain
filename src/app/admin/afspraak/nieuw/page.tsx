@@ -265,7 +265,7 @@ export default function NieuweAfspraakPage() {
                 </label>
                 <select
                   value={type}
-                  onChange={(e) => setType(e.target.value as any)}
+                  onChange={(e) => setType(e.target.value as 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN')}
                   className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 cursor-pointer"
                 >
                   <option value="CONSULTATIE">Consultatie</option>

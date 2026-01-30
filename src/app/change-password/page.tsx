@@ -54,18 +54,18 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-2" style={{ color: '#2879D8' }}>
           Wachtwoord Wijzigen
         </h1>
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-slate-600 mb-6">
           Je wachtwoord is gereset door een administrator. Kies een nieuw wachtwoord om door te gaan.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Huidig Wachtwoord *
             </label>
             <input
@@ -73,12 +73,12 @@ export default function ChangePasswordPage() {
               value={huidigWachtwoord}
               onChange={(e) => setHuidigWachtwoord(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Nieuw Wachtwoord * (min. 8 karakters)
             </label>
             <input
@@ -87,12 +87,12 @@ export default function ChangePasswordPage() {
               onChange={(e) => setNieuwWachtwoord(e.target.value)}
               required
               minLength={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Bevestig Nieuw Wachtwoord *
             </label>
             <input
@@ -101,7 +101,7 @@ export default function ChangePasswordPage() {
               onChange={(e) => setBevestigWachtwoord(e.target.value)}
               required
               minLength={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md"
             />
           </div>
 

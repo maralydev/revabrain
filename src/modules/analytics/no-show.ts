@@ -100,7 +100,7 @@ export async function analyzeNoShows(
     // Groepeer per patiënt
     const patientMap = new Map<number, PatientNoShowInfo>();
 
-    for (const afspraak of noShowAfspraken as any[]) {
+    for (const afspraak of noShowAfspraken) {
       if (!afspraak.patient) continue;
 
       const patientId = afspraak.patient.id;

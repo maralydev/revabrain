@@ -113,7 +113,7 @@ export default function AfspraakTypesPage() {
         </h1>
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-50"
         >
           Terug
         </button>
@@ -136,12 +136,12 @@ export default function AfspraakTypesPage() {
       {/* Form */}
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-slate-900">
             {editingCode} - Configuratie Wijzigen
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Weergavenaam *
             </label>
             <input
@@ -149,13 +149,13 @@ export default function AfspraakTypesPage() {
               value={naam}
               onChange={(e) => setNaam(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
                 Kleur (hex) *
               </label>
               <div className="flex gap-2">
@@ -163,7 +163,7 @@ export default function AfspraakTypesPage() {
                   type="color"
                   value={kleur}
                   onChange={(e) => setKleur(e.target.value)}
-                  className="w-16 h-10 border border-gray-300 rounded cursor-pointer"
+                  className="w-16 h-10 border border-slate-300 rounded cursor-pointer"
                 />
                 <input
                   type="text"
@@ -172,19 +172,19 @@ export default function AfspraakTypesPage() {
                   placeholder="#3B82F6"
                   pattern="^#[0-9A-Fa-f]{6}$"
                   required
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
                 Standaard Duur (minuten) *
               </label>
               <select
                 value={standaardDuur}
                 onChange={(e) => setStandaardDuur(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-slate-300 rounded-md"
               >
                 <option value={30}>30 min</option>
                 <option value={45}>45 min</option>
@@ -201,9 +201,9 @@ export default function AfspraakTypesPage() {
                 id="factureerbaar"
                 checked={factureerbaar}
                 onChange={(e) => setFactureerbaar(e.target.checked)}
-                className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
+                className="w-4 h-4 text-[#2879D8] border-slate-300 rounded"
               />
-              <label htmlFor="factureerbaar" className="text-sm text-gray-700">
+              <label htmlFor="factureerbaar" className="text-sm text-slate-700">
                 Factureerbaar
               </label>
             </div>
@@ -213,9 +213,9 @@ export default function AfspraakTypesPage() {
                 id="actief"
                 checked={actief}
                 onChange={(e) => setActief(e.target.checked)}
-                className="w-4 h-4 text-[#2879D8] border-gray-300 rounded"
+                className="w-4 h-4 text-[#2879D8] border-slate-300 rounded"
               />
-              <label htmlFor="actief" className="text-sm text-gray-700">
+              <label htmlFor="actief" className="text-sm text-slate-700">
                 Actief
               </label>
             </div>
@@ -242,7 +242,7 @@ export default function AfspraakTypesPage() {
                 resetForm();
               }}
               disabled={saving}
-              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50"
             >
               Annuleren
             </button>
@@ -253,13 +253,13 @@ export default function AfspraakTypesPage() {
       {/* List */}
       <div className="bg-white rounded-lg shadow">
         {loading ? (
-          <div className="p-6 text-gray-600">Laden...</div>
+          <div className="p-6 text-slate-600">Laden...</div>
         ) : configs.length === 0 ? (
-          <div className="p-6 text-gray-500">Geen afspraak types gevonden</div>
+          <div className="p-6 text-slate-500">Geen afspraak types gevonden</div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-slate-200">
             {configs.map((config) => (
-              <div key={config.id} className="p-4 hover:bg-gray-50">
+              <div key={config.id} className="p-4 hover:bg-slate-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div
@@ -269,10 +269,10 @@ export default function AfspraakTypesPage() {
                     />
                     <div>
                       <div className="flex items-center gap-3">
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-slate-900">
                           {config.naam}
                         </span>
-                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded font-mono">
+                        <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-mono">
                           {config.code}
                         </span>
                         {!config.actief && (
@@ -281,7 +281,7 @@ export default function AfspraakTypesPage() {
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-600 mt-1">
+                      <div className="text-sm text-slate-600 mt-1">
                         Duur: {config.standaardDuur} min •
                         {config.factureerbaar ? ' Factureerbaar' : ' Niet factureerbaar'}
                       </div>

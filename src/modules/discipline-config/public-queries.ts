@@ -29,7 +29,7 @@ export async function getDisciplineDetail(
 ): Promise<DisciplineDetailResult> {
   try {
     // Find discipline config
-    const discipline = await (prisma as any).disciplineConfig.findFirst({
+    const discipline = await prisma.disciplineConfig.findFirst({
       where: { code: code.toUpperCase(), actief: true },
     });
 
@@ -38,7 +38,7 @@ export async function getDisciplineDetail(
     }
 
     // Find team members - use raw query to avoid enum type issue
-    const teamleden = await (prisma as any).$queryRaw`
+    const teamleden = await prisma.$queryRaw<PublicTeamlidData[]>`
       SELECT id, voornaam, achternaam, bio, foto
       FROM Teamlid
       WHERE discipline = ${code.toUpperCase()} AND actief = 1

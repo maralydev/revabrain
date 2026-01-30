@@ -72,14 +72,14 @@ export async function createAfwezigheid(
     });
 
     // Maak afwezigheid aan
-    const afwezigheid = await (prisma as any).afwezigheid.create({
+    const afwezigheid = await prisma.afwezigheid.create({
       data: {
         startDatum: input.startDatum,
         eindDatum: input.eindDatum,
         type: input.type,
         reden: input.reden || null,
         zorgverlenerId: session.userId,
-      } as any, // Type assertion needed until Prisma client is regenerated
+      },
     });
 
     return {
@@ -108,36 +108,36 @@ export async function updateAfwezigheid(
     }
 
     // Haal bestaande afwezigheid op
-    const bestaandeAfwezigheid = await (prisma as any).afwezigheid.findUnique({
+    const bestaandeAfwezigheid = await prisma.afwezigheid.findUnique({
       where: { id: input.afwezigheidId },
-    } as any); // Type assertion needed
+    });
 
     if (!bestaandeAfwezigheid) {
       return { success: false, error: 'Afwezigheid niet gevonden' };
     }
 
     // Check toegang
-    if ((bestaandeAfwezigheid as any).zorgverlenerId !== session.userId && !session.isAdmin) {
+    if (bestaandeAfwezigheid.zorgverlenerId !== session.userId && !session.isAdmin) {
       return { success: false, error: 'Geen toegang tot deze afwezigheid' };
     }
 
     // Validatie datum
-    const nieuwStartDatum = input.startDatum || (bestaandeAfwezigheid as any).startDatum;
-    const nieuwEindDatum = input.eindDatum || (bestaandeAfwezigheid as any).eindDatum;
+    const nieuwStartDatum = input.startDatum || bestaandeAfwezigheid.startDatum;
+    const nieuwEindDatum = input.eindDatum || bestaandeAfwezigheid.eindDatum;
 
     if (nieuwEindDatum < nieuwStartDatum) {
       return { success: false, error: 'Einddatum moet na startdatum liggen' };
     }
 
     // Update afwezigheid
-    await (prisma as any).afwezigheid.update({
+    await prisma.afwezigheid.update({
       where: { id: input.afwezigheidId },
       data: {
         ...(input.startDatum && { startDatum: input.startDatum }),
         ...(input.eindDatum && { eindDatum: input.eindDatum }),
         ...(input.type && { type: input.type }),
         ...(input.reden !== undefined && { reden: input.reden || null }),
-      } as any, // Type assertion needed
+      },
     });
 
     return { success: true };
@@ -157,23 +157,23 @@ export async function deleteAfwezigheid(
     const session = await requireZorgverlener();
 
     // Haal bestaande afwezigheid op
-    const bestaandeAfwezigheid = await (prisma as any).afwezigheid.findUnique({
+    const bestaandeAfwezigheid = await prisma.afwezigheid.findUnique({
       where: { id: afwezigheidId },
-    } as any); // Type assertion needed
+    });
 
     if (!bestaandeAfwezigheid) {
       return { success: false, error: 'Afwezigheid niet gevonden' };
     }
 
     // Check toegang
-    if ((bestaandeAfwezigheid as any).zorgverlenerId !== session.userId && !session.isAdmin) {
+    if (bestaandeAfwezigheid.zorgverlenerId !== session.userId && !session.isAdmin) {
       return { success: false, error: 'Geen toegang tot deze afwezigheid' };
     }
 
     // Delete
-    await (prisma as any).afwezigheid.delete({
+    await prisma.afwezigheid.delete({
       where: { id: afwezigheidId },
-    } as any); // Type assertion needed
+    });
 
     console.log('Afwezigheid verwijderd', { id: afwezigheidId, userId: session.userId });
 

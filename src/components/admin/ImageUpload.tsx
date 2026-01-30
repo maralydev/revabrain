@@ -122,7 +122,7 @@ export default function ImageUpload({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-slate-700">
           {label}
         </label>
       )}
@@ -131,7 +131,7 @@ export default function ImageUpload({
         // Preview existing image
         <div className="relative group">
           <div
-            className={`relative ${aspectClasses[aspectRatio]} overflow-hidden rounded-lg border border-gray-200 bg-gray-50`}
+            className={`relative ${aspectClasses[aspectRatio]} overflow-hidden rounded-lg border border-slate-200 bg-slate-50`}
           >
             <Image
               src={value}
@@ -144,7 +144,7 @@ export default function ImageUpload({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
+              className="px-3 py-1.5 bg-white text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-100 transition-colors"
             >
               Wijzig
             </button>
@@ -168,7 +168,7 @@ export default function ImageUpload({
             border-2 border-dashed rounded-lg
             flex flex-col items-center justify-center
             cursor-pointer transition-colors
-            ${isDragging ? 'border-[var(--rb-primary)] bg-[var(--rb-light)]' : 'border-gray-300 hover:border-gray-400'}
+            ${isDragging ? 'border-[var(--rb-primary)] bg-[var(--rb-light)]' : 'border-slate-300 hover:border-slate-400'}
             ${isUploading ? 'pointer-events-none opacity-60' : ''}
           `}
           onClick={() => fileInputRef.current?.click()}
@@ -176,12 +176,12 @@ export default function ImageUpload({
           {isUploading ? (
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-2 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-gray-500">Uploaden...</span>
+              <span className="text-sm text-slate-500">Uploaden...</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 p-4 text-center">
               <svg
-                className="w-10 h-10 text-gray-400"
+                className="w-10 h-10 text-slate-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -193,13 +193,13 @@ export default function ImageUpload({
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-slate-600">
                 <span className="font-medium text-[var(--rb-primary)]">
                   Klik om te uploaden
                 </span>{' '}
                 of sleep een bestand hierheen
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-slate-400">
                 PNG, JPG, GIF of WebP (max {maxSize}MB)
               </p>
             </div>
@@ -223,7 +223,7 @@ export default function ImageUpload({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Of voer een URL in..."
-          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--rb-primary)] focus:border-transparent"
+          className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[var(--rb-primary)] focus:border-transparent"
         />
       </div>
 
@@ -243,7 +243,7 @@ export default function ImageUpload({
 
       {/* Help text */}
       {helpText && !error && (
-        <p className="text-sm text-gray-500">{helpText}</p>
+        <p className="text-sm text-slate-500">{helpText}</p>
       )}
     </div>
   );

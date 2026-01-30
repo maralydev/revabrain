@@ -7,7 +7,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import type { Afspraak, Zorgverlener } from '../types'
+import type { Afspraak, AfspraakType, AfspraakStatus, Zorgverlener } from '../types'
 import { getAfsprakenByDate } from '@/modules/afspraak/queries'
 import { getActieveTeamleden } from '@/modules/teamlid/queries'
 import type { Teamlid } from '@prisma/client'
@@ -77,13 +77,13 @@ export function useAfspraken(datum: Date, zorgverlenerId?: number) {
         id: a.id,
         datum: new Date(a.datum),
         duur: a.duur,
-        type: a.type as any,
-        status: a.status as any,
+        type: a.type as AfspraakType,
+        status: a.status as AfspraakStatus,
         patientNaam: a.patient ? `${a.patient.voornaam} ${a.patient.achternaam}` : undefined,
         patientId: a.patientId || undefined,
         zorgverlenerNaam: `${a.zorgverlener.voornaam} ${a.zorgverlener.achternaam}`,
         zorgverlenerId: a.zorgverlenerId,
-        isAlert: (a as any).isAlert || false,
+        isAlert: a.isAlert || false,
         // isHerhalend, sessieNummer, totaalSessies not yet implemented
       }))
 

@@ -13,9 +13,10 @@ export interface SessionPayload {
 }
 
 // Config
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'dev-secret-key-change-in-production'
-);
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const SESSION_COOKIE_NAME = 'revabrain_session';
 const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 dagen in seconden
 

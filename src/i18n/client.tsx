@@ -112,8 +112,8 @@ export function LanguageSwitcher() {
       <div className="flex items-center gap-1">
         {locs.map((loc, index) => (
           <span key={loc}>
-            {index > 0 && <span className="text-gray-400 mx-1">|</span>}
-            <span className="text-sm text-gray-600">{loc.toUpperCase()}</span>
+            {index > 0 && <span className="text-slate-400 mx-1">|</span>}
+            <span className="text-sm text-slate-600">{loc.toUpperCase()}</span>
           </span>
         ))}
       </div>
@@ -124,13 +124,13 @@ export function LanguageSwitcher() {
     <div className="flex items-center gap-1">
       {locs.map((loc, index) => (
         <span key={loc}>
-          {index > 0 && <span className="text-gray-400 mx-1">|</span>}
+          {index > 0 && <span className="text-slate-400 mx-1">|</span>}
           <button
             onClick={() => setLocale(loc)}
             className={`text-sm transition-colors ${
               locale === loc
                 ? 'font-semibold text-[#2879D8]'
-                : 'text-gray-600 hover:text-gray-900'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             {loc.toUpperCase()}

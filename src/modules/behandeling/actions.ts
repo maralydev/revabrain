@@ -36,7 +36,7 @@ export async function saveBehandeling(
 
     const { slug, locale, title, description, longDescription, extraInfo, iconSvg, color, volgorde, actief } = input;
 
-    const result = await (prisma as any).behandeling.upsert({
+    const result = await prisma.behandeling.upsert({
       where: {
         slug_locale: { slug, locale },
       },
@@ -87,7 +87,7 @@ export async function updateBehandeling(
   try {
     await requireAdmin();
 
-    const result = await (prisma as any).behandeling.update({
+    const result = await prisma.behandeling.update({
       where: { id },
       data: {
         ...input,
@@ -116,7 +116,7 @@ export async function deleteBehandeling(
   try {
     await requireAdmin();
 
-    await (prisma as any).behandeling.delete({
+    await prisma.behandeling.delete({
       where: { id },
     });
 
@@ -136,7 +136,7 @@ export async function toggleBehandelingActief(
   try {
     await requireAdmin();
 
-    const current = await (prisma as any).behandeling.findUnique({
+    const current = await prisma.behandeling.findUnique({
       where: { id },
     });
 
@@ -144,7 +144,7 @@ export async function toggleBehandelingActief(
       return { success: false, error: 'Behandeling not found' };
     }
 
-    const result = await (prisma as any).behandeling.update({
+    const result = await prisma.behandeling.update({
       where: { id },
       data: {
         actief: !current.actief,
@@ -172,7 +172,7 @@ export async function createAandoening(
   try {
     await requireAdmin();
 
-    const result = await (prisma as any).aandoening.create({
+    const result = await prisma.aandoening.create({
       data: {
         naam: input.naam,
         beschrijving: input.beschrijving ?? null,
@@ -199,7 +199,7 @@ export async function updateAandoening(
   try {
     await requireAdmin();
 
-    const result = await (prisma as any).aandoening.update({
+    const result = await prisma.aandoening.update({
       where: { id },
       data: input,
     });
@@ -220,7 +220,7 @@ export async function deleteAandoening(
   try {
     await requireAdmin();
 
-    await (prisma as any).aandoening.delete({
+    await prisma.aandoening.delete({
       where: { id },
     });
 
@@ -241,7 +241,7 @@ export async function reorderAandoeningen(
     await requireAdmin();
 
     for (const { id, volgorde } of orders) {
-      await (prisma as any).aandoening.update({
+      await prisma.aandoening.update({
         where: { id },
         data: { volgorde },
       });

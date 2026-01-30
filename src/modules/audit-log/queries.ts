@@ -55,10 +55,10 @@ export async function getAuditLogs(
   }
 
   // Count total
-  const totaal = await (prisma as any).auditLog.count({ where: whereClause });
+  const totaal = await prisma.auditLog.count({ where: whereClause });
 
   // Haal logs op met paginatie
-  const logs = await (prisma as any).auditLog.findMany({
+  const logs = await prisma.auditLog.findMany({
     where: whereClause,
     orderBy: { timestamp: 'desc' },
     take: filters.limit || 100,
@@ -78,7 +78,7 @@ export async function getActieTypes(): Promise<string[]> {
     throw new Error('Alleen admins kunnen audit logs bekijken');
   }
 
-  const results = await (prisma as any).auditLog.findMany({
+  const results = await prisma.auditLog.findMany({
     select: { actieType: true },
     distinct: ['actieType'],
     orderBy: { actieType: 'asc' },

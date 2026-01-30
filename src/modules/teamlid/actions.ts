@@ -205,7 +205,7 @@ export async function resetPassword(
     const hashedPassword = await bcrypt.hash(tijdelijk, 10);
 
     // Update wachtwoord and force password change
-    await (prisma as any).teamlid.update({
+    await prisma.teamlid.update({
       where: { id: teamlidId },
       data: {
         wachtwoord: hashedPassword,
@@ -297,7 +297,7 @@ export async function changePassword(
     const hashedPassword = await bcrypt.hash(input.nieuwWachtwoord, 10);
 
     // Update wachtwoord en reset mustChangePassword flag
-    await (prisma as any).teamlid.update({
+    await prisma.teamlid.update({
       where: { id: session.userId },
       data: {
         wachtwoord: hashedPassword,

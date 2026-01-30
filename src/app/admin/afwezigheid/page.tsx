@@ -105,14 +105,14 @@ export default function AfwezigheidPage() {
   };
 
   const typeColors: Record<AfwezigheidType, { bg: string; text: string; icon: string }> = {
-    VAKANTIE: { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: '🏖️' },
-    ZIEKTE: { bg: 'bg-red-100', text: 'text-red-700', icon: '🤒' },
-    OPLEIDING: { bg: 'bg-blue-100', text: 'text-blue-700', icon: '📚' },
-    ANDERE: { bg: 'bg-slate-100', text: 'text-slate-700', icon: '📋' },
+    VAKANTIE: { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: '' },
+    ZIEKTE: { bg: 'bg-red-100', text: 'text-red-700', icon: '' },
+    OPLEIDING: { bg: 'bg-blue-100', text: 'text-blue-700', icon: '' },
+    ANDERE: { bg: 'bg-slate-100', text: 'text-slate-700', icon: '' },
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -221,10 +221,10 @@ export default function AfwezigheidPage() {
                   onChange={(e) => setType(e.target.value as AfwezigheidType)}
                   className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 cursor-pointer"
                 >
-                  <option value="VAKANTIE">🏖️ Vakantie</option>
-                  <option value="ZIEKTE">🤒 Ziekte</option>
-                  <option value="OPLEIDING">📚 Opleiding</option>
-                  <option value="ANDERE">📋 Andere</option>
+                  <option value="VAKANTIE">Vakantie</option>
+                  <option value="ZIEKTE">Ziekte</option>
+                  <option value="OPLEIDING">Opleiding</option>
+                  <option value="ANDERE">Andere</option>
                 </select>
               </div>
 

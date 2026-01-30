@@ -47,21 +47,36 @@ export function WeekView({ startDatum, zorgverleners, afspraken, onAfspraakClick
     return datum.toDateString() === today.toDateString()
   }
 
+  const isWeekend = (datum: Date) => {
+    const day = datum.getDay()
+    return day === 0 || day === 6
+  }
+
   return (
     <div className="flex-1 overflow-auto">
       <div className="min-w-[1000px]">
         {/* Header met dagen */}
-        <div className="flex border-b border-gray-200 bg-white sticky top-0 z-10">
-          <div className="w-20 flex-shrink-0 p-3 border-r border-gray-200" />
+        <div className="flex border-b border-slate-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="w-20 flex-shrink-0 p-3 border-r border-slate-100" />
           {dagen.map(dag => (
             <div
               key={dag.toISOString()}
-              className={`flex-1 p-3 border-r border-gray-200 min-w-[140px] ${
-                isVandaag(dag) ? 'bg-blue-50' : ''
+              className={`flex-1 p-3 border-r border-slate-100 last:border-r-0 min-w-[140px] ${
+                isVandaag(dag)
+                  ? 'bg-[var(--rb-light)]'
+                  : isWeekend(dag)
+                    ? 'bg-slate-50/50'
+                    : ''
               }`}
             >
               <div className="text-center">
-                <div className={`font-medium ${isVandaag(dag) ? 'text-[#2879D8]' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-sm ${
+                  isVandaag(dag)
+                    ? 'text-[var(--rb-primary)]'
+                    : isWeekend(dag)
+                      ? 'text-slate-400'
+                      : 'text-slate-800'
+                }`}>
                   {formatDagHeader(dag)}
                 </div>
               </div>
@@ -71,8 +86,8 @@ export function WeekView({ startDatum, zorgverleners, afspraken, onAfspraakClick
 
         {/* Tijdslots */}
         {UREN.map(uur => (
-          <div key={uur} className="flex border-b border-gray-100">
-            <div className="w-20 flex-shrink-0 p-2 text-sm text-gray-500 text-right pr-4 border-r border-gray-200">
+          <div key={uur} className="flex border-b border-slate-100">
+            <div className="w-20 flex-shrink-0 p-2 text-xs font-medium text-slate-400 text-right pr-3 border-r border-slate-100 flex items-start pt-2">
               {uur}:00
             </div>
             {dagen.map(dag => {
@@ -80,8 +95,12 @@ export function WeekView({ startDatum, zorgverleners, afspraken, onAfspraakClick
               return (
                 <div
                   key={dag.toISOString()}
-                  className={`flex-1 min-w-[140px] min-h-[60px] p-1 border-r border-gray-100 hover:bg-gray-50 transition-colors ${
-                    isVandaag(dag) ? 'bg-blue-50/30' : 'bg-white'
+                  className={`flex-1 min-w-[140px] min-h-[60px] p-1 border-r border-slate-100 last:border-r-0 hover:bg-[var(--rb-primary)]/5 transition-colors ${
+                    isVandaag(dag)
+                      ? 'bg-[var(--rb-light)]/30'
+                      : isWeekend(dag)
+                        ? 'bg-slate-50/30'
+                        : 'bg-white'
                   }`}
                 >
                   <div className="flex flex-col gap-1">

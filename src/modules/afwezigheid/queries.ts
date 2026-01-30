@@ -27,14 +27,14 @@ export async function getAfwezighedenByZorgverlener(
     return [];
   }
 
-  const afwezigheden = await (prisma as any).afwezigheid.findMany({
+  const afwezigheden = await prisma.afwezigheid.findMany({
     where: {
       zorgverlenerId: targetId,
     },
     orderBy: { startDatum: 'desc' },
-  } as any); // Type assertion needed
+  });
 
-  return afwezigheden as any;
+  return afwezigheden;
 }
 
 /**
@@ -54,7 +54,7 @@ export async function getAfwezighedenByPeriod(
     return [];
   }
 
-  const afwezigheden = await (prisma as any).afwezigheid.findMany({
+  const afwezigheden = await prisma.afwezigheid.findMany({
     where: {
       zorgverlenerId: targetId,
       OR: [
@@ -82,9 +82,9 @@ export async function getAfwezighedenByPeriod(
       ],
     },
     orderBy: { startDatum: 'asc' },
-  } as any); // Type assertion needed
+  });
 
-  return afwezigheden as any;
+  return afwezigheden;
 }
 
 /**
@@ -94,13 +94,13 @@ export async function isAfwezigOpDatum(
   datum: Date,
   zorgverlenerId: number
 ): Promise<boolean> {
-  const afwezigheid = await (prisma as any).afwezigheid.findFirst({
+  const afwezigheid = await prisma.afwezigheid.findFirst({
     where: {
       zorgverlenerId,
       startDatum: { lte: datum },
       eindDatum: { gte: datum },
     },
-  } as any); // Type assertion needed
+  });
 
   return !!afwezigheid;
 }

@@ -49,15 +49,15 @@ export default function EditAfspraakPage() {
         const afspraakDatum = new Date(data.datum);
         setDatum(afspraakDatum.toISOString().split('T')[0]);
         setTijd(afspraakDatum.toTimeString().slice(0, 5));
-        setDuur(data.duur as any);
-        setType(data.type as any);
+        setDuur(data.duur as 30 | 45 | 60 | 90);
+        setType(data.type as 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN');
         setNotities(data.notities || '');
-        setIsAlert((data as any).isAlert || false);
+        setIsAlert(data.isAlert || false);
         setStatus(data.status as AfspraakStatus);
 
         // Set patient
         if (data.patient) {
-          setSelectedPatient(data.patient as any);
+          setSelectedPatient({ ...data.patient, afspraken: [] });
         }
       } catch (err) {
         setError('Fout bij laden afspraak');
@@ -372,7 +372,7 @@ export default function EditAfspraakPage() {
                 </label>
                 <select
                   value={type}
-                  onChange={(e) => setType(e.target.value as any)}
+                  onChange={(e) => setType(e.target.value as 'INTAKE' | 'CONSULTATIE' | 'HUISBEZOEK' | 'ADMIN')}
                   className="w-full px-4 py-3 bg-slate-50 border-0 rounded-xl focus:ring-2 focus:ring-[var(--rb-primary)] focus:bg-white transition-all duration-200 cursor-pointer"
                 >
                   <option value="CONSULTATIE">Consultatie</option>

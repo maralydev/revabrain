@@ -24,7 +24,7 @@ export interface PageContentData {
  */
 export async function getAllPageContent(): Promise<PageContentData[]> {
   try {
-    const content = await (prisma as any).pageContent.findMany({
+    const content = await prisma.pageContent.findMany({
       orderBy: [{ page: 'asc' }, { section: 'asc' }, { locale: 'asc' }],
     });
     return content;
@@ -42,7 +42,7 @@ export async function getPageContent(
   locale: string = 'nl'
 ): Promise<Record<string, PageContentData>> {
   try {
-    const content = await (prisma as any).pageContent.findMany({
+    const content = await prisma.pageContent.findMany({
       where: { page, locale, published: true },
     });
 
@@ -63,7 +63,7 @@ export async function getPageContent(
  */
 export async function getContentById(id: number): Promise<PageContentData | null> {
   try {
-    return await (prisma as any).pageContent.findUnique({
+    return await prisma.pageContent.findUnique({
       where: { id },
     });
   } catch (error) {
@@ -80,7 +80,7 @@ export async function getPageContentPreview(
   locale: string = 'nl'
 ): Promise<Record<string, PageContentData>> {
   try {
-    const content = await (prisma as any).pageContent.findMany({
+    const content = await prisma.pageContent.findMany({
       where: { page, locale },
     });
 

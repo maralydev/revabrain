@@ -30,7 +30,7 @@ export async function savePageContent(
     const { page, section, locale, title, subtitle, content, content2, imageUrl, buttonText, buttonUrl, published } = input;
 
     // Upsert: create if not exists, update if exists
-    const result = await (prisma as any).pageContent.upsert({
+    const result = await prisma.pageContent.upsert({
       where: {
         page_section_locale: { page, section, locale },
       },
@@ -79,7 +79,7 @@ export async function updatePageContent(
 
     const { title, subtitle, content, content2, imageUrl, buttonText, buttonUrl, published } = input;
 
-    const result = await (prisma as any).pageContent.update({
+    const result = await prisma.pageContent.update({
       where: { id },
       data: {
         ...(title !== undefined && { title }),
@@ -110,7 +110,7 @@ export async function deletePageContent(
   try {
     await requireAdmin();
 
-    await (prisma as any).pageContent.delete({
+    await prisma.pageContent.delete({
       where: { id },
     });
 
@@ -130,7 +130,7 @@ export async function togglePublished(
   try {
     await requireAdmin();
 
-    const current = await (prisma as any).pageContent.findUnique({
+    const current = await prisma.pageContent.findUnique({
       where: { id },
     });
 
@@ -138,7 +138,7 @@ export async function togglePublished(
       return { success: false, error: 'Content not found' };
     }
 
-    const result = await (prisma as any).pageContent.update({
+    const result = await prisma.pageContent.update({
       where: { id },
       data: {
         published: !current.published,
@@ -180,12 +180,12 @@ export async function seedPageContentStructure(): Promise<{ success: boolean; cr
       for (const section of sections) {
         for (const locale of locales) {
           // Check if exists
-          const existing = await (prisma as any).pageContent.findUnique({
+          const existing = await prisma.pageContent.findUnique({
             where: { page_section_locale: { page, section, locale } },
           });
 
           if (!existing) {
-            await (prisma as any).pageContent.create({
+            await prisma.pageContent.create({
               data: {
                 page,
                 section,
@@ -221,7 +221,7 @@ export async function addSection(
     await requireAdmin();
 
     // Check if exists
-    const existing = await (prisma as any).pageContent.findUnique({
+    const existing = await prisma.pageContent.findUnique({
       where: { page_section_locale: { page, section, locale } },
     });
 
@@ -229,7 +229,7 @@ export async function addSection(
       return { success: false, error: 'Sectie bestaat al' };
     }
 
-    const result = await (prisma as any).pageContent.create({
+    const result = await prisma.pageContent.create({
       data: {
         page,
         section,
@@ -258,7 +258,7 @@ export async function duplicateToLocale(
   try {
     await requireAdmin();
 
-    const source = await (prisma as any).pageContent.findUnique({
+    const source = await prisma.pageContent.findUnique({
       where: { id },
     });
 
@@ -267,7 +267,7 @@ export async function duplicateToLocale(
     }
 
     // Check if target already exists
-    const existing = await (prisma as any).pageContent.findUnique({
+    const existing = await prisma.pageContent.findUnique({
       where: { page_section_locale: { page: source.page, section: source.section, locale: targetLocale } },
     });
 
@@ -275,7 +275,7 @@ export async function duplicateToLocale(
       return { success: false, error: 'Content already exists for this locale' };
     }
 
-    const result = await (prisma as any).pageContent.create({
+    const result = await prisma.pageContent.create({
       data: {
         page: source.page,
         section: source.section,

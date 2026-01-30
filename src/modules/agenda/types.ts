@@ -62,9 +62,9 @@ export const STATUS_CONFIG: Record<AfspraakStatus, { label: string; color: strin
   GEANNULEERD: { label: 'Geannuleerd', color: '#9E9E9E', bgColor: '#F5F5F5' },
 }
 
-export const TYPE_CONFIG: Record<AfspraakType, { label: string; icon: string }> = {
-  INTAKE: { label: 'Intake', icon: '📋' },
-  CONSULTATIE: { label: 'Consultatie', icon: '🩺' },
-  HUISBEZOEK: { label: 'Huisbezoek', icon: '🏠' },
-  ADMIN: { label: 'Admin', icon: '📝' },
+export const TYPE_CONFIG: Record<AfspraakType, { label: string }> = {
+  INTAKE: { label: 'Intake' },
+  CONSULTATIE: { label: 'Consultatie' },
+  HUISBEZOEK: { label: 'Huisbezoek' },
+  ADMIN: { label: 'Admin' },
 }

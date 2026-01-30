@@ -58,10 +58,10 @@ export default function VerwijzersFAQ({ content }: VerwijzersFAQProps) {
   const displayFaqs = faqs.length > 0 ? faqs : DEFAULT_FAQS;
 
   return (
-    <section className="py-16 lg:py-24 bg-[var(--gray-50)]">
+    <section className="py-16 lg:py-24 bg-slate-50">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
             {faqTitle}
           </h2>
         </div>
@@ -74,11 +74,11 @@ export default function VerwijzersFAQ({ content }: VerwijzersFAQProps) {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
               >
-                <h3 className="font-semibold text-gray-900 pr-4">{faq.question}</h3>
+                <h3 className="font-semibold text-slate-900 pr-4">{faq.question}</h3>
                 <svg
-                  className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform duration-200 ${
+                  className={`w-5 h-5 text-slate-500 flex-shrink-0 transition-transform duration-200 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
                   fill="none"
@@ -94,7 +94,7 @@ export default function VerwijzersFAQ({ content }: VerwijzersFAQProps) {
                   openIndex === index ? 'max-h-96' : 'max-h-0'
                 }`}
               >
-                <p className="px-6 pb-4 text-gray-600">{faq.answer}</p>
+                <p className="px-6 pb-4 text-slate-600">{faq.answer}</p>
               </div>
             </div>
           ))}

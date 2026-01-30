@@ -25,7 +25,7 @@ export async function getAllDisciplineConfigs(): Promise<DisciplineConfigData[]>
     throw new Error('Alleen admins kunnen disciplines beheren');
   }
 
-  return (prisma as any).disciplineConfig.findMany({
+  return prisma.disciplineConfig.findMany({
     orderBy: [{ volgorde: 'asc' }, { naam: 'asc' }],
   });
 }
@@ -34,7 +34,7 @@ export async function getAllDisciplineConfigs(): Promise<DisciplineConfigData[]>
  * Haal alle actieve disciplines op (voor publieke site/dropdowns)
  */
 export async function getActieveDisciplineConfigs(): Promise<DisciplineConfigData[]> {
-  return (prisma as any).disciplineConfig.findMany({
+  return prisma.disciplineConfig.findMany({
     where: { actief: true },
     orderBy: { volgorde: 'asc' },
   });
@@ -45,7 +45,7 @@ export async function getActieveDisciplineConfigs(): Promise<DisciplineConfigDat
  */
 export async function getDisciplineByCode(code: string): Promise<DisciplineConfigData | null> {
   try {
-    return await (prisma as any).disciplineConfig.findUnique({
+    return await prisma.disciplineConfig.findUnique({
       where: { code },
     });
   } catch (error) {

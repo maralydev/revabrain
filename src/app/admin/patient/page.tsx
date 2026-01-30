@@ -46,7 +46,7 @@ export default function PatientOverzichtPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-500 font-medium">Laden...</p>
@@ -56,7 +56,7 @@ export default function PatientOverzichtPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white p-8">
+    <div className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

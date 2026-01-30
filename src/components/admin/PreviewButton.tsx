@@ -50,11 +50,11 @@ export default function PreviewButton({
         type="button"
         onClick={handlePreview}
         disabled={isLoading}
-        className={`inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 ${className}`}
       >
         {isLoading ? (
           <>
-            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             Preview laden...
           </>
         ) : (

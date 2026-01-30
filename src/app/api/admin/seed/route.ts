@@ -2,13 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { hash } from 'bcryptjs';
 
-// Secret key for one-time seed - change or remove after use
-const SEED_SECRET = 'revabrain-seed-2024';
-
-// Allow both GET and POST for easy browser access
-export async function GET(request: Request) {
-  return seedDatabase(request);
-}
+const SEED_SECRET = process.env.SEED_SECRET;
 
 export async function POST(request: Request) {
   return seedDatabase(request);
@@ -16,11 +10,8 @@ export async function POST(request: Request) {
 
 async function seedDatabase(request: Request) {
   try {
-    // Check secret
-    const { searchParams } = new URL(request.url);
-    const secret = searchParams.get('secret');
-
-    if (secret !== SEED_SECRET) {
+    const secret = request.headers.get('x-seed-secret');
+    if (!SEED_SECRET || secret !== SEED_SECRET) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -214,7 +205,6 @@ async function seedDatabase(request: Request) {
       success: true,
       message: 'Database seeded successfully',
       admin: admin.email,
-      password: 'admin123',
     });
   } catch (error) {
     console.error('Seed error:', error);

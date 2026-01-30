@@ -38,7 +38,7 @@ export async function updateAfspraakTypeConfig(
     }
 
     // Check if exists
-    const existing = await (prisma as any).afspraakTypeConfig.findUnique({
+    const existing = await prisma.afspraakTypeConfig.findUnique({
       where: { code: input.code },
     });
 
@@ -54,7 +54,7 @@ export async function updateAfspraakTypeConfig(
     if (input.factureerbaar !== undefined) updateData.factureerbaar = input.factureerbaar;
     if (input.actief !== undefined) updateData.actief = input.actief;
 
-    await (prisma as any).afspraakTypeConfig.update({
+    await prisma.afspraakTypeConfig.update({
       where: { code: input.code },
       data: updateData,
     });

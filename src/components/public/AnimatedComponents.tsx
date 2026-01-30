@@ -406,11 +406,11 @@ export function SectionHeading({
           {overline}
         </p>
       )}
-      <h2 className={`text-3xl lg:text-5xl font-bold mb-6 leading-tight ${light ? 'text-white' : 'text-gray-900'}`}>
+      <h2 className={`text-3xl lg:text-5xl font-bold mb-6 leading-tight ${light ? 'text-white' : 'text-slate-900'}`}>
         {title}
       </h2>
       {description && (
-        <p className={`text-lg max-w-2xl ${centered ? 'mx-auto' : ''} ${light ? 'text-white/70' : 'text-gray-600'}`}>
+        <p className={`text-lg max-w-2xl ${centered ? 'mx-auto' : ''} ${light ? 'text-white/70' : 'text-slate-600'}`}>
           {description}
         </p>
       )}

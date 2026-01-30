@@ -36,7 +36,7 @@ export async function updateDisciplineConfig(
     }
 
     // Check if exists
-    const existing = await (prisma as any).disciplineConfig.findUnique({
+    const existing = await prisma.disciplineConfig.findUnique({
       where: { code: input.code },
     });
 
@@ -51,7 +51,7 @@ export async function updateDisciplineConfig(
     if (input.actief !== undefined) updateData.actief = input.actief;
     if (input.volgorde !== undefined) updateData.volgorde = input.volgorde;
 
-    await (prisma as any).disciplineConfig.update({
+    await prisma.disciplineConfig.update({
       where: { code: input.code },
       data: updateData,
     });

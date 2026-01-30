@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const nameParts = searchLower.split(' ')
 
     // Search patients by name
-    const patients = await (prisma.patient as any).findMany({
+    const patients = await prisma.patient.findMany({
       where: {
         OR: [
           {
@@ -47,7 +47,6 @@ export async function GET(request: NextRequest) {
               ]
             : []),
         ],
-        isActief: true,
       },
       select: {
         id: true,

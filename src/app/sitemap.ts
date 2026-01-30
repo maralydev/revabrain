@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic discipline pages
   let disciplinePages: MetadataRoute.Sitemap = [];
   try {
-    const disciplines = await (prisma as any).disciplineConfig.findMany({
+    const disciplines = await prisma.disciplineConfig.findMany({
       where: { actief: true },
       select: { code: true, laatstGewijzigd: true },
     });

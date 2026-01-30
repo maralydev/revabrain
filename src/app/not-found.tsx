@@ -45,10 +45,10 @@ export default function NotFound() {
         </div>
 
         {/* Text */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-slate-900 mb-4">
           Pagina niet gevonden
         </h1>
-        <p className="text-gray-600 mb-8 leading-relaxed">
+        <p className="text-slate-600 mb-8 leading-relaxed">
           De pagina die u zoekt bestaat niet of is verplaatst.
           Controleer de URL of ga terug naar de homepage.
         </p>
@@ -76,21 +76,21 @@ export default function NotFound() {
         </div>
 
         {/* Helpful links */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-sm text-gray-500 mb-4">Misschien zoekt u:</p>
+        <div className="mt-12 pt-8 border-t border-slate-200">
+          <p className="text-sm text-slate-500 mb-4">Misschien zoekt u:</p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link href="/treatments" className="text-[#2879D8] hover:underline">
               Behandelingen
             </Link>
-            <span className="text-gray-300">•</span>
+            <span className="text-slate-300">•</span>
             <Link href="/team" className="text-[#2879D8] hover:underline">
               Ons team
             </Link>
-            <span className="text-gray-300">•</span>
+            <span className="text-slate-300">•</span>
             <Link href="/costs" className="text-[#2879D8] hover:underline">
               Tarieven
             </Link>
-            <span className="text-gray-300">•</span>
+            <span className="text-slate-300">•</span>
             <Link href="/disciplines" className="text-[#2879D8] hover:underline">
               Disciplines
             </Link>

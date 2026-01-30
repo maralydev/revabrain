@@ -55,7 +55,7 @@ async function checkConflicts(
   const eindTijd = new Date(datum.getTime() + duur * 60000);
 
   // Check afwezigheid
-  const afwezigheid = await (prisma as any).afwezigheid.findFirst({
+  const afwezigheid = await prisma.afwezigheid.findFirst({
     where: {
       zorgverlenerId,
       startDatum: { lte: datum },
@@ -155,7 +155,7 @@ export async function createAfspraak(
         patientId: input.patientId,
         zorgverlenerId: session.userId,
         ingeboektDoorId: session.userId,
-      } as any, // Type assertion needed until Prisma client is regenerated
+      },
     });
 
     // Audit log
@@ -238,7 +238,7 @@ export async function updateAfspraak(
         ...(input.type && { type: input.type }),
         ...(input.notities !== undefined && { notities: input.notities || null }),
         ...(input.isAlert !== undefined && { isAlert: input.isAlert }),
-      } as any, // Type assertion needed until Prisma client is regenerated
+      },
     });
 
     // Audit log

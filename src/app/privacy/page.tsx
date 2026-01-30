@@ -94,17 +94,17 @@ export default async function PrivacyPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Intro */}
           <div className="prose prose-lg max-w-none mb-12">
-            <p className="text-gray-700 leading-relaxed text-lg">{intro}</p>
+            <p className="text-slate-700 leading-relaxed text-lg">{intro}</p>
           </div>
 
           {/* Sections */}
           <div className="space-y-10">
             {sections.map((section, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
+              <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:p-8">
+                <h2 className="text-xl font-bold text-slate-900 mb-4">
                   {section.title}
                 </h2>
-                <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                <div className="text-slate-700 leading-relaxed whitespace-pre-line">
                   {section.content}
                 </div>
               </div>

@@ -7,7 +7,6 @@ import { requireZorgverlener } from '@/shared/lib/auth';
 export type AfspraakWithRelations = Afspraak & {
   patient: Patient | null;
   zorgverlener: Pick<Teamlid, 'id' | 'voornaam' | 'achternaam'>;
-  isAlert?: boolean; // Temporary: Field exists in DB but not in generated Prisma types yet
 };
 
 /**

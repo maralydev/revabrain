@@ -60,7 +60,7 @@ export async function login(email: string, password: string): Promise<LoginResul
     await setSessionCookie(token);
 
     // Check if user must change password
-    const mustChangePassword = (user as any).mustChangePassword || false;
+    const mustChangePassword = user.mustChangePassword || false;
 
     // Audit log (direct because we just created the session)
     await logAuditDirect({

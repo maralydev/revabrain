@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
 import PublicLayout from '@/components/public/PublicLayout';
+import PageCTA from '@/components/public/PageCTA';
 import { getBehandelingBySlug, getAllBehandelingen } from '@/modules/behandeling/queries';
 import { getFooterData } from '@/modules/footer/queries';
 
@@ -64,7 +65,6 @@ const ICONS: Record<string, ReactNode> = {
 export async function generateStaticParams() {
   const behandelingen = await getAllBehandelingen('nl');
 
-  // Combine database slugs with fallback slugs
   const slugs = new Set([
     ...behandelingen.map(b => b.slug),
     ...Object.keys(FALLBACK_DATA),
@@ -97,19 +97,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BehandelingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // Server-side data fetching voor SEO
   const [behandeling, footerData] = await Promise.all([
     getBehandelingBySlug(slug, 'nl'),
     getFooterData(),
   ]);
   const fallback = FALLBACK_DATA[slug];
 
-  // If no data from DB and no fallback, show 404
   if (!behandeling && !fallback) {
     notFound();
   }
 
-  // Use DB data with fallback
   const title = behandeling?.title || fallback?.title || 'Behandeling';
   const description = behandeling?.description || fallback?.description || '';
   const longDescription = behandeling?.longDescription || fallback?.longDescription || '';
@@ -122,9 +119,9 @@ export default async function BehandelingPage({ params }: { params: Promise<{ sl
   return (
     <PublicLayout footerData={footerData}>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--rb-primary)] via-[var(--rb-primary-dark)] to-[var(--rb-dark)] overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-[var(--rb-accent)]/10 blur-3xl" />
-        <div className="absolute bottom-10 left-20 w-64 h-64 rounded-full bg-[var(--rb-primary-light)]/10 blur-3xl" />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--rb-dark)] via-[var(--rb-primary)] to-[var(--rb-dark)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(89,236,183,0.1),transparent_70%)]" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <Link
@@ -154,7 +151,7 @@ export default async function BehandelingPage({ params }: { params: Promise<{ sl
 
             <div className="flex justify-center">
               <div
-                className="w-64 h-64 rounded-full flex items-center justify-center"
+                className="w-64 h-64 rounded-2xl flex items-center justify-center"
                 style={{ backgroundColor: `${color}20`, color }}
               >
                 {behandeling?.iconSvg ? (
@@ -166,14 +163,16 @@ export default async function BehandelingPage({ params }: { params: Promise<{ sl
             </div>
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--rb-primary)] via-[var(--rb-accent)] to-[var(--rb-primary)]" />
       </section>
 
-      {/* Aandoeningen Section - Server rendered voor SEO */}
+      {/* Aandoeningen Section */}
       {aandoeningen.length > 0 && (
-        <section className="py-16 lg:py-24 bg-[var(--gray-50)]">
+        <section className="py-16 lg:py-24 bg-slate-50">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            <div className="bg-white rounded-2xl border border-slate-100 p-8 lg:p-12">
+              <h2 className="text-2xl font-bold text-slate-900 mb-8">
                 Aandoeningen die wij behandelen
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -183,9 +182,9 @@ export default async function BehandelingPage({ params }: { params: Promise<{ sl
                     className="border-l-4 pl-4"
                     style={{ borderColor: color }}
                   >
-                    <h3 className="font-semibold text-gray-900 mb-1">{aandoening.naam}</h3>
+                    <h3 className="font-semibold text-slate-900 mb-1">{aandoening.naam}</h3>
                     {aandoening.beschrijving && (
-                      <p className="text-sm text-gray-600">{aandoening.beschrijving}</p>
+                      <p className="text-sm text-slate-600">{aandoening.beschrijving}</p>
                     )}
                   </div>
                 ))}
@@ -195,35 +194,20 @@ export default async function BehandelingPage({ params }: { params: Promise<{ sl
         </section>
       )}
 
-      {/* CTA Section */}
-      <section className="relative bg-gradient-to-br from-[var(--rb-primary)] via-[var(--rb-primary-dark)] to-[var(--rb-dark)] overflow-hidden">
-        <div className="absolute top-10 right-20 w-64 h-64 rounded-full bg-[var(--rb-accent)]/10 blur-3xl" />
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            Vragen over {title.toLowerCase()}?
-          </h2>
-
-          <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto">
-            Neem contact met ons op voor een vrijblijvend gesprek over uw situatie.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-4 bg-[var(--rb-accent)] text-[var(--rb-dark)] font-semibold rounded-lg hover:bg-[var(--rb-accent-dark)] transition-colors"
-            >
-              Maak een afspraak
-            </Link>
-            <Link
-              href="/verwijzers"
-              className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
-            >
-              Info voor verwijzers
-            </Link>
-          </div>
-        </div>
-      </section>
+      <PageCTA title={`Vragen over ${title.toLowerCase()}?`} description="Neem contact met ons op voor een vrijblijvend gesprek over uw situatie.">
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center px-8 py-4 bg-white text-[var(--rb-dark)] font-semibold rounded-xl hover:bg-[var(--rb-accent)] hover:shadow-xl hover:shadow-[var(--rb-accent)]/20 transition-all duration-300"
+        >
+          Maak een afspraak
+        </Link>
+        <Link
+          href="/verwijzers"
+          className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300"
+        >
+          Info voor verwijzers
+        </Link>
+      </PageCTA>
     </PublicLayout>
   );
 }

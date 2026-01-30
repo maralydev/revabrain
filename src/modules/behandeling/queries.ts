@@ -35,7 +35,7 @@ export async function getAllBehandelingen(
   locale: string = 'nl'
 ): Promise<BehandelingData[]> {
   try {
-    const behandelingen = await (prisma as any).behandeling.findMany({
+    const behandelingen = await prisma.behandeling.findMany({
       where: { locale, actief: true },
       include: {
         aandoeningen: {
@@ -59,7 +59,7 @@ export async function getBehandelingBySlug(
   locale: string = 'nl'
 ): Promise<BehandelingData | null> {
   try {
-    const behandeling = await (prisma as any).behandeling.findUnique({
+    const behandeling = await prisma.behandeling.findUnique({
       where: {
         slug_locale: { slug, locale },
       },
@@ -81,7 +81,7 @@ export async function getBehandelingBySlug(
  */
 export async function getAllBehandelingenAdmin(): Promise<BehandelingData[]> {
   try {
-    const behandelingen = await (prisma as any).behandeling.findMany({
+    const behandelingen = await prisma.behandeling.findMany({
       include: {
         aandoeningen: {
           orderBy: { volgorde: 'asc' },

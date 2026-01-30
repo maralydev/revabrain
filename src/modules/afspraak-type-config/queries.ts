@@ -26,7 +26,7 @@ export async function getAllAfspraakTypeConfigs(): Promise<AfspraakTypeConfigDat
     throw new Error('Alleen admins kunnen afspraak types beheren');
   }
 
-  return (prisma as any).afspraakTypeConfig.findMany({
+  return prisma.afspraakTypeConfig.findMany({
     orderBy: [{ actief: 'desc' }, { naam: 'asc' }],
   });
 }
@@ -37,7 +37,7 @@ export async function getAllAfspraakTypeConfigs(): Promise<AfspraakTypeConfigDat
 export async function getAfspraakTypeConfigByCode(
   code: string
 ): Promise<AfspraakTypeConfigData | null> {
-  return (prisma as any).afspraakTypeConfig.findUnique({
+  return prisma.afspraakTypeConfig.findUnique({
     where: { code },
   });
 }
@@ -48,7 +48,7 @@ export async function getAfspraakTypeConfigByCode(
 export async function getActieveAfspraakTypeConfigs(): Promise<AfspraakTypeConfigData[]> {
   await requireZorgverlener();
 
-  return (prisma as any).afspraakTypeConfig.findMany({
+  return prisma.afspraakTypeConfig.findMany({
     where: { actief: true },
     orderBy: { naam: 'asc' },
   });

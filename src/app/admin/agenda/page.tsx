@@ -56,12 +56,12 @@ export default function AgendaPage() {
         const data = await getAfsprakenByWeek(startOfWeek)
 
         // Transform to Afspraak type
-        const transformed: Afspraak[] = data.map((a: any) => ({
+        const transformed: Afspraak[] = data.map((a) => ({
           id: a.id,
           datum: new Date(a.datum),
           duur: a.duur,
-          type: a.type,
-          status: a.status,
+          type: a.type as Afspraak['type'],
+          status: a.status as Afspraak['status'],
           patientNaam: a.patient ? `${a.patient.voornaam} ${a.patient.achternaam}` : undefined,
           patientId: a.patientId || undefined,
           zorgverlenerNaam: `${a.zorgverlener.voornaam} ${a.zorgverlener.achternaam}`,

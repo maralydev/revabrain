@@ -1,30 +1,28 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
+import Link from 'next/link'
 import {
   FadeIn,
   StaggerChildren,
   SectionHeading,
-  GlowCard,
-  LinkWithArrow,
   ArrowIcon,
-} from '@/components/public/AnimatedComponents';
+  LinkWithArrow,
+} from '@/components/public/AnimatedComponents'
 
 interface Discipline {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
+  id: string
+  name: string
+  description: string
+  icon: string
 }
 
 interface TreatmentsSectionProps {
-  overline: string;
-  title: string;
-  description: string;
-  disciplines: Discipline[];
+  overline: string
+  title: string
+  description: string
+  disciplines: Discipline[]
 }
 
-// Icons for disciplines
 const DisciplineIcon = ({ type, className = '' }: { type: string; className?: string }) => {
   const icons: Record<string, React.ReactNode> = {
     brain: (
@@ -47,13 +45,13 @@ const DisciplineIcon = ({ type, className = '' }: { type: string; className?: st
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
       </svg>
     ),
-  };
-  return icons[type] || icons.brain;
-};
+  }
+  return icons[type] || icons.brain
+}
 
 export default function TreatmentsSection({ overline, title, description, disciplines }: TreatmentsSectionProps) {
   return (
-    <section className="section-padding bg-[var(--gray-50)] relative">
+    <section className="py-24 lg:py-32 bg-slate-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           overline={overline}
@@ -65,32 +63,32 @@ export default function TreatmentsSection({ overline, title, description, discip
           <StaggerChildren staggerDelay={0.1} className="contents">
             {disciplines.map((disc) => (
               <Link key={disc.id} href={`/treatments/${disc.id}`}>
-                <GlowCard className="premium-card h-full group cursor-pointer">
-                  <div className="icon-container mb-6">
-                    <DisciplineIcon type={disc.icon} className="w-8 h-8" />
+                <div className="bg-white rounded-2xl p-6 h-full group cursor-pointer border border-slate-100 hover:border-[var(--rb-primary)]/20 hover:shadow-lg hover:shadow-[var(--rb-primary)]/5 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--rb-light)] flex items-center justify-center text-[var(--rb-primary)] mb-5 group-hover:bg-[var(--rb-primary)] group-hover:text-white transition-colors duration-300">
+                    <DisciplineIcon type={disc.icon} className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[var(--rb-primary)] transition-colors">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[var(--rb-primary)] transition-colors">
                     {disc.name}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  <p className="text-slate-500 text-sm leading-relaxed mb-4">
                     {disc.description}
                   </p>
                   <span className="inline-flex items-center gap-2 text-[var(--rb-primary)] text-sm font-medium group-hover:gap-3 transition-all">
                     Meer info
                     <ArrowIcon className="w-4 h-4" />
                   </span>
-                </GlowCard>
+                </div>
               </Link>
             ))}
           </StaggerChildren>
         </div>
 
         <FadeIn delay={0.4}>
-          <div className="text-center mt-12">
+          <div className="text-center mt-14">
             <LinkWithArrow href="/treatments">Bekijk alle behandelingen</LinkWithArrow>
           </div>
         </FadeIn>
       </div>
     </section>
-  );
+  )
 }

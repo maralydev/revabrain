@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
 import PublicLayout from '@/components/public/PublicLayout';
+import PageCTA from '@/components/public/PageCTA';
 import { getActieveDisciplineConfigs, getDisciplineByCode } from '@/modules/discipline-config/queries';
 import { getPublicTeamledenByDiscipline } from '@/modules/teamlid/queries';
 import { getPageContent } from '@/modules/page-content/queries';
@@ -126,14 +127,12 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
 export default async function DisciplinePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
 
-  // Fetch discipline data
   const discipline = await getDisciplineByCode(code.toUpperCase());
 
   if (!discipline || !discipline.actief) {
     notFound();
   }
 
-  // Fetch team members, other disciplines, CMS content, and footer data
   const [teamleden, allDisciplines, content, footerData] = await Promise.all([
     getPublicTeamledenByDiscipline(discipline.code),
     getActieveDisciplineConfigs(),
@@ -141,23 +140,20 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
     getFooterData(),
   ]);
 
-  // Other disciplines for sidebar
   const otherDisciplines = allDisciplines.filter((d) => d.code !== discipline.code);
 
-  // CMS content met defaults
   const extraInfo = content?.info?.content || null;
   const ctaTitle = content?.cta?.title || `Meer weten over ${discipline.naam.toLowerCase()}?`;
   const ctaContent = content?.cta?.content || 'Neem contact met ons op voor een vrijblijvend gesprek over uw situatie.';
 
-  // Get indicaties from CMS or fallback
   const indicaties = INDICATIES[discipline.code.toUpperCase()] || [];
 
   return (
     <PublicLayout footerData={footerData}>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--rb-primary)] via-[var(--rb-primary-dark)] to-[var(--rb-dark)] overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-[var(--rb-accent)]/10 blur-3xl" />
-        <div className="absolute bottom-10 left-20 w-64 h-64 rounded-full bg-[var(--rb-primary-light)]/10 blur-3xl" />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--rb-dark)] via-[var(--rb-primary)] to-[var(--rb-dark)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(89,236,183,0.1),transparent_70%)]" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <Link
@@ -183,12 +179,14 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
             </div>
 
             <div className="flex justify-center">
-              <div className="w-48 h-48 rounded-full bg-white/10 flex items-center justify-center text-white">
+              <div className="w-48 h-48 rounded-2xl bg-white/10 flex items-center justify-center text-white">
                 {DISCIPLINE_ICONS[discipline.code.toUpperCase()] || DEFAULT_ICON}
               </div>
             </div>
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--rb-primary)] via-[var(--rb-accent)] to-[var(--rb-primary)]" />
       </section>
 
       {/* Main Content */}
@@ -197,17 +195,15 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-12">
-              {/* Extra Info (CMS) */}
               {extraInfo && (
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <p className="text-gray-700 leading-relaxed">{extraInfo}</p>
+                <div className="bg-white rounded-2xl border border-slate-100 p-8">
+                  <p className="text-slate-700 leading-relaxed">{extraInfo}</p>
                 </div>
               )}
 
-              {/* Indicaties */}
               {indicaties.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <div className="bg-white rounded-2xl border border-slate-100 p-8">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6">
                     Wat behandelen wij?
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -216,18 +212,17 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
                         key={index}
                         className="border-l-4 border-[var(--rb-primary)] pl-4 py-2"
                       >
-                        <h3 className="font-semibold text-gray-900">{indicatie.naam}</h3>
-                        <p className="text-sm text-gray-600">{indicatie.beschrijving}</p>
+                        <h3 className="font-semibold text-slate-900">{indicatie.naam}</h3>
+                        <p className="text-sm text-slate-600">{indicatie.beschrijving}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Team */}
               {teamleden.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <div className="bg-white rounded-2xl border border-slate-100 p-8">
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6">
                     Ons team
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-6">
@@ -240,26 +235,26 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
                           <img
                             src={lid.foto}
                             alt={`${lid.voornaam} ${lid.achternaam}`}
-                            className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                            className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--rb-primary)] to-[var(--rb-primary-dark)] flex items-center justify-center text-white font-semibold flex-shrink-0">
+                          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--rb-primary)] to-[var(--rb-primary-dark)] flex items-center justify-center text-white font-semibold flex-shrink-0">
                             {lid.voornaam.charAt(0)}{lid.achternaam.charAt(0)}
                           </div>
                         )}
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-slate-900">
                             {lid.voornaam} {lid.achternaam}
                           </h3>
                           <p className="text-sm text-[var(--rb-primary)]">{discipline.naam}</p>
                           {lid.bio && (
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">{lid.bio}</p>
+                            <p className="text-sm text-slate-600 mt-1 line-clamp-2">{lid.bio}</p>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-6 pt-6 border-t">
+                  <div className="mt-6 pt-6 border-t border-slate-100">
                     <Link
                       href="/team"
                       className="inline-flex items-center text-[var(--rb-primary)] font-medium hover:underline"
@@ -276,32 +271,30 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
 
             {/* Right Column - Sidebar */}
             <div className="space-y-6">
-              {/* Contact CTA */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">
+              <div className="bg-white rounded-2xl border border-slate-100 p-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-3">
                   Afspraak maken?
                 </h3>
-                <p className="text-gray-600 mb-4 text-sm">
+                <p className="text-slate-600 mb-4 text-sm">
                   Neem contact met ons op voor een vrijblijvend gesprek.
                 </p>
                 <Link
                   href="/contact"
-                  className="block w-full py-3 text-center bg-[var(--rb-primary)] text-white font-semibold rounded-lg hover:bg-[var(--rb-primary-dark)] transition-colors"
+                  className="block w-full py-3 text-center bg-[var(--rb-primary)] text-white font-semibold rounded-xl hover:bg-[var(--rb-primary-dark)] transition-colors"
                 >
                   Neem contact op
                 </Link>
                 <a
                   href="tel:+32498686842"
-                  className="block w-full mt-3 py-3 text-center border-2 border-[var(--rb-primary)] text-[var(--rb-primary)] font-semibold rounded-lg hover:bg-[var(--rb-primary)]/5 transition-colors"
+                  className="block w-full mt-3 py-3 text-center border-2 border-[var(--rb-primary)] text-[var(--rb-primary)] font-semibold rounded-xl hover:bg-[var(--rb-primary)]/5 transition-colors"
                 >
                   +32 498 68 68 42
                 </a>
               </div>
 
-              {/* Other Disciplines */}
               {otherDisciplines.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">
+                <div className="bg-white rounded-2xl border border-slate-100 p-6">
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">
                     Andere disciplines
                   </h3>
                   <ul className="space-y-3">
@@ -309,7 +302,7 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
                       <li key={d.id}>
                         <Link
                           href={`/disciplines/${d.code.toLowerCase()}`}
-                          className="flex items-center text-gray-700 hover:text-[var(--rb-primary)] transition-colors"
+                          className="flex items-center text-slate-700 hover:text-[var(--rb-primary)] transition-colors"
                         >
                           <svg className="w-4 h-4 mr-2 text-[var(--rb-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -322,25 +315,33 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
                 </div>
               )}
 
-              {/* Quick Links */}
-              <div className="bg-[var(--rb-primary)]/5 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
+              <div className="bg-[var(--rb-light)] rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">
                   Snelle links
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <Link href="/treatments" className="text-gray-700 hover:text-[var(--rb-primary)] transition-colors">
-                      → Onze behandelingen
+                    <Link href="/treatments" className="text-slate-700 hover:text-[var(--rb-primary)] transition-colors flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                      Onze behandelingen
                     </Link>
                   </li>
                   <li>
-                    <Link href="/costs" className="text-gray-700 hover:text-[var(--rb-primary)] transition-colors">
-                      → Tarieven & terugbetaling
+                    <Link href="/costs" className="text-slate-700 hover:text-[var(--rb-primary)] transition-colors flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                      Tarieven & terugbetaling
                     </Link>
                   </li>
                   <li>
-                    <Link href="/verwijzers" className="text-gray-700 hover:text-[var(--rb-primary)] transition-colors">
-                      → Info voor verwijzers
+                    <Link href="/verwijzers" className="text-slate-700 hover:text-[var(--rb-primary)] transition-colors flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                      Info voor verwijzers
                     </Link>
                   </li>
                 </ul>
@@ -350,35 +351,20 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative bg-gradient-to-br from-[var(--rb-primary)] via-[var(--rb-primary-dark)] to-[var(--rb-dark)] overflow-hidden">
-        <div className="absolute top-10 right-20 w-64 h-64 rounded-full bg-[var(--rb-accent)]/10 blur-3xl" />
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            {ctaTitle}
-          </h2>
-
-          <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto">
-            {ctaContent}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-4 bg-[var(--rb-accent)] text-[var(--rb-dark)] font-semibold rounded-lg hover:bg-[var(--rb-accent-dark)] transition-colors"
-            >
-              Maak een afspraak
-            </Link>
-            <Link
-              href="/treatments"
-              className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
-            >
-              Bekijk behandelingen
-            </Link>
-          </div>
-        </div>
-      </section>
+      <PageCTA title={ctaTitle} description={ctaContent}>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center px-8 py-4 bg-white text-[var(--rb-dark)] font-semibold rounded-xl hover:bg-[var(--rb-accent)] hover:shadow-xl hover:shadow-[var(--rb-accent)]/20 transition-all duration-300"
+        >
+          Maak een afspraak
+        </Link>
+        <Link
+          href="/treatments"
+          className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300"
+        >
+          Bekijk behandelingen
+        </Link>
+      </PageCTA>
     </PublicLayout>
   );
 }

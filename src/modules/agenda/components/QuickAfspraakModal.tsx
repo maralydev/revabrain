@@ -274,7 +274,7 @@ export function QuickAfspraakModal({
               Type afspraak
             </label>
             <div className="grid grid-cols-2 gap-3">
-              {(Object.entries(TYPE_CONFIG) as [AfspraakType, { label: string; icon: string }][])
+              {(Object.entries(TYPE_CONFIG) as [AfspraakType, { label: string }][])
                 .filter(([key]) => key !== 'ADMIN')
                 .map(([key, config]) => (
                 <button
@@ -282,14 +282,13 @@ export function QuickAfspraakModal({
                   type="button"
                   onClick={() => setType(key)}
                   className={`
-                    flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200
+                    flex items-center justify-center px-4 py-3.5 rounded-xl transition-all duration-200
                     ${type === key
                       ? 'bg-gradient-to-br from-[var(--rb-primary)]/10 to-[var(--rb-accent)]/10 border-2 border-[var(--rb-primary)] text-[var(--rb-primary)] shadow-sm'
                       : 'bg-slate-50 border-2 border-transparent hover:bg-slate-100'
                     }
                   `}
                 >
-                  <span className="text-lg">{config.icon}</span>
                   <span className="font-semibold text-sm">{config.label}</span>
                 </button>
               ))}

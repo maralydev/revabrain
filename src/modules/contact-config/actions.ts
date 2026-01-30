@@ -39,7 +39,7 @@ export interface UpdateContactInfoResult {
  */
 export async function getContactInfo(): Promise<ContactInfoData | null> {
   try {
-    const info = await (prisma as any).contactInfo.findFirst({
+    const info = await prisma.contactInfo.findFirst({
       where: { id: 1 },
     });
     return info;
@@ -78,7 +78,7 @@ export async function updateContactInfo(
     }
 
     // Upsert (update or insert)
-    await (prisma as any).contactInfo.upsert({
+    await prisma.contactInfo.upsert({
       where: { id: 1 },
       update: updateData,
       create: {
