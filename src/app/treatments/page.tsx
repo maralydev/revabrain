@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import PublicLayout from '@/components/public/PublicLayout'
+import { PublicLayout } from '@/components/public/PublicLayout'
 import PageHero from '@/components/public/PageHero'
 import PageCTA from '@/components/public/PageCTA'
 import { getAllBehandelingen } from '@/modules/behandeling/queries'
@@ -82,7 +82,7 @@ export default async function TreatmentsPage() {
   ]
 
   return (
-    <PublicLayout footerData={footerData}>
+    <PublicLayout >
       <PageHero title={heroTitle} badge={heroSubtitle} description={heroDescription} />
 
       {/* Treatments Grid */}

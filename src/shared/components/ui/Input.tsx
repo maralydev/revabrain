@@ -1,81 +1,88 @@
-import { InputHTMLAttributes, ReactNode, forwardRef } from 'react'
+"use client";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  error?: string
-  icon?: ReactNode
-  helperText?: string
+import React from "react";
+import { cn } from "@/shared/utils/cn";
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+  helperText?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, helperText, className = '', id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
-
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      label,
+      error,
+      helperText,
+      leftIcon,
+      rightIcon,
+      fullWidth = false,
+      type = "text",
+      ...props
+    },
+    ref
+  ) => {
     return (
-      <div className="space-y-1.5">
+      <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-slate-700">
+          <label
+            htmlFor={props.id}
+            className="text-sm font-medium text-gray-700"
+          >
             {label}
+            {props.required && (
+              <span className="ml-1 text-red-500">*</span>
+            )}
           </label>
         )}
         <div className="relative">
-          {icon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400">
-              {icon}
+          {leftIcon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              {leftIcon}
             </div>
           )}
           <input
             ref={ref}
-            id={inputId}
-            className={`
-              w-full rounded-xl border bg-slate-50 px-4 py-2.5
-              text-sm text-slate-900 placeholder:text-slate-400
-              transition-all duration-200
-              focus:bg-white focus:border-[var(--rb-primary)] focus:ring-2 focus:ring-[var(--rb-primary)]/20 focus:outline-none
-              ${icon ? 'pl-10' : ''}
-              ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200'}
-              ${className}
-            `}
+            type={type}
+            className={cn(
+              "flex h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm text-gray-900 placeholder:text-gray-400",
+              "transition-all duration-200",
+              "focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10",
+              "disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500",
+              "hover:border-gray-300",
+              leftIcon && "pl-10",
+              rightIcon && "pr-10",
+              error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+              className
+            )}
             {...props}
           />
+          {rightIcon && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+              {rightIcon}
+            </div>
+          )}
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {helperText && !error && <p className="text-sm text-slate-400">{helperText}</p>}
+        {(error || helperText) && (
+          <p
+            className={cn(
+              "text-sm",
+              error ? "text-red-600" : "text-gray-500"
+            )}
+          >
+            {error || helperText}
+          </p>
+        )}
       </div>
-    )
+    );
   }
-)
+);
 
-Input.displayName = 'Input'
+Input.displayName = "Input";
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string
-  error?: string
-}
-
-export function Textarea({ label, error, className = '', id, ...props }: TextareaProps) {
-  const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-')
-
-  return (
-    <div className="space-y-1.5">
-      {label && (
-        <label htmlFor={textareaId} className="block text-sm font-medium text-slate-700">
-          {label}
-        </label>
-      )}
-      <textarea
-        id={textareaId}
-        className={`
-          w-full rounded-xl border bg-slate-50 px-4 py-2.5
-          text-sm text-slate-900 placeholder:text-slate-400
-          transition-all duration-200 resize-y min-h-[100px]
-          focus:bg-white focus:border-[var(--rb-primary)] focus:ring-2 focus:ring-[var(--rb-primary)]/20 focus:outline-none
-          ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200'}
-          ${className}
-        `}
-        {...props}
-      />
-      {error && <p className="text-sm text-red-500">{error}</p>}
-    </div>
-  )
-}
+export { Input };

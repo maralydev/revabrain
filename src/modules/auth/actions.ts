@@ -52,8 +52,10 @@ export async function login(email: string, password: string): Promise<LoginResul
     const sessionPayload = {
       userId: user.id,
       email: user.email,
-      rol: user.rol,
+      voornaam: user.voornaam,
+      achternaam: user.achternaam,
       isAdmin: user.isAdmin,
+      mustChangePassword: user.mustChangePassword || false,
     };
 
     const token = await createSession(sessionPayload);
@@ -83,24 +85,26 @@ export async function login(email: string, password: string): Promise<LoginResul
 /**
  * Logout server action
  */
-export async function logout(): Promise<void> {
-  // Get session before deleting for audit
+export async function logout() {
   const session = await getSession();
+  
   if (session) {
-    const user = await prisma.teamlid.findUnique({
-      where: { id: session.userId },
-      select: { voornaam: true, achternaam: true },
-    });
-
-    // Audit log
     await logAuditDirect({
       teamlidId: session.userId,
-      teamlidNaam: user ? `${user.voornaam} ${user.achternaam}` : 'Onbekend',
+      teamlidNaam: `${session.voornaam} ${session.achternaam}`,
       actieType: 'LOGOUT',
       omschrijving: `Uitgelogd`,
     });
   }
-
+  
   await deleteSessionCookie();
   redirect('/login');
+}
+
+/**
+ * Check if user is authenticated
+ */
+export async function checkAuth() {
+  const session = await getSession();
+  return !!session;
 }

@@ -1,17 +1,16 @@
-'use client'
+"use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from '@/shared/components/ui/Icons'
-
-export type AgendaView = 'DAG' | 'WEEK'
+import { Button } from "@/shared/components/ui/Button";
+import { cn } from "@/shared/utils/cn";
 
 interface AgendaHeaderProps {
-  currentDate: Date
-  view: AgendaView
-  onPrevDay: () => void
-  onNextDay: () => void
-  onToday: () => void
-  onViewChange: (view: AgendaView) => void
-  onNieuweAfspraak?: () => void
+  currentDate: Date;
+  view: "DAG" | "WEEK";
+  onPrevDay: () => void;
+  onNextDay: () => void;
+  onToday: () => void;
+  onViewChange: (view: "DAG" | "WEEK") => void;
+  onNieuweAfspraak: () => void;
 }
 
 export function AgendaHeader({
@@ -21,116 +20,107 @@ export function AgendaHeader({
   onNextDay,
   onToday,
   onViewChange,
-  onNieuweAfspraak
+  onNieuweAfspraak,
 }: AgendaHeaderProps) {
   const formatDate = (date: Date) => {
-    if (view === 'WEEK') {
-      const endDate = new Date(date)
-      endDate.setDate(endDate.getDate() + 6)
-      return `${date.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' })}`
+    if (view === "DAG") {
+      return date.toLocaleDateString("nl-BE", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } else {
+      const endOfWeek = new Date(date);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      return `${date.toLocaleDateString("nl-BE", {
+        day: "numeric",
+        month: "short",
+      })} - ${endOfWeek.toLocaleDateString("nl-BE", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })}`;
     }
-    return date.toLocaleDateString('nl-BE', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
-
-  const isToday = () => {
-    const today = new Date()
-    return currentDate.toDateString() === today.toDateString()
-  }
+  };
 
   return (
-    <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-30">
-      <div className="px-8 py-5 flex items-center justify-between">
-        {/* Left: Date & Today button */}
-        <div className="flex items-center gap-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 capitalize">
-              {formatDate(currentDate)}
-            </h1>
-          </div>
-
-          {!isToday() && (
-            <button
-              onClick={onToday}
-              className="px-4 py-2 text-sm font-medium text-[var(--rb-primary)] bg-[var(--rb-primary)]/10 rounded-full hover:bg-[var(--rb-primary)]/20 transition-all duration-200"
-            >
-              Vandaag
-            </button>
-          )}
+    <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Left: Title and Date */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Agenda</h1>
+          <p className="text-gray-600 capitalize">{formatDate(currentDate)}</p>
         </div>
 
-        {/* Right: Controls */}
-        <div className="flex items-center gap-4">
-          {/* View Toggle */}
-          <div className="flex p-1 bg-slate-100 rounded-xl">
+        {/* Center: Navigation */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={onPrevDay}>
+            <ChevronLeftIcon className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={onToday}>
+            Vandaag
+          </Button>
+          <Button variant="outline" size="sm" onClick={onNextDay}>
+            <ChevronRightIcon className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Right: View Toggle + New Appointment */}
+        <div className="flex items-center gap-3">
+          <div className="flex bg-gray-100 rounded-lg p-1">
             <button
-              onClick={() => onViewChange('DAG')}
-              className={`
-                px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200
-                ${view === 'DAG'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-                }
-              `}
+              onClick={() => onViewChange("DAG")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                view === "DAG"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
             >
               Dag
             </button>
             <button
-              onClick={() => onViewChange('WEEK')}
-              className={`
-                px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200
-                ${view === 'WEEK'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-                }
-              `}
+              onClick={() => onViewChange("WEEK")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                view === "WEEK"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              )}
             >
               Week
             </button>
           </div>
-
-          {/* Navigation */}
-          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            <button
-              onClick={onPrevDay}
-              className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200"
-              aria-label="Vorige"
-            >
-              <ChevronLeftIcon className="w-5 h-5 text-slate-600" />
-            </button>
-            <button
-              onClick={onNextDay}
-              className="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200"
-              aria-label="Volgende"
-            >
-              <ChevronRightIcon className="w-5 h-5 text-slate-600" />
-            </button>
-          </div>
-
-          {/* New appointment */}
-          <button
-            onClick={onNieuweAfspraak}
-            className="
-              flex items-center gap-2 px-5 py-2.5
-              bg-gradient-to-r from-[var(--rb-primary)] to-[var(--rb-primary-dark)]
-              text-white text-sm font-semibold rounded-xl
-              shadow-lg shadow-[var(--rb-primary)]/25
-              hover:shadow-xl hover:shadow-[var(--rb-primary)]/30 hover:scale-[1.02]
-              active:scale-[0.98]
-              transition-all duration-200
-            "
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+          <Button onClick={onNieuweAfspraak} leftIcon={<PlusIcon className="w-4 h-4" />}>
             Nieuwe afspraak
-          </button>
+          </Button>
         </div>
       </div>
-    </header>
-  )
+    </div>
+  );
+}
+
+function ChevronLeftIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function PlusIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  );
 }

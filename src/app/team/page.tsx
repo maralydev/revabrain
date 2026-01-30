@@ -1,79 +1,92 @@
-import { Metadata } from 'next'
-import PublicLayout from '@/components/public/PublicLayout'
-import PageHero from '@/components/public/PageHero'
-import PageCTA from '@/components/public/PageCTA'
-import { getPublicTeamleden } from '@/modules/teamlid/queries'
-import { getPageContent } from '@/modules/page-content/queries'
-import { getFooterData } from '@/modules/footer/queries'
-import TeamGrid from './TeamGrid'
-
-export const metadata: Metadata = {
-  title: 'Ons Team | RevaBrain',
-  description: 'Ontmoet het multidisciplinaire team van RevaBrain. Gespecialiseerde zorgverleners in neurologische revalidatie.',
-  keywords: ['team', 'neurologische revalidatie', 'logopedist', 'kinesitherapeut', 'ergotherapeut', 'neuropsycholoog', 'diëtist', 'RevaBrain'],
-  openGraph: {
-    title: 'Ons Team | RevaBrain',
-    description: 'Ontmoet het multidisciplinaire team van RevaBrain.',
-    type: 'website',
-  },
-}
-
-const DISCIPLINE_LABELS: Record<string, string> = {
-  'LOGOPEDIE': 'Logopedie',
-  'KINESITHERAPIE': 'Kinesitherapie',
-  'ERGOTHERAPIE': 'Ergotherapie',
-  'NEUROPSYCHOLOGIE': 'Neuropsychologie',
-  'DIETIEK': 'Diëtetiek',
-}
-
-const ROL_LABELS: Record<string, string> = {
-  'ZORGVERLENER': 'Zorgverlener',
-  'SECRETARIAAT': 'Medisch Secretariaat',
-}
+import { PublicLayout } from "@/components/public/PublicLayout";
+import { Card } from "@/shared/components/ui/Card";
+import { prisma } from "@/shared/lib/prisma";
+import Image from "next/image";
 
 export default async function TeamPage() {
-  const [teamleden, content, footerData] = await Promise.all([
-    getPublicTeamleden(),
-    getPageContent('team', 'nl'),
-    getFooterData(),
-  ])
-
-  const heroTitle = content.hero?.title || 'Ons Team'
-  const heroSubtitle = content.hero?.subtitle || 'Ontmoet de experts'
-  const heroDescription = content.hero?.content || 'Ons multidisciplinair team van gespecialiseerde zorgverleners staat klaar om u te begeleiden op uw weg naar herstel.'
-
-  const ctaTitle = content.cta?.title || 'Interesse om bij ons team te komen?'
-  const ctaContent = content.cta?.content || 'We zijn altijd op zoek naar gepassioneerde zorgverleners die ons team willen versterken.'
-  const ctaButtonText = content.cta?.buttonText || 'Solliciteer nu'
-  const ctaButtonUrl = content.cta?.buttonUrl || '/contact'
-
-  const activeDisciplines = [...new Set(teamleden.map(m => m.discipline).filter(Boolean))] as string[]
+  const teamMembers = await prisma.teamlid.findMany({
+    where: {
+      actief: true,
+    },
+    select: {
+      id: true,
+      voornaam: true,
+      achternaam: true,
+      bio: true,
+      foto: true,
+      discipline: true,
+    },
+    orderBy: {
+      achternaam: "asc",
+    },
+  });
 
   return (
-    <PublicLayout footerData={footerData}>
-      <PageHero title={heroTitle} badge={heroSubtitle} description={heroDescription} />
+    <PublicLayout>
+      {/* Hero */}
+      <section className="relative pt-24 pb-16 bg-gradient-to-br from-blue-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              Ons team
+            </h1>
+            <p className="text-lg text-gray-600">
+              Ontmoet onze gespecialiseerde zorgverleners die dagelijks werken
+              aan het herstel van onze patienten.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <TeamGrid
-        teamleden={teamleden}
-        activeDisciplines={activeDisciplines}
-        disciplineLabels={DISCIPLINE_LABELS}
-        rolLabels={ROL_LABELS}
-      />
+      {/* Team Grid */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {teamMembers.map((member) => (
+              <Card key={member.id} hover className="overflow-hidden">
+                <div className="aspect-square relative bg-gray-100">
+                  {member.foto ? (
+                    <Image
+                      src={member.foto}
+                      alt={`${member.voornaam} ${member.achternaam}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-teal-100">
+                      <span className="text-5xl font-bold text-blue-600">
+                        {member.voornaam.charAt(0)}
+                        {member.achternaam.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {member.voornaam} {member.achternaam}
+                  </h3>
+                  {member.discipline && (
+                    <p className="text-blue-600 font-medium mt-1">
+                      {member.discipline}
+                    </p>
+                  )}
+                  {member.bio && (
+                    <p className="text-gray-600 mt-3 text-sm leading-relaxed">
+                      {member.bio}
+                    </p>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
 
-      <PageCTA title={ctaTitle} description={ctaContent}>
-        <a
-          href={ctaButtonUrl}
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[var(--rb-dark)] font-semibold rounded-xl hover:bg-[var(--rb-accent)] hover:shadow-xl hover:shadow-[var(--rb-accent)]/20 transition-all duration-300"
-        >
-          {ctaButtonText}
-        </a>
-        <a
-          href="mailto:jobs@revabrain.be"
-          className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-        >
-          Mail ons direct
-        </a>
-      </PageCTA>
+          {teamMembers.length === 0 && (
+            <div className="text-center py-16 text-gray-500">
+              <p>Geen teamleden gevonden.</p>
+            </div>
+          )}
+        </div>
+      </section>
     </PublicLayout>
-  )
+  );
 }

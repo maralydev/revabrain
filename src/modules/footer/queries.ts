@@ -3,7 +3,19 @@
 import { getContactInfo } from '@/modules/contact-config/actions';
 import { getPageContent } from '@/modules/page-content/queries';
 import { getAllBehandelingen } from '@/modules/behandeling/queries';
-import type { FooterData } from '@/components/public/Footer';
+
+export interface FooterData {
+  telefoon: string;
+  email: string;
+  adresStraat: string;
+  adresNummer: string;
+  adresPostcode: string;
+  adresGemeente: string;
+  tagline: string;
+  copyrightText: string | null;
+  customLinks: Array<{ label: string; url: string }>;
+  behandelingLinks: Array<{ label: string; url: string }>;
+}
 
 /**
  * Haal alle footer data op - contact info + CMS content + behandelingen

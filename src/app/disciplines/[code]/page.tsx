@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
-import PublicLayout from '@/components/public/PublicLayout';
+import { PublicLayout } from '@/components/public/PublicLayout';
 import PageCTA from '@/components/public/PageCTA';
 import { getActieveDisciplineConfigs, getDisciplineByCode } from '@/modules/discipline-config/queries';
 import { getPublicTeamledenByDiscipline } from '@/modules/teamlid/queries';
@@ -149,7 +149,7 @@ export default async function DisciplinePage({ params }: { params: Promise<{ cod
   const indicaties = INDICATIES[discipline.code.toUpperCase()] || [];
 
   return (
-    <PublicLayout footerData={footerData}>
+    <PublicLayout >
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--rb-dark)] via-[var(--rb-primary)] to-[var(--rb-dark)]" />

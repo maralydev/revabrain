@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
-import PublicLayout from '@/components/public/PublicLayout'
+import { PublicLayout } from '@/components/public/PublicLayout'
 import PageHero from '@/components/public/PageHero'
 import PageCTA from '@/components/public/PageCTA'
 import { getPageContent } from '@/modules/page-content/queries'
@@ -66,7 +66,7 @@ export default async function VerwijzersPage() {
   const card3Content = content.card3?.content || 'Focus op neurologische revalidatie en kinderlogopedie';
 
   return (
-    <PublicLayout footerData={footerData}>
+    <PublicLayout >
       <PageHero title={heroTitle} badge={heroLabel} description={heroSubtitle} align="left">
         <div className="flex flex-col sm:flex-row gap-4">
           <a

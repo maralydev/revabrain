@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifySession } from '@/shared/lib/auth';
+import { getSession } from '@/shared/lib/auth';
 
 // Enable preview mode for a specific page
 export async function POST(request: NextRequest) {
   try {
     // Verify admin authentication
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
+    const session = await getSession();
 
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
-    }
-
-    const session = await verifySession(sessionToken);
     if (!session || !session.isAdmin) {
       return NextResponse.json({ error: 'Admin toegang vereist' }, { status: 403 });
     }

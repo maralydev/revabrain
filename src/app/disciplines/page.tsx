@@ -1,121 +1,105 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import PublicLayout from '@/components/public/PublicLayout'
-import PageHero from '@/components/public/PageHero'
-import PageCTA from '@/components/public/PageCTA'
-import { getActieveDisciplineConfigs } from '@/modules/discipline-config/queries'
-import { getPageContent } from '@/modules/page-content/queries'
-import { getFooterData } from '@/modules/footer/queries'
-
-export const metadata: Metadata = {
-  title: 'Onze Disciplines | RevaBrain',
-  description: 'Ontdek onze gespecialiseerde disciplines: neurologopedie, prelogopedie, kinesitherapie, ergotherapie en neuropsychologie.',
-  keywords: ['disciplines', 'neurologopedie', 'prelogopedie', 'kinesitherapie', 'ergotherapie', 'neuropsychologie', 'revalidatie'],
-  openGraph: {
-    title: 'Onze Disciplines | RevaBrain',
-    description: 'Gespecialiseerde disciplines voor neurologische revalidatie.',
-    type: 'website',
-  },
-}
-
-const DISCIPLINE_ICONS: Record<string, React.ReactNode> = {
-  NEUROLOGOPEDIE: (
-    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-    </svg>
-  ),
-  PRELOGOPEDIE: (
-    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
-    </svg>
-  ),
-  KINESITHERAPIE: (
-    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-    </svg>
-  ),
-  ERGOTHERAPIE: (
-    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17l-5.648-3.014A2.25 2.25 0 014.25 10.09V5.25a2.25 2.25 0 012.25-2.25h11a2.25 2.25 0 012.25 2.25v4.84a2.25 2.25 0 01-1.522 2.067l-5.648 3.013a2.25 2.25 0 01-2.11 0z" />
-    </svg>
-  ),
-  NEUROPSYCHOLOGIE: (
-    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-    </svg>
-  ),
-}
-
-const DEFAULT_ICON = (
-  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-  </svg>
-)
+import { PublicLayout } from "@/components/public/PublicLayout";
+import { Card } from "@/shared/components/ui/Card";
+import { prisma } from "@/shared/lib/prisma";
+import Link from "next/link";
 
 export default async function DisciplinesPage() {
-  const [disciplines, content, footerData] = await Promise.all([
-    getActieveDisciplineConfigs(),
-    getPageContent('disciplines', 'nl'),
-    getFooterData(),
-  ])
-
-  const heroTitle = content?.hero?.title || 'Onze Disciplines'
-  const heroSubtitle = content?.hero?.content || 'Bij RevaBrain werken verschillende disciplines samen om u de beste zorg te bieden.'
+  const disciplines = await prisma.disciplineConfig.findMany({
+    where: {
+      actief: true,
+    },
+    orderBy: {
+      volgorde: "asc",
+    },
+  });
 
   return (
-    <PublicLayout footerData={footerData}>
-      <PageHero title={heroTitle} description={heroSubtitle} />
+    <PublicLayout>
+      {/* Hero */}
+      <section className="relative pt-24 pb-16 bg-gradient-to-br from-blue-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              Onze disciplines
+            </h1>
+            <p className="text-lg text-gray-600">
+              Een multidisciplinaire aanpak voor optimale zorg. Elke discipline
+              brengt zijn eigen expertise in voor een complete behandeling.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <section className="py-20 lg:py-28 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {disciplines.length === 0 ? (
-            <div className="text-center text-slate-500 py-12">Geen disciplines gevonden.</div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {disciplines.map((discipline) => (
-                <Link
-                  key={discipline.id}
-                  href={`/disciplines/${discipline.code.toLowerCase()}`}
-                  className="group bg-white rounded-2xl border border-slate-100 hover:border-[var(--rb-primary)]/20 hover:shadow-lg hover:shadow-[var(--rb-primary)]/5 transition-all duration-300"
-                >
-                  <div className="p-8">
-                    <div className="w-14 h-14 rounded-xl bg-[var(--rb-light)] flex items-center justify-center text-[var(--rb-primary)] mb-6 group-hover:bg-[var(--rb-primary)] group-hover:text-white transition-colors duration-300">
-                      {DISCIPLINE_ICONS[discipline.code.toUpperCase()] || DEFAULT_ICON}
+      {/* Disciplines Grid */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            {disciplines.map((discipline) => (
+              <Link
+                key={discipline.code}
+                href={`/disciplines/${discipline.code.toLowerCase()}`}
+              >
+                <Card hover className="h-full p-8">
+                  <div className="flex items-start gap-6">
+                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <DisciplineIcon className="w-8 h-8 text-blue-600" />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-[var(--rb-primary)] transition-colors">
-                      {discipline.naam}
-                    </h2>
-                    {discipline.beschrijving && (
-                      <p className="text-slate-500 mb-4 line-clamp-3 text-sm leading-relaxed">{discipline.beschrijving}</p>
-                    )}
-                    <span className="inline-flex items-center gap-2 text-[var(--rb-primary)] font-medium text-sm group-hover:gap-3 transition-all">
-                      Meer informatie
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    </span>
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                        {discipline.naam}
+                      </h2>
+                      {discipline.beschrijving ? (
+                        <p className="text-gray-600 leading-relaxed">
+                          {discipline.beschrijving}
+                        </p>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          Klik voor meer informatie
+                        </p>
+                      )}
+                      <div className="mt-4 inline-flex items-center gap-2 text-blue-600 font-medium">
+                        Meer informatie
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                </Link>
-              ))}
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {disciplines.length === 0 && (
+            <div className="text-center py-16 text-gray-500">
+              <p>Geen disciplines gevonden.</p>
             </div>
           )}
         </div>
       </section>
-
-      <PageCTA
-        title={content?.cta?.title || 'Niet zeker welke discipline?'}
-        description={content?.cta?.content || 'Neem contact met ons op. Wij helpen u graag om de juiste zorg te vinden.'}
-      >
-        <Link
-          href={content?.cta?.buttonUrl || '/contact'}
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[var(--rb-dark)] font-semibold rounded-xl hover:bg-[var(--rb-accent)] hover:shadow-xl hover:shadow-[var(--rb-accent)]/20 transition-all duration-300"
-        >
-          {content?.cta?.buttonText || 'Neem contact op'}
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
-        </Link>
-      </PageCTA>
     </PublicLayout>
-  )
+  );
+}
+
+function DisciplineIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+      />
+    </svg>
+  );
 }

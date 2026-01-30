@@ -1,12 +1,5 @@
-import Footer from './Footer';
-import { getFooterData } from '@/modules/footer/queries';
+import { Footer } from "./Footer";
 
-/**
- * Server Component wrapper voor Footer
- * Haalt footer data op en geeft door aan client Footer component
- */
-export default async function FooterWrapper() {
-  const footerData = await getFooterData();
-
-  return <Footer data={footerData} />;
+export default function FooterWrapper() {
+  return <Footer />;
 }

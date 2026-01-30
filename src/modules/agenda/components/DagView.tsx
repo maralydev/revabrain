@@ -17,10 +17,10 @@ interface DagViewProps {
 // Configuration
 const START_HOUR = 8
 const END_HOUR = 19
-const SLOT_MINUTES = 15 // 15-minute slots for precision
-const PIXELS_PER_SLOT = 20 // Height of each 15-min slot
+const SLOT_MINUTES = 15
+const PIXELS_PER_SLOT = 20
 const TOTAL_SLOTS = (END_HOUR - START_HOUR) * (60 / SLOT_MINUTES)
-const MIN_DURATION_SLOTS = 2 // Minimum 30 minutes
+const MIN_DURATION_SLOTS = 2
 
 type DragMode = 'move' | 'resize'
 
@@ -54,14 +54,12 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     zorgverlenerNaam: string
   } | null>(null)
 
-  // Convert time to slot index
   const timeToSlot = useCallback((date: Date) => {
     const hours = date.getHours()
     const minutes = date.getMinutes()
     return ((hours - START_HOUR) * 60 + minutes) / SLOT_MINUTES
   }, [])
 
-  // Convert slot index to time
   const slotToTime = useCallback((slot: number, baseDate: Date) => {
     const totalMinutes = slot * SLOT_MINUTES
     const hours = START_HOUR + Math.floor(totalMinutes / 60)
@@ -71,12 +69,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     return date
   }, [])
 
-  // Format time display
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })
-  }
-
-  // Format slot to time string
   const slotToTimeString = (slot: number) => {
     const totalMinutes = slot * SLOT_MINUTES
     const hours = START_HOUR + Math.floor(totalMinutes / 60)
@@ -84,24 +76,21 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
   }
 
-  // Get afspraken for a zorgverlener
   const getAfsprakenVoorZorgverlener = useCallback((zorgverlenerId: number) => {
     return afspraken.filter(a => a.zorgverlenerId === zorgverlenerId)
   }, [afspraken])
 
-  // Calculate position and height for an afspraak
   const getAfspraakStyle = useCallback((afspraak: Afspraak) => {
     const startSlot = timeToSlot(afspraak.datum)
     const duurSlots = afspraak.duur / SLOT_MINUTES
     return {
       top: startSlot * PIXELS_PER_SLOT,
-      height: duurSlots * PIXELS_PER_SLOT - 2, // -2 for gap
+      height: duurSlots * PIXELS_PER_SLOT - 2,
       startSlot,
       duurSlots,
     }
   }, [timeToSlot])
 
-  // Handle drag start (move)
   const handleDragStart = useCallback((e: React.MouseEvent, afspraak: Afspraak) => {
     e.preventDefault()
     e.stopPropagation()
@@ -125,7 +114,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     })
   }, [timeToSlot])
 
-  // Handle resize start
   const handleResizeStart = useCallback((e: React.MouseEvent, afspraak: Afspraak) => {
     e.preventDefault()
     e.stopPropagation()
@@ -149,7 +137,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     })
   }, [timeToSlot])
 
-  // Handle drag/resize move
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!dragState || !containerRef.current) return
 
@@ -157,11 +144,9 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     const deltaSlots = Math.round(deltaY / PIXELS_PER_SLOT)
 
     if (dragState.mode === 'move') {
-      // Moving: change start slot
       let newSlot = dragState.originalSlot + deltaSlots
       newSlot = Math.max(0, Math.min(newSlot, TOTAL_SLOTS - dragState.originalDuurSlots))
 
-      // Find which zorgverlener column we're over
       const columns = containerRef.current.querySelectorAll('[data-zorgverlener-id]')
       let newZorgverlenerId = dragState.zorgverlenerId
 
@@ -178,11 +163,8 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
         zorgverlenerId: newZorgverlenerId,
       })
     } else {
-      // Resizing: change duration
       let newDuurSlots = dragState.originalDuurSlots + deltaSlots
       newDuurSlots = Math.max(MIN_DURATION_SLOTS, newDuurSlots)
-
-      // Don't exceed end of day
       const maxDuurSlots = TOTAL_SLOTS - dragState.originalSlot
       newDuurSlots = Math.min(newDuurSlots, maxDuurSlots)
 
@@ -194,7 +176,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     }
   }, [dragState])
 
-  // Handle drag/resize end
   const handleMouseUp = useCallback(async () => {
     if (!dragState || !dropPreview) {
       setDragState(null)
@@ -215,13 +196,11 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
         const result = await updateAfspraak({
           afspraakId: dragState.afspraak.id,
           datum: newDatum,
-          duur: newDuur as 30 | 45 | 60 | 90, // Cast - backend accepts any valid duration
+          duur: newDuur as 30 | 45 | 60 | 90,
         })
 
         if (result.success) {
           onRefresh?.()
-        } else {
-          console.error('Update failed:', result.error)
         }
       } catch (err) {
         console.error('Drag update failed:', err)
@@ -234,7 +213,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     setDropPreview(null)
   }, [dragState, dropPreview, datum, slotToTime, onRefresh])
 
-  // Set up global mouse listeners for dragging
   useEffect(() => {
     if (dragState) {
       window.addEventListener('mousemove', handleMouseMove)
@@ -251,7 +229,6 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     }
   }, [dragState, handleMouseMove, handleMouseUp])
 
-  // Handle mouse move over grid for hover effect
   const handleGridMouseMove = useCallback((e: React.MouseEvent, zorgverlenerId: number) => {
     if (dragState) return
 
@@ -263,11 +240,8 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     setHoverSlot({ slot, zorgverlenerId })
   }, [dragState])
 
-  // Handle click on empty slot
   const handleSlotClick = useCallback((e: React.MouseEvent, zorgverlener: Zorgverlener) => {
     if (dragState) return
-
-    // Check if clicking on an afspraak
     if ((e.target as HTMLElement).closest('[data-afspraak]')) return
 
     const target = e.currentTarget as HTMLElement
@@ -284,13 +258,12 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
     })
   }, [dragState, datum, slotToTime])
 
-  // Generate time labels
   const timeLabels = []
   for (let hour = START_HOUR; hour < END_HOUR; hour++) {
     timeLabels.push(
       <div
         key={hour}
-        className="h-[80px] text-xs font-medium text-slate-400 text-right pr-3 flex items-start pt-2"
+        className="h-[80px] text-xs font-medium text-gray-400 text-right pr-3 flex items-start pt-2"
       >
         {hour}:00
       </div>
@@ -299,30 +272,29 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
 
   return (
     <>
-      <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 to-white" ref={containerRef}>
+      <div className="flex-1 overflow-auto bg-gray-50" ref={containerRef}>
         <div className="min-w-[800px] p-6">
-          {/* Modern card container */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
-            {/* Header with zorgverleners */}
-            <div className="flex border-b border-slate-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
-              <div className="w-20 flex-shrink-0 p-4 border-r border-slate-100" />
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
+              <div className="w-20 flex-shrink-0 p-4 border-r border-gray-100" />
               {zorgverleners.map(zv => (
                 <div
                   key={zv.id}
-                  className="flex-1 p-4 border-r border-slate-100 min-w-[220px] last:border-r-0"
+                  className="flex-1 p-4 border-r border-gray-100 min-w-[220px] last:border-r-0"
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-sm"
-                      style={{ backgroundColor: zv.kleur }}
+                      style={{ backgroundColor: zv.kleur || '#3b82f6' }}
                     >
                       {zv.voornaam.charAt(0)}{zv.achternaam.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-slate-800 block truncate">
+                      <span className="font-semibold text-gray-800 block truncate">
                         {zv.voornaam} {zv.achternaam}
                       </span>
-                      <span className="text-xs text-slate-500">{zv.discipline}</span>
+                      <span className="text-xs text-gray-500">{zv.discipline}</span>
                     </div>
                   </div>
                 </div>
@@ -332,7 +304,7 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
             {/* Time grid */}
             <div className="flex">
               {/* Time column */}
-              <div className="w-20 flex-shrink-0 border-r border-slate-100 bg-slate-50/50">
+              <div className="w-20 flex-shrink-0 border-r border-gray-100 bg-gray-50">
                 {timeLabels}
               </div>
 
@@ -344,7 +316,7 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                   <div
                     key={zv.id}
                     data-zorgverlener-id={zv.id}
-                    className="flex-1 min-w-[220px] border-r border-slate-100 last:border-r-0 relative bg-white cursor-pointer"
+                    className="flex-1 min-w-[220px] border-r border-gray-100 last:border-r-0 relative bg-white cursor-pointer"
                     style={{ height: TOTAL_SLOTS * PIXELS_PER_SLOT }}
                     onClick={(e) => handleSlotClick(e, zv)}
                     onMouseMove={(e) => handleGridMouseMove(e, zv.id)}
@@ -354,7 +326,7 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                     {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
                       <div
                         key={i}
-                        className="absolute left-0 right-0 border-b border-slate-100"
+                        className="absolute left-0 right-0 border-b border-gray-100"
                         style={{ top: i * 4 * PIXELS_PER_SLOT }}
                       />
                     ))}
@@ -363,37 +335,34 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
                     {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
                       <div
                         key={`half-${i}`}
-                        className="absolute left-0 right-0 border-b border-dashed border-slate-50"
+                        className="absolute left-0 right-0 border-b border-dashed border-gray-50"
                         style={{ top: (i * 4 + 2) * PIXELS_PER_SLOT }}
                       />
                     ))}
 
-                    {/* Hover indicator - modern styling */}
+                    {/* Hover indicator */}
                     {hoverSlot && hoverSlot.zorgverlenerId === zv.id && !dragState && (
                       <div
-                        className="absolute left-2 right-2 h-[38px] bg-gradient-to-r from-[var(--rb-primary)]/10 to-[var(--rb-accent)]/10 border-2 border-dashed border-[var(--rb-primary)]/40 rounded-xl pointer-events-none flex items-center justify-center backdrop-blur-sm"
+                        className="absolute left-2 right-2 h-[38px] bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg pointer-events-none flex items-center justify-center"
                         style={{ top: hoverSlot.slot * PIXELS_PER_SLOT }}
                       >
-                        <span className="text-xs font-semibold text-[var(--rb-primary)]">
+                        <span className="text-xs font-medium text-blue-600">
                           + {slotToTimeString(hoverSlot.slot)}
                         </span>
                       </div>
                     )}
 
-                    {/* Drop preview - enhanced visual */}
+                    {/* Drop preview */}
                     {dropPreview && dropPreview.zorgverlenerId === zv.id && dragState && (
                       <div
-                        className="absolute left-2 right-2 bg-gradient-to-br from-[var(--rb-primary)]/20 to-[var(--rb-accent)]/20 border-2 border-dashed border-[var(--rb-primary)] rounded-xl z-30 pointer-events-none flex flex-col items-center justify-center backdrop-blur-sm shadow-lg"
+                        className="absolute left-2 right-2 bg-blue-100 border-2 border-dashed border-blue-400 rounded-lg z-30 pointer-events-none flex items-center justify-center"
                         style={{
                           top: dropPreview.slot * PIXELS_PER_SLOT,
                           height: dropPreview.duurSlots * PIXELS_PER_SLOT - 2,
                         }}
                       >
-                        <span className="text-xs font-bold text-[var(--rb-primary)]">
+                        <span className="text-xs font-medium text-blue-700">
                           {slotToTimeString(dropPreview.slot)} - {slotToTimeString(dropPreview.slot + dropPreview.duurSlots)}
-                        </span>
-                        <span className="text-xs text-[var(--rb-primary)]/80 font-medium">
-                          {dropPreview.duurSlots * SLOT_MINUTES} min
                         </span>
                       </div>
                     )}
@@ -424,12 +393,12 @@ export function DagView({ datum, zorgverleners, afspraken, onAfspraakClick, onRe
         </div>
       </div>
 
-      {/* Loading overlay - enhanced */}
+      {/* Loading overlay */}
       {isUpdating && (
-        <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl px-6 py-4 shadow-2xl border border-white/50 flex items-center gap-4">
-            <div className="w-6 h-6 border-3 border-[var(--rb-primary)] border-t-transparent rounded-full animate-spin" />
-            <span className="text-slate-700 font-medium">
+        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl px-6 py-4 shadow-xl flex items-center gap-4">
+            <div className="w-6 h-6 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <span className="text-gray-700 font-medium">
               {dragState?.mode === 'resize' ? 'Duur aanpassen...' : 'Afspraak verplaatsen...'}
             </span>
           </div>

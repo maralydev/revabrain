@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { verifySession } from '@/shared/lib/auth';
+import { getSession } from '@/shared/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { randomUUID } from 'crypto';
@@ -30,16 +29,9 @@ async function ensureUploadDir(subFolder: string = 'general') {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
-    }
-
-    const session = await verifySession(sessionToken);
+    const session = await getSession();
     if (!session) {
-      return NextResponse.json({ error: 'Sessie verlopen' }, { status: 401 });
+      return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
     }
 
     // Parse form data
@@ -101,16 +93,9 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
-    }
-
-    const session = await verifySession(sessionToken);
+    const session = await getSession();
     if (!session) {
-      return NextResponse.json({ error: 'Sessie verlopen' }, { status: 401 });
+      return NextResponse.json({ error: 'Niet geautoriseerd' }, { status: 401 });
     }
 
     // Get folder from query params

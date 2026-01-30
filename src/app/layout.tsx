@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RevaBrain - Admin",
-  description: "Neurologische revalidatiepraktijk - Intern systeem",
+  title: "RevaBrain - Neurologische Revalidatiepraktijk",
+  description: "Multidisciplinaire groepspraktijk gespecialiseerd in neurologische revalidatie. Logopedie, kinesitherapie, ergotherapie, neuropsychologie en dietiek.",
+  keywords: "neurologische revalidatie, logopedie, kinesitherapie, ergotherapie, neuropsychologie, hersenletsel, NAH, België",
 };
 
 export default function RootLayout({

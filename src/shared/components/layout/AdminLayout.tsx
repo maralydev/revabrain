@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import { Sidebar, type UserInfo } from './Sidebar'
+import React from "react";
+import { Sidebar } from "./Sidebar";
 
 interface AdminLayoutProps {
-  children: React.ReactNode
-  userInfo?: UserInfo
+  children: React.ReactNode;
 }
 
-export function AdminLayout({ children, userInfo }: AdminLayoutProps) {
+export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <Sidebar userInfo={userInfo} />
-      <main className="ml-[200px] min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <main className="flex-1 overflow-auto">
         {children}
       </main>
     </div>
-  )
+  );
 }

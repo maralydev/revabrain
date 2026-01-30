@@ -1,33 +1,19 @@
-'use client'
+"use client";
 
-import { ReactNode } from 'react'
-import { I18nProvider } from '@/i18n/client'
-import { UtilityBar } from './UtilityBar'
-import { PublicHeader } from './PublicHeader'
-import ScrollToTop from './ScrollToTop'
-import Footer, { type FooterData } from './Footer'
+import React from "react";
+import { PublicHeader } from "./PublicHeader";
+import { Footer } from "./Footer";
 
 interface PublicLayoutProps {
-  children: ReactNode
-  footerData?: FooterData | null
+  children: React.ReactNode;
 }
 
-function PublicLayoutContent({ children, footerData }: PublicLayoutProps) {
+export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <UtilityBar />
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <PublicHeader />
-      <main className="flex-1">{children}</main>
-      <Footer data={footerData} />
-      <ScrollToTop />
+      <main className="flex-1 pt-20">{children}</main>
+      <Footer />
     </div>
-  )
-}
-
-export default function PublicLayout({ children, footerData }: PublicLayoutProps) {
-  return (
-    <I18nProvider>
-      <PublicLayoutContent footerData={footerData}>{children}</PublicLayoutContent>
-    </I18nProvider>
-  )
+  );
 }

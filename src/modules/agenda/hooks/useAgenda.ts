@@ -8,6 +8,8 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import type { Afspraak, AfspraakType, AfspraakStatus, Zorgverlener } from '../types'
+
+export type AgendaView = 'DAG' | 'WEEK'
 import { getAfsprakenByDate } from '@/modules/afspraak/queries'
 import { getActieveTeamleden } from '@/modules/teamlid/queries'
 import type { Teamlid } from '@prisma/client'

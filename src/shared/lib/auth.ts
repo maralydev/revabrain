@@ -1,131 +1,100 @@
-import { hash, compare } from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { jwtVerify, SignJWT } from "jose";
+import bcrypt from "bcryptjs";
 
-// Types
-export type Rol = 'ZORGVERLENER' | 'SECRETARIAAT';
-
-export interface SessionPayload {
+export interface Session {
   userId: number;
   email: string;
-  rol: string; // ZORGVERLENER | SECRETARIAAT
+  voornaam: string;
+  achternaam: string;
   isAdmin: boolean;
+  mustChangePassword: boolean;
 }
 
-// Config
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required');
-}
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const SESSION_COOKIE_NAME = 'revabrain_session';
-const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 dagen in seconden
-
-/**
- * Hash een wachtwoord met bcrypt
- */
-export async function hashPassword(password: string): Promise<string> {
-  return hash(password, 12);
-}
-
-/**
- * Verifieer een wachtwoord tegen een hash
- */
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  return compare(password, hashedPassword);
-}
-
-/**
- * Creëer een JWT session token
- */
-export async function createSession(payload: SessionPayload): Promise<string> {
-  const token = await new SignJWT(payload as unknown as Record<string, unknown>)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('7d')
-    .sign(JWT_SECRET);
-
-  return token;
-}
-
-/**
- * Verifieer en decode een JWT token
- */
-export async function verifySession(token: string): Promise<SessionPayload | null> {
-  try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as unknown as SessionPayload;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Haal de huidige sessie op uit cookies
- */
-export async function getSession(): Promise<SessionPayload | null> {
+export async function getSession(): Promise<Session | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const token = cookieStore.get("session")?.value;
 
   if (!token) {
     return null;
   }
 
-  return verifySession(token);
+  try {
+    const secret = new TextEncoder().encode(
+      process.env.JWT_SECRET || "default-secret-change-in-production"
+    );
+    const { payload } = await jwtVerify(token, secret);
+    return payload as unknown as Session;
+  } catch {
+    return null;
+  }
 }
 
-/**
- * Sla een sessie op in cookies
- */
+export async function requireAuth(): Promise<Session> {
+  const session = await getSession();
+  
+  if (!session) {
+    redirect("/login");
+  }
+
+  if (session.mustChangePassword) {
+    redirect("/change-password");
+  }
+
+  return session;
+}
+
+export async function requireAdmin(): Promise<Session> {
+  const session = await requireAuth();
+  
+  if (!session.isAdmin) {
+    redirect("/admin");
+  }
+
+  return session;
+}
+
+// Alias for backward compatibility
+export const requireZorgverlener = requireAuth;
+export const verifySession = getSession;
+
+// Password utilities
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+
+// Session utilities
+export async function createSession(user: Session): Promise<string> {
+  const secret = new TextEncoder().encode(
+    process.env.JWT_SECRET || "default-secret-change-in-production"
+  );
+  
+  const token = await new SignJWT(user as unknown as Record<string, unknown>)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("24h")
+    .sign(secret);
+  
+  return token;
+}
+
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
+  cookieStore.set("session", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: SESSION_DURATION,
-    path: '/',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24, // 24 hours
+    path: "/",
   });
 }
 
-/**
- * Verwijder sessie cookie
- */
 export async function deleteSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE_NAME);
-}
-
-/**
- * Check of user admin rechten heeft
- */
-export async function requireAdmin(): Promise<SessionPayload> {
-  const session = await getSession();
-
-  if (!session) {
-    throw new Error('Niet ingelogd');
-  }
-
-  if (!session.isAdmin) {
-    throw new Error('Geen admin rechten');
-  }
-
-  return session;
-}
-
-/**
- * Check of user een zorgverlener is
- */
-export async function requireZorgverlener(): Promise<SessionPayload> {
-  const session = await getSession();
-
-  if (!session) {
-    throw new Error('Niet ingelogd');
-  }
-
-  if (session.rol !== 'ZORGVERLENER' && !session.isAdmin) {
-    throw new Error('Alleen zorgverleners hebben toegang');
-  }
-
-  return session;
+  cookieStore.delete("session");
 }

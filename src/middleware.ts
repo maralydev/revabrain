@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifySession } from '@/shared/lib/auth';
+import { getSession } from '@/shared/lib/auth';
 
 // Public routes die geen auth vereisen
 const PUBLIC_ROUTES = ['/login', '/'];
@@ -17,14 +17,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Haal sessie op
-  const token = request.cookies.get('revabrain_session')?.value;
-
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  const session = await verifySession(token);
+  // Haal sessie op via cookie
+  const session = await getSession();
 
   if (!session) {
     return NextResponse.redirect(new URL('/login', request.url));
